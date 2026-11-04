@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>PunchConstruct</AssemblyName>
+    <Version>0.4.24</Version>
+    <GameDir Condition="'$(GameDir)' == ''">D:\game\steam\steamapps\common\Slay the Spire 2</GameDir>
+    <BaseLibDir Condition="'$(BaseLibDir)' == ''">D:\game\steam\steamapps\workshop\content\2868840\3737335127\BaseLib</BaseLibDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\tools\NativeProbe\PoolShutdown.cs" Link="QaPoolShutdown.cs" />
+    <Reference Include="sts2"><HintPath>$(GameDir)\data_sts2_windows_x86_64\sts2.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="GodotSharp"><HintPath>$(GameDir)\data_sts2_windows_x86_64\GodotSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(GameDir)\data_sts2_windows_x86_64\0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="BaseLib"><HintPath>$(BaseLibDir)\BaseLib.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

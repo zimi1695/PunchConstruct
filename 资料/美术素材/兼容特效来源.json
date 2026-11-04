@@ -1,0 +1,34 @@
+{
+  "game_version": "0.111.0",
+  "scope": "Construct-containing runs on gl_compatibility only",
+  "resources": [
+    {
+      "source": "shaders/vfx/monsters/decimillipede_suck_shader.tres",
+      "source_sha256": "1a4efc89e32b0a5f5d5ee88d2c0e070a913f6becaa932dcbc48b7f98133ca10a",
+      "changes": "Two scalar fma expressions replaced by equivalent multiplication and addition; no graph/default/texture/timing changes.",
+      "output": "PunchConstruct/assets/native_compat/decimillipede_suck.gdshader",
+      "sha256": "27bf1e1257c79143f3a6d32a5b63ce5973f6f936a228bb003d665286285c3ff4"
+    },
+    {
+      "source": "scenes/creature_visuals/decimillipede_segment_front.tscn",
+      "source_sha256": "04cb180a62862486b3f1e88c734170faba23641bc851fee713004588965a8e8c",
+      "changes": "Only scene UID removed and shader reference redirected to the scoped compatibility shader; original textures, animation, material parameters and nodes retained.",
+      "output": "PunchConstruct/assets/native_compat/decimillipede_segment_front.tscn",
+      "sha256": "0cd9755a45efaa6e2b33743007be67ccea266fdd4933e915aa67177361410d4c"
+    },
+    {
+      "source": "scenes/creature_visuals/decimillipede_segment_middle.tscn",
+      "source_sha256": "7e575b496b27b101e21f1733b055429f5fe478d76a252bfcc46df3a9a130848f",
+      "changes": "Only scene UID removed and shader reference redirected to the scoped compatibility shader; original textures, animation, material parameters and nodes retained.",
+      "output": "PunchConstruct/assets/native_compat/decimillipede_segment_middle.tscn",
+      "sha256": "46182537082b5b9447697d9951a603b071919c36a41a881df5d2e7309fd4b183"
+    },
+    {
+      "source": "scenes/creature_visuals/decimillipede_segment_back.tscn",
+      "source_sha256": "e08c39b2f36ba9179164a2c3fff1cf50e8e207e9bfe4c3bc6756702d8ba4f01f",
+      "changes": "Only scene UID removed and shader reference redirected to the scoped compatibility shader; original textures, animation, material parameters and nodes retained.",
+      "output": "PunchConstruct/assets/native_compat/decimillipede_segment_back.tscn",
+      "sha256": "d65491fb57b2467c73a597b7af1dd7f85a403e6f6fb7ad84629479b1a83c9c85"
+    }
+  ]
+}

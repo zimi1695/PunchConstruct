@@ -1,0 +1,27 @@
+采用素材接入说明（2026-10-23，v0.3.1）
+
+用户最新指定：先古架势重新采用架势_v0.1.png；普通版继续使用v0.2。小斩波与本角色铁斩波卡面互换：小斩波采用铁斩波.png，铁斩波采用卡牌_小斩波_v0.2.png。共16张原稿，原稿不修改。本次互换仅更新工作区及本地试玩，不导出安装包。各导出对应关系以采用素材清单.json为准。
+
+头像_像素_v0.2.png → portrait.ctex；32×32；nearest resize
+选人海报_v0.1.png → character_select.ctex；1920×1080；resize without crop
+卡牌_小斩波_v0.2.png → iron_wave.ctex；1000×760；resize without crop
+卡牌_铁斩波形态_v0.5.png → iron_wave_form.ctex；1000×760；resize without crop
+东尼斩波.jpg → tony_wave.ctex；1000×760；contain without crop, black side padding
+铁斩波.png → small_wave.ctex；1000×760；resize without crop
+卡牌_锻造车间_v0(3).jpg → forge_workshop.ctex；1000×760；resize without crop
+卡牌_王者风范_v0_facefix.jpg → royal_bearing.ctex；1000×760；resize without crop
+卡牌_趁热打铁_v04.jpg → strike_while_hot.ctex；1000×760；resize without crop
+卡牌_终局裁定_v0.jpg → final_judgment.ctex；1000×760；resize without crop
+卡牌_卸甲成军_v0.jpg → unarm_to_arms.ctex；1000×760；resize without crop
+卡牌_厄运共鸣_v0.jpg → doom_resonance.ctex；1000×760；resize without crop
+卡牌_不倒不休_v0.jpg → never_back_down.ctex；1000×760；resize without crop
+卡牌_拳王形态_v0.jpg → boxing_champion_form.ctex；606×852；resize without crop
+架势_v0.2.png → guard_stance.ctex；128×128；alpha crop, contain, transparent padding
+架势_v0.2.png → guard_stance_big.ctex；256×256；alpha crop, contain, transparent padding
+架势_v0.1.png → ancient_guard_stance.ctex；128×128；alpha crop, contain, transparent padding
+架势_v0.1.png → ancient_guard_stance_big.ctex；256×256；alpha crop, contain, transparent padding
+
+两版架势分别导出128图标、256大图及透明描边。
+遗物图标最新确认：营养汤、幽灵种子、正版及假打击木偶无需镜像，直接使用原图；螺线飞镖取消旋转，主体改银色；损毁头盔取消旋转，色调偏银色。银色处理保留原图的明暗、透明度和白色悬停描边，仅用于本角色，波纹水盆继续倒扣。使用运行时纹理处理，不覆盖原版文件。本次仅编译同步本地试玩，不导出安装包。
+震荡卡面沿用原版震荡波；巨大铁斩波卡面沿用原版铁斩波。
+九个状态小图标仍共用原版活力：东尼斩波延迟结算、铁斩波形态、锻造车间、王者风范、趁热打铁、终局裁定、卸甲成军、不倒不休、拳王形态。

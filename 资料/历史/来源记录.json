@@ -1,0 +1,347 @@
+[
+  {
+    "original": "资料/历史资料/工作区说明旧稿.md",
+    "current": "资料/历史/记录/工作区说明旧稿.md",
+    "sha256": "79c6fa0780ad344e20c4eb2f03f0cc92f56008f3ce090f12ce617c77d8f488d2"
+  },
+  {
+    "original": "资料/历史资料/已撤回的遗物改动提案.md",
+    "current": "资料/历史/记录/已撤回的遗物改动提案.md",
+    "sha256": "1ea6e8a2f78df6056645d76588658951476aff6547192452e99abb6bec38ae3f"
+  },
+  {
+    "original": "资料/历史资料/整理记录.json",
+    "current": "资料/历史/记录/整理记录.json",
+    "sha256": "47694fa928e6896edc13f66a93a266afdb22d19a5da2424f751c0f2be21eef09"
+  },
+  {
+    "original": "资料/历史资料/早期试玩反馈.txt",
+    "current": "资料/历史/记录/早期试玩反馈.txt",
+    "sha256": "f364a3086b1e4ec188488c2d2de60e9df101bb8094c40df9d3c0b15a12d20958"
+  },
+  {
+    "original": "资料/历史资料/设计整理旧稿.md",
+    "current": "资料/历史/记录/设计整理旧稿.md",
+    "sha256": "660a571b923f9a97f4af4d1c8634d33b11cfede1474756959a4ca199617a03b1"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/build_relic_review.py",
+    "current": "资料/历史/记录/build_relic_review.py",
+    "sha256": "927871d4c7496d96663d10fe6f72530dbc4e36ad4602855de8e7632b8dfb97a9"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/cards_bite.json",
+    "current": "资料/历史/记录/cards_bite.json",
+    "sha256": "082b33e04c5f3f62fa5bfba903602bc2e12ccfd7514f58f209d3ddb410717480"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/cards_bright_flame.json",
+    "current": "资料/历史/记录/cards_bright_flame.json",
+    "sha256": "a480f36a9cc341453ff24d31a3681b04bb12188103ab7042cc7b1ae213794c22"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/cards_glow.json",
+    "current": "资料/历史/记录/cards_glow.json",
+    "sha256": "cb7c1644aeefc8997378300d7ad9ef47002dfc3fd57f804c1f05031d0c2407e2"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/cards_wish.json",
+    "current": "资料/历史/记录/cards_wish.json",
+    "sha256": "193a95d7c01fffddb986c11685f7f01508ac59e5fb17f2aaa08b911ba542bee2"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/relics_source_ancient_pools.json",
+    "current": "资料/历史/记录/relics_source_ancient_pools.json",
+    "sha256": "d3c66c2489240f759af0fede304baef5f7ebbfc9a185d98dcd272c21a4df6236"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/relics_source_beta_version.json",
+    "current": "资料/历史/记录/relics_source_beta_version.json",
+    "sha256": "fc80a4d6c2389386417938bdfef624fbd24992f8f01787af5bacd1045973f406"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/relics_source_beta_zhs.json",
+    "current": "资料/历史/记录/relics_source_beta_zhs.json",
+    "sha256": "924dafba2f77ed1229425517328e30e5979ad413ca48e8c56b4f550948730995"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/relics_source_enchantments.json",
+    "current": "资料/历史/记录/relics_source_enchantments.json",
+    "sha256": "398f2b7606dedb1be8505e4f7b075f07267e1e5850f369f0a951cce77861f27e"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/relics_source_helical_dart.json",
+    "current": "资料/历史/记录/relics_source_helical_dart.json",
+    "sha256": "7f061ef4635f128dff02bf05900b0ff0550e8df2008c3a710ff9870092cad19b"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/relics_source_stats.json",
+    "current": "资料/历史/记录/relics_source_stats.json",
+    "sha256": "d48ae8ea518c71cae9e7777c9ea3687469623e78144393c3f1798788e73165fd"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/relics_source_versions.json",
+    "current": "资料/历史/记录/relics_source_versions.json",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/relics_source_zhs.json",
+    "current": "资料/历史/记录/relics_source_zhs.json",
+    "sha256": "5c66e2c26894a14d356a47b1ffb1a4e6e7a1420be4d8fba1477ac1f0f3e73739"
+  },
+  {
+    "original": "资料/历史资料/遗物参考数据/relic_review.json",
+    "current": "资料/历史/记录/relic_review.json",
+    "sha256": "fae548618d70262ccbb30dd5f8fb3676a96ae00fdfe684ff26aafa09ae6a90ca"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/卸甲成军/稿件1/卸甲成军.jpg",
+    "current": "资料/历史/旧稿/卸甲成军（稿件1）.jpg",
+    "sha256": "25a61547457772088273539f96ef74573973ccb98801de5fcbf5c731b87fadc9"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/卸甲成军/稿件2/卸甲成军.jpg",
+    "current": "资料/历史/旧稿/卸甲成军（稿件2）.jpg",
+    "sha256": "f895c44432ec8b069f20d60644971936052a7af58d5005c7d01195d260e06fbf"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/卸甲成军/稿件3/卸甲成军.jpg",
+    "current": "资料/历史/旧稿/卸甲成军（稿件3）.jpg",
+    "sha256": "5a5974ece5963e32675be216671c4c0d9f1a599f502da02df66f8faedcbd9669"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/卸甲成军/稿件4/卸甲成军.jpg",
+    "current": "资料/历史/旧稿/卸甲成军（稿件4）.jpg",
+    "sha256": "c0151a7e7ad004d2589226bee8a494f362bf4f71a9b1cf624ac1fd9d2d0ce01a"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/厄运共鸣/稿件1/厄运共鸣.jpg",
+    "current": "资料/历史/旧稿/厄运共鸣（稿件1）.jpg",
+    "sha256": "5ae80bf96e1f4f75d08e7d267024e5315e4db982c80fd09cfe1bec73660e3128"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/厄运共鸣/稿件2/厄运共鸣.jpg",
+    "current": "资料/历史/旧稿/厄运共鸣（稿件2）.jpg",
+    "sha256": "166b80a2f207dddc4b5252cd3d48efba804f7f358a304ac4075024bf8aea21a9"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/小斩波/稿件1/小斩波.png",
+    "current": "资料/历史/旧稿/小斩波（稿件1）.png",
+    "sha256": "c4e2d6ff58b2e1b0497004303973ac20cdd7b73cc116f9a9cd6d26aabd597e35"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/拳王形态/稿件1/拳王形态.jpg",
+    "current": "资料/历史/旧稿/拳王形态（稿件1）.jpg",
+    "sha256": "b570aaeed5fc786448ba61a66b590ec7cf31d6147c68ab8aaa4a1b373066aa11"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/王者风范/稿件1/王者风范.jpg",
+    "current": "资料/历史/旧稿/王者风范（稿件1）.jpg",
+    "sha256": "1c57e544ae0216a4a4b0ec10d698b92f714f0cec1f1ba3a3bc8c94142eeea9b1"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/王者风范/稿件2/王者风范.jpg",
+    "current": "资料/历史/旧稿/王者风范（稿件2）.jpg",
+    "sha256": "5f97712f279e6e42feada56dfe6d858c20a14b7d59463fda6b423403114a0ded"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/趁热打铁/稿件1/趁热打铁.jpg",
+    "current": "资料/历史/旧稿/趁热打铁（稿件1）.jpg",
+    "sha256": "400c6eba2ea58df3949d73691657f420d172b79af6de63482674c0441f2cb295"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/趁热打铁/稿件2/趁热打铁.jpg",
+    "current": "资料/历史/旧稿/趁热打铁（稿件2）.jpg",
+    "sha256": "b9896f5b7d689492c0e241cb72b11a42b8351651659874095a9a9b895ceb2637"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/趁热打铁/稿件3/趁热打铁.jpg",
+    "current": "资料/历史/旧稿/趁热打铁（稿件3）.jpg",
+    "sha256": "f595f2fe5c0ac3bbf2fc6a7eb1ac19d78ac8ab01e521a0016a9f8e4033745952"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/铁斩波形态/稿件1/铁斩波形态.png",
+    "current": "资料/历史/旧稿/铁斩波形态（稿件1）.png",
+    "sha256": "2472c1c5a2aa8bb3042fd4682a9f693fbdc68bb002f167e6f2cab6865155e92d"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/铁斩波形态/稿件2/铁斩波形态.png",
+    "current": "资料/历史/旧稿/铁斩波形态（稿件2）.png",
+    "sha256": "992d643cec07f4ad359e0cf40ad751f05b13c99034e400d5e98a58c451db4441"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/铁斩波形态/稿件3/铁斩波形态.png",
+    "current": "资料/历史/旧稿/铁斩波形态（稿件3）.png",
+    "sha256": "bc7cb0cb18b22974337d7065d32b7d64ab401e6937f2f96279d626d28472babd"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/铁斩波形态/稿件4/铁斩波形态.jpg",
+    "current": "资料/历史/旧稿/铁斩波形态（稿件4）.jpg",
+    "sha256": "2f46d4f96081ae57cd1cdef125bcac5cb0158ee609e720add180136de4f181ca"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/锻造车间/稿件1/锻造车间.jpg",
+    "current": "资料/历史/旧稿/锻造车间（稿件1）.jpg",
+    "sha256": "1b1930d545e9b6a329b27130023ee1e2cda0642be2d2d3657d0faeba48068bcc"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/锻造车间/稿件2/锻造车间.jpg",
+    "current": "资料/历史/旧稿/锻造车间（稿件2）.jpg",
+    "sha256": "13c6526cfc4e38a05d5bd70a7e451502960023b6118da6b315d746421e0316b6"
+  },
+  {
+    "original": "资料/美术素材/历史稿/卡牌/锻造车间/稿件3/锻造车间.jpg",
+    "current": "资料/历史/旧稿/锻造车间（稿件3）.jpg",
+    "sha256": "56e454b57388d61a088ef863e4623e256f88dcf57256c6ac8af953f89972e99a"
+  },
+  {
+    "original": "资料/美术素材/历史稿/状态图标/初次图标总览.png",
+    "current": "资料/历史/旧稿/初次图标总览.png",
+    "sha256": "1050d9aa610965a5f8eb2c0f1f9ff05c45b33e924e277b7c1a5551eb31fff55f"
+  },
+  {
+    "original": "资料/美术素材/历史稿/状态图标/插地剑.png",
+    "current": "资料/历史/旧稿/插地剑.png",
+    "sha256": "6f48d0098473a5661fe335da0e13e125e90a2617f366a9aeae10093b476987b6"
+  },
+  {
+    "original": "资料/美术素材/历史稿/状态图标/螺丝.png",
+    "current": "资料/历史/旧稿/螺丝.png",
+    "sha256": "dfbd83846603195441b17f89fc8f6f29a4d4ad0d40fa30d2f73a85452c49908e"
+  },
+  {
+    "original": "资料/美术素材/历史稿/状态图标/64像素/插地剑.png",
+    "current": "资料/历史/旧稿/插地剑（缩略图）.png",
+    "sha256": "2dcc84d7e511bac44eb9c0dd4e49d33518ee49b265897bf04967675a3610a712"
+  },
+  {
+    "original": "资料/美术素材/历史稿/状态图标/64像素/螺丝.png",
+    "current": "资料/历史/旧稿/螺丝（缩略图）.png",
+    "sha256": "e2a946feaa05248ac303e4d0597ce81da862e03cd4ab721e7d834fa168900b3d"
+  },
+  {
+    "original": "资料/美术素材/历史稿/角色/头像/稿件1/头像.png",
+    "current": "资料/历史/旧稿/头像（稿件1）.png",
+    "sha256": "1f759f62eb003b8332fc344b03dacc751920f35126ecd80d22e9e7af847ece61"
+  },
+  {
+    "original": "资料/美术素材/制作记录/早期素材接入记录.txt",
+    "current": "资料/历史/记录/早期素材接入记录.txt",
+    "sha256": "b0e57b3a5c6ff5d9601915b34c703654a2cf11e7287d6f870bbb5aa78f35c527"
+  },
+  {
+    "original": "资料/美术素材/制作记录/早期绘图记录.md",
+    "current": "资料/历史/记录/早期绘图记录.md",
+    "sha256": "00cfb456d03b3bbe54ca05358824f54cea0442d44cbc1149af8379867016376c"
+  },
+  {
+    "original": "资料/美术素材/制作记录/状态图标提示词.json",
+    "current": "资料/历史/记录/状态图标提示词.json",
+    "sha256": "3c71ae70dd2f7dbf5d84681127a4740c5be03960636171f6cca7e2d71c721c47"
+  },
+  {
+    "original": "资料/美术素材/状态图标/已选/王者风范.png",
+    "current": "资料/历史/图标原图/王者风范.png",
+    "sha256": "0a7da7e642ca175d8909349850a670b3d134ca04f8c3ea054352e98f67944344"
+  },
+  {
+    "original": "资料/美术素材/状态图标/已选/铁斩波形态.png",
+    "current": "资料/历史/图标原图/铁斩波形态.png",
+    "sha256": "5a2cd94ec220664be270e9a8da21a2e21f554af437aa938a9f8f7561bb2c3e98"
+  },
+  {
+    "original": "资料/美术素材/状态图标/待审/不倒不休.png",
+    "current": "资料/历史/图标原图/不倒不休.png",
+    "sha256": "00e44033323be79a931f6c5f858ed1fb597e1a695992dd5c72529f4a6b420adc"
+  },
+  {
+    "original": "资料/美术素材/状态图标/待审/东尼斩波.png",
+    "current": "资料/历史/图标原图/东尼斩波.png",
+    "sha256": "2e4b9f9832f7bf47082f5cc1b476324aebc0af07fb45b5fb0344d8f7b818703d"
+  },
+  {
+    "original": "资料/美术素材/状态图标/待审/卸甲成军.png",
+    "current": "资料/历史/图标原图/卸甲成军.png",
+    "sha256": "e3527e9e38c1c5f913dff8a4687f38abc7ca8098906006e9d24b7e1c74c05020"
+  },
+  {
+    "original": "资料/美术素材/状态图标/待审/拳王形态.png",
+    "current": "资料/历史/图标原图/拳王形态.png",
+    "sha256": "e90fe29fc60463e59998cfe41f6c6cd5763c8c5ae4832c0215a4d21637fab6cf"
+  },
+  {
+    "original": "资料/美术素材/状态图标/待审/终局裁定.png",
+    "current": "资料/历史/图标原图/终局裁定.png",
+    "sha256": "560ca762841fa7e36656c68bc943bb7607dcedd74fd9b0e88509ef0b3ab5c739"
+  },
+  {
+    "original": "资料/美术素材/状态图标/待审/趁热打铁.png",
+    "current": "资料/历史/图标原图/趁热打铁.png",
+    "sha256": "6270542bcfc260c1d9f03127c0d53c91272353e44b7ecda118aac3e95bcdd605"
+  },
+  {
+    "original": "资料/美术素材/状态图标/待审/锻造车间.png",
+    "current": "资料/历史/图标原图/锻造车间.png",
+    "sha256": "5497a6be2cd8bd5d00ff9cc34f2187eb6b68f49f8d189cfaaf0f1e5f54ecc5f2"
+  },
+  {
+    "original": "资料/美术素材/状态图标/64像素/已选/王者风范.png",
+    "current": "资料/美术素材/状态图标/王者风范.png",
+    "sha256": "d1c29d4acd957ae4e6fe5d7ad60582c73ee0edb9528e79ddba5984f919e385ba"
+  },
+  {
+    "original": "资料/美术素材/状态图标/64像素/已选/铁斩波形态.png",
+    "current": "资料/美术素材/状态图标/铁斩波形态.png",
+    "sha256": "c607ba6bf90a7db80e10ba57f5cad60df0134279e4eed15c2f4e58d62ed5493a"
+  },
+  {
+    "original": "资料/美术素材/状态图标/64像素/待审/不倒不休.png",
+    "current": "资料/美术素材/状态图标/不倒不休.png",
+    "sha256": "fa9041dae026e73a7b38623e3590a82742d74c34002932aafb74cca4c8bdde3a"
+  },
+  {
+    "original": "资料/美术素材/状态图标/64像素/待审/东尼斩波.png",
+    "current": "资料/美术素材/状态图标/东尼斩波.png",
+    "sha256": "9a350737c03fedf1d3b8bd703575a98fa1b3d3338c346d78a1891cebf5f2f87a"
+  },
+  {
+    "original": "资料/美术素材/状态图标/64像素/待审/卸甲成军.png",
+    "current": "资料/美术素材/状态图标/卸甲成军.png",
+    "sha256": "210b20bfaf38de9d70ce93839e6feebcc96a26c8d65c46ee73b5af9eff56b1d2"
+  },
+  {
+    "original": "资料/美术素材/状态图标/64像素/待审/拳王形态.png",
+    "current": "资料/美术素材/状态图标/拳王形态.png",
+    "sha256": "2e0bc9cc3bb8ada4995ef842db21f3855f37c8e43ad6299d27bb873c308665df"
+  },
+  {
+    "original": "资料/美术素材/状态图标/64像素/待审/终局裁定.png",
+    "current": "资料/美术素材/状态图标/终局裁定.png",
+    "sha256": "a96cf2d135cf4984850486181e3f5abb373d0fcc3a81defeb6dc22c73ba2e8b7"
+  },
+  {
+    "original": "资料/美术素材/状态图标/64像素/待审/趁热打铁.png",
+    "current": "资料/美术素材/状态图标/趁热打铁.png",
+    "sha256": "fe6747de3c97f88e881ea7628127b8fa16ea505a3750fb1f67fdcc83e97dae16"
+  },
+  {
+    "original": "资料/美术素材/状态图标/64像素/待审/锻造车间.png",
+    "current": "资料/美术素材/状态图标/锻造车间.png",
+    "sha256": "26e93188e1b57b8e2745de526753b7fc03c0e2b7219018753a94f3294b88009b"
+  },
+  {
+    "original": "资料/设定/README.md",
+    "current": "资料/历史/记录/旧设定说明.md",
+    "sha256": "9875679578b3feb7251439477cf097cc18ff5af86fc11749c6a37cac65c95216"
+  },
+  {
+    "original": "tools/organize_workspace.py",
+    "current": "资料/历史/记录/organize_workspace.py",
+    "sha256": "834c2659414d7ea28c21856809d6648d74c51f35857f3d86ad6ac5d0866096cd"
+  },
+  {
+    "original": "tools/simplify_workspace.py",
+    "current": "资料/历史/记录/simplify_workspace.py",
+    "sha256": "ea386bfe8324c2a6e1c9e623ea6853937390f5c115a78145e21409705b9f3cfe"
+  }
+]

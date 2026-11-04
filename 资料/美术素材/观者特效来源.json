@@ -1,0 +1,94 @@
+[
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "images/vfx/stance/exhaust_l.png",
+    "source_resource": "Watcher/_imported/exhaust_l.png-d153da6e02d124e2d6516c9386b205f4.ctex",
+    "output": "PunchConstruct/assets/observer_vfx/exhaust_l.ctex",
+    "sha256": "9f4afe042090b90f0486f763b8a320339aed4970c40333605c00cacc01fa9ca7"
+  },
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "images/vfx/stance/glow_spark.png",
+    "source_resource": "Watcher/_imported/glow_spark.png-b11bd31ccfc5f00508cd16df405c3068.ctex",
+    "output": "PunchConstruct/assets/observer_vfx/glow_spark.ctex",
+    "sha256": "e83d23dae314c4a8ebdef68f2a2c241b3926d5c5dd10d07a7da681fd54b20be1"
+  },
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "images/vfx/sts1_eye/eye0.png",
+    "source_resource": "Watcher/_imported/eye0.png-12cfaa7ec44d2c2831b3aa2276135e4e.ctex",
+    "output": "PunchConstruct/assets/observer_vfx/eye0.ctex",
+    "sha256": "d3d8ecf405024d6f3bc7d78c0b5882ff8b941557fb71c0bd0a894148145ea7c4"
+  },
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "images/vfx/sts1_eye/eye1.png",
+    "source_resource": "Watcher/_imported/eye1.png-f2597064aad3f3c14d14035317fa4a19.ctex",
+    "output": "PunchConstruct/assets/observer_vfx/eye1.ctex",
+    "sha256": "7a3a610a709b3cff443bb3cc9b202f9b06b2dfc73dae9d73459132adcb2ff6b0"
+  },
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "images/vfx/sts1_eye/eye2.png",
+    "source_resource": "Watcher/_imported/eye2.png-b64a0f8ecc0fab50cb1fe8f23aad87bd.ctex",
+    "output": "PunchConstruct/assets/observer_vfx/eye2.ctex",
+    "sha256": "39cf6cb3528069b19998679d491cf2e4af7ac5483ace60773e98634e81bea575"
+  },
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "images/vfx/sts1_eye/eye3.png",
+    "source_resource": "Watcher/_imported/eye3.png-572aa6440beae3294c9cb6baaeb515ae.ctex",
+    "output": "PunchConstruct/assets/observer_vfx/eye3.ctex",
+    "sha256": "e9eff66857e6b043b2457651f7e14221373375b065c0d725ccb2196105e948aa"
+  },
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "images/vfx/sts1_eye/eye4.png",
+    "source_resource": "Watcher/_imported/eye4.png-53c4144bcaba83716b891396e0d204ce.ctex",
+    "output": "PunchConstruct/assets/observer_vfx/eye4.ctex",
+    "sha256": "ee2a4be01cf9ced6510ab405aff645aaab733ef17fda3faaa47d1e243e3be45e"
+  },
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "images/vfx/sts1_eye/eye5.png",
+    "source_resource": "Watcher/_imported/eye5.png-1d8423a246928126e2a07a80faa76df1.ctex",
+    "output": "PunchConstruct/assets/observer_vfx/eye5.ctex",
+    "sha256": "52527b0f42116bf75122686a63955565baf09e57f521cff6988e3af8b3811306"
+  },
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "images/vfx/sts1_eye/eye6.png",
+    "source_resource": "Watcher/_imported/eye6.png-bf4ef613bf35b219f5e754ec2af19964.ctex",
+    "output": "PunchConstruct/assets/observer_vfx/eye6.ctex",
+    "sha256": "8a5e29408b19e950a600824dc13bd3497580d53f69f18b290770ab9ac54848fb"
+  },
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "audio/watcher/divinity.ogg",
+    "source_resource": "audio/watcher/divinity.ogg",
+    "output": "PunchConstruct/assets/observer_vfx/divinity.ogg",
+    "sha256": "7ef48cb943ce5e465263b6b8641772ccae388778cfca418f0938bd09aef18eac"
+  },
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "audio/watcher/mantra.ogg",
+    "source_resource": "audio/watcher/mantra.ogg",
+    "output": "PunchConstruct/assets/observer_vfx/mantra.ogg",
+    "sha256": "5c47eaf8e0987783ebcb96f9648943677c0d2b8d1bd495587e950b877f1e3dd6"
+  },
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "Watcher.dll: WatcherMod.StanceVfxHelper.VignetteShader",
+    "source_resource": "Watcher.dll: VignetteShader; adapted Divinity defaults",
+    "output": "PunchConstruct/assets/observer_vfx/divinity_border.gdshader",
+    "sha256": "10e089ec47ecfd36ba3d2213d04783fe3e2169ffb782406e000560a0a295cdfd"
+  },
+  {
+    "source_pack": "Watcher 0.10.3",
+    "source_path": "images/vfx/sts1/vfx.png",
+    "source_resource": "Watcher/_imported/vfx.png-e40a11c13fd0dfd216e696dfd8d78721.ctex",
+    "output": "PunchConstruct/assets/observer_vfx/divinity_atlas.ctex",
+    "sha256": "105c8af8fece73ebd37a3b418cd45fa9437b87b6e64279015d5815f86a159949",
+    "usage": "Only combat/strikeLine2: non-rotated region (1402,19,122,17), original atlas preserved."
+  }
+]

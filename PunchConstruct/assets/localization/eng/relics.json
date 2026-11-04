@@ -1,0 +1,17 @@
+{
+  "PUNCHCONSTRUCT_ADAPTED_LARGE_CAPSULE.description": "Obtain [blue]{Relics}[/blue] random [gold]Relics[/gold]. Add [blue]2[/blue] [gold]Small Waves[/gold] to your [gold]Deck[/gold].",
+  "PUNCHCONSTRUCT_ADAPTED_DINGY_RUG.description": "[gold]Colorless cards[/gold] are much more likely to appear in card rewards.",
+  "PUNCHCONSTRUCT_ADAPTED_STRIKE_DUMMY.description": "Cards with Wave in their names deal 3 additional damage.",
+  "PUNCHCONSTRUCT_ADAPTED_FAKE_STRIKE_DUMMY.description": "Cards with Wave in their names deal 1 additional damage.",
+  "PUNCHCONSTRUCT_ADAPTED_GHOST_SEED.description": "Your Small Waves are [gold]Ethereal[/gold].",
+  "PUNCHCONSTRUCT_ADAPTED_RIPPLE_BASIN.description": "At the end of your turn, if you played an Attack this turn, gain 4 [gold]Block[/gold].",
+  "PUNCHCONSTRUCT_ADAPTED_NUTRITIOUS_SOUP.description": "拾起时，将你[gold]牌组[/gold]中的所有[gold]小斩波[/gold][gold]变化[/gold]为[gold]铁斩波[/gold]，并赋予[gold]永恒[/gold]。",
+  "PUNCHCONSTRUCT_ADAPTED_RUINED_HELMET.description": "每场战斗首次获得[gold]力量[/gold]或[gold]敏捷[/gold]时，获得等量的另一项属性。整场共触发一次。",
+  "PUNCHCONSTRUCT_ADAPTED_HELICAL_DART.description": "Whenever you play an Attack, gain 1 Dexterity this turn.",
+  "PUNCHCONSTRUCT_ADAPTED_LEAFY_POULTICE.description": "拾起时，失去[red]{MaxHp}[/red]点最大生命，并[gold]变化[/gold]你的[blue]2[/blue]张[gold]小斩波[/gold]。",
+  "PUNCHCONSTRUCT_ADAPTED_SEA_GLASS.description": "查看储君、亡灵契约师、故障机器人各[blue]5[/blue]张牌，共[blue]15[/blue]张。从中选择任意数量的卡牌加入你的[gold]牌组[/gold]。",
+  "PUNCHCONSTRUCT_ADAPTED_PRISMATIC_GEM.description": "Gain {Energy:energyIcons()} at the start of each turn. Combat card rewards no longer contain [gold]Colorless cards[/gold].",
+  "PUNCHCONSTRUCT_ADAPTED_ARCHAIC_TOOTH.description": "将一张[gold]铁斩波[/gold][gold]变化[/gold]为[gold]灼热铁斩波[/gold]并[gold]强化[/gold]3次。",
+  "PUNCHCONSTRUCT_ADAPTED_NEOWS_TALISMAN.description": "[gold]强化[/gold]两张[gold]小斩波[/gold]。",
+  "PUNCHCONSTRUCT_ADAPTED_PANDORAS_BOX.description": "拾起时，将所有可变化的[gold]小斩波[/gold]、[gold]打击[/gold]和[gold]防御[/gold][gold]变化[/gold]为其他牌。"
+}

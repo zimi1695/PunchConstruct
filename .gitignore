@@ -1,0 +1,26 @@
+# 本机工具链与编辑器
+.dotnet-local/
+**/bin/
+**/obj/
+**/__pycache__/
+*.user
+Thumbs.db
+
+# 本地运行时：游戏本体、隔离存档、QA 证据、临时日志
+tools/runtime/
+tools/game-reference/
+*.log
+.screenshots/
+
+# 可复现的构建产物；工坊文案、清单与宣传图仍需入库
+dist/PunchConstruct/
+dist/SteamWorkshop/content/
+dist/SteamWorkshop/验收日志/
+
+# 第三方上传工具二进制，来源记录见 tools/ModUploader/provenance.json
+tools/ModUploader/ModUploader.exe
+tools/ModUploader/ModUploader.pdb
+tools/ModUploader/steam_api64.dll
+
+# 体积较大的历史美术稿；当前采用的美术源图仍入库
+资料/历史/旧稿/

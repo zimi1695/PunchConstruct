@@ -1,0 +1,1 @@
+{"id":"RecoveryProbe","name":"Local recovery QA only","author":"QA","version":"1.0.0","has_dll":true,"has_pck":false,"affects_gameplay":true,"dependencies":[{"id":"BaseLib"},{"id":"PunchConstruct"}]}

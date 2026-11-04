@@ -1,0 +1,1134 @@
+{
+  "moves_and_deletions": [
+    {
+      "action": "move",
+      "from": "一些基本设定.txt",
+      "to": "资料/设定/原始设定.txt",
+      "sha256": "94eaff81e3fd18b74ca67f2544c918906b6b91f4de94a5549f9ce5399fe45b88"
+    },
+    {
+      "action": "move",
+      "from": "卡牌池审阅清单_v0.1.txt",
+      "to": "资料/设定/卡牌清单.txt",
+      "sha256": "70425abaf0b66c00692faf7437122dd8de75423c4b4c460f2ce1581dc84e9ea2"
+    },
+    {
+      "action": "move",
+      "from": "角色背景与对白草稿_v0.1.txt",
+      "to": "资料/设定/角色对白.txt",
+      "sha256": "0d6d55ac0cf69682533b26b69b010794b325314f37144a7b0741a4fe3a8c209a"
+    },
+    {
+      "action": "move",
+      "from": "待修复问题清单.txt",
+      "to": "资料/设定/问题记录.txt",
+      "sha256": "ca540f7c2a5c3563bf96fc530214c996c6f1887e0fbf547efa9900f2633a4ef7"
+    },
+    {
+      "action": "move",
+      "from": "sts2_punch_construct_design.md",
+      "to": "资料/历史资料/设计整理旧稿.md",
+      "sha256": "1089bc27bafea6e772e0df95bfa05ead036f405e310762a5e75f5c6beaa3f46a"
+    },
+    {
+      "action": "move",
+      "from": "原版全遗物_改动审查稿_v0.1.md",
+      "to": "资料/历史资料/已撤回的遗物改动提案.md",
+      "sha256": "caff888d5c4e739093e7eeef8dc2d7bbb1a1d7d40ac91345f92753300420ad73"
+    },
+    {
+      "action": "move",
+      "from": "试玩反馈与方向待定_2026-10-21.txt",
+      "to": "资料/历史资料/早期试玩反馈.txt",
+      "sha256": "f364a3086b1e4ec188488c2d2de60e9df101bb8094c40df9d3c0b15a12d20958"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/头像_像素_v0.2.png",
+      "to": "资料/美术素材/角色/头像.png",
+      "sha256": "e810c1b78dae2df7a35440c305f0997e8380f4af674d26bb29c97088564fbd70"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/选人海报_v0.1.png",
+      "to": "资料/美术素材/角色/选人海报.png",
+      "sha256": "3c6b0cfda41d54d74803fc3628ce0ebad646f0e9bdfaeadb291c0df1105f550d"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/铁斩波.png",
+      "to": "资料/美术素材/卡牌/小斩波.png",
+      "sha256": "47a0f53fbff4ef2187780b2a12bc7495d77508defd0ca53d752ecac1f90e22a4"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/卡牌_小斩波_v0.2.png",
+      "to": "资料/美术素材/卡牌/铁斩波.png",
+      "sha256": "49225d7a43b59af6fcdce423cbe6b8ebb8f5151f0ea3867dc586e0b3d7babc75"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/卡牌_铁斩波形态_v0.5.png",
+      "to": "资料/美术素材/卡牌/铁斩波形态.png",
+      "sha256": "0892c9bb6870c5c883a6b21252036a9bf72ca5f79c9755a595a64705ad17ce7a"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/东尼斩波.jpg",
+      "to": "资料/美术素材/卡牌/东尼斩波.jpg",
+      "sha256": "766e299d37f0d7b751aeb8038da469246aa966a78d8d6f1e2f2c1f7bd03330c1"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/卡牌_锻造车间_v0(3).jpg",
+      "to": "资料/美术素材/卡牌/锻造车间.jpg",
+      "sha256": "61d4f75ed20df23e5b1c83690e52ed2feeac49d1110d14f89af84025c3731cca"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/卡牌_王者风范_v0_facefix.jpg",
+      "to": "资料/美术素材/卡牌/王者风范.jpg",
+      "sha256": "18a406c6df510398832613b710a73a98806777fd3226f9cf41c2e964a30b16d0"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/卡牌_趁热打铁_v04.jpg",
+      "to": "资料/美术素材/卡牌/趁热打铁.jpg",
+      "sha256": "b35ec0c17dd4d0489f6922d0329ac24f6178593f4df49004644cd8bc32611c83"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/卡牌_终局裁定_v0.jpg",
+      "to": "资料/美术素材/卡牌/终局裁定.jpg",
+      "sha256": "f417ca05ee541725b5ec42f51ac5c9f3bfbb008a76511b484c61cf4e0354af67"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/卡牌_卸甲成军_v0.jpg",
+      "to": "资料/美术素材/卡牌/卸甲成军.jpg",
+      "sha256": "d4fe4106804f7c74d572721e4bf93e1e11ed3352e43ddd67e737e9e02c44b8a4"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/卡牌_厄运共鸣_v0.jpg",
+      "to": "资料/美术素材/卡牌/厄运共鸣.jpg",
+      "sha256": "286a6722016e807ba742fd2ce0b40d750fb477bf71826243729d0cbd81140dc2"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/卡牌_不倒不休_v0.jpg",
+      "to": "资料/美术素材/卡牌/不倒不休.jpg",
+      "sha256": "15df2b303ab2a55cd96a0c5ccfe420e95ce4dda36fc8111bf8ccfef7b126eaa2"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/卡牌_拳王形态_v0.jpg",
+      "to": "资料/美术素材/卡牌/拳王形态.jpg",
+      "sha256": "b8eb78b30b417ecef22b4c83cf7dc28f210d2056e61ed5a5ae4706c689af81b2"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/架势_v0.2.png",
+      "to": "资料/美术素材/遗物/架势.png",
+      "sha256": "290c1dd8757108cad6d1fc3339558748079b5262b1516e6ff7362d99284e8b73"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/可用素材/架势_v0.1.png",
+      "to": "资料/美术素材/遗物/先古架势.png",
+      "sha256": "23f28105ca1a2503e1c704fa9c9c78b400faed82f56c9d11b9c1a8a0fedba341"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/06_插地小剑_v0.2.png",
+      "to": "资料/美术素材/状态图标/已选/铁斩波形态.png",
+      "sha256": "5a2cd94ec220664be270e9a8da21a2e21f554af437aa938a9f8f7561bb2c3e98"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/64x64_待审/06_插地小剑_v0.2.png",
+      "to": "资料/美术素材/状态图标/64像素/已选/铁斩波形态.png",
+      "sha256": "c607ba6bf90a7db80e10ba57f5cad60df0134279e4eed15c2f4e58d62ed5493a"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/06_插地小剑_v0.3_王者风范.png",
+      "to": "资料/美术素材/状态图标/已选/王者风范.png",
+      "sha256": "0a7da7e642ca175d8909349850a670b3d134ca04f8c3ea054352e98f67944344"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/64x64_待审/06_插地小剑_v0.3_王者风范.png",
+      "to": "资料/美术素材/状态图标/64像素/已选/王者风范.png",
+      "sha256": "d1c29d4acd957ae4e6fe5d7ad60582c73ee0edb9528e79ddba5984f919e385ba"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/02_小擂台_v0.1.png",
+      "to": "资料/美术素材/状态图标/待审/不倒不休.png",
+      "sha256": "00e44033323be79a931f6c5f858ed1fb597e1a695992dd5c72529f4a6b420adc"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/64x64_待审/02_小擂台_v0.1.png",
+      "to": "资料/美术素材/状态图标/64像素/待审/不倒不休.png",
+      "sha256": "fa9041dae026e73a7b38623e3590a82742d74c34002932aafb74cca4c8bdde3a"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/03_烧红铁锭_v0.1.png",
+      "to": "资料/美术素材/状态图标/待审/趁热打铁.png",
+      "sha256": "6270542bcfc260c1d9f03127c0d53c91272353e44b7ecda118aac3e95bcdd605"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/64x64_待审/03_烧红铁锭_v0.1.png",
+      "to": "资料/美术素材/状态图标/64像素/待审/趁热打铁.png",
+      "sha256": "fe6747de3c97f88e881ea7628127b8fa16ea505a3750fb1f67fdcc83e97dae16"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/04_小车间_v0.1.png",
+      "to": "资料/美术素材/状态图标/待审/锻造车间.png",
+      "sha256": "5497a6be2cd8bd5d00ff9cc34f2187eb6b68f49f8d189cfaaf0f1e5f54ecc5f2"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/64x64_待审/04_小车间_v0.1.png",
+      "to": "资料/美术素材/状态图标/64像素/待审/锻造车间.png",
+      "sha256": "26e93188e1b57b8e2745de526753b7fc03c0e2b7219018753a94f3294b88009b"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/05_拳王腰带_v0.1.png",
+      "to": "资料/美术素材/状态图标/待审/拳王形态.png",
+      "sha256": "e90fe29fc60463e59998cfe41f6c6cd5763c8c5ae4832c0215a4d21637fab6cf"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/64x64_待审/05_拳王腰带_v0.1.png",
+      "to": "资料/美术素材/状态图标/64像素/待审/拳王形态.png",
+      "sha256": "2e0bc9cc3bb8ada4995ef842db21f3855f37c8e43ad6299d27bb873c308665df"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/07_沙漏_v0.1.png",
+      "to": "资料/美术素材/状态图标/待审/东尼斩波.png",
+      "sha256": "2e4b9f9832f7bf47082f5cc1b476324aebc0af07fb45b5fb0344d8f7b818703d"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/64x64_待审/07_沙漏_v0.1.png",
+      "to": "资料/美术素材/状态图标/64像素/待审/东尼斩波.png",
+      "sha256": "9a350737c03fedf1d3b8bd703575a98fa1b3d3338c346d78a1891cebf5f2f87a"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/08_断甲骨手_v0.1.png",
+      "to": "资料/美术素材/状态图标/待审/卸甲成军.png",
+      "sha256": "e3527e9e38c1c5f913dff8a4687f38abc7ca8098906006e9d24b7e1c74c05020"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/64x64_待审/08_断甲骨手_v0.1.png",
+      "to": "资料/美术素材/状态图标/64像素/待审/卸甲成军.png",
+      "sha256": "210b20bfaf38de9d70ce93839e6feebcc96a26c8d65c46ee73b5af9eff56b1d2"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/09_裁定印记_v0.1.png",
+      "to": "资料/美术素材/状态图标/待审/终局裁定.png",
+      "sha256": "560ca762841fa7e36656c68bc943bb7607dcedd74fd9b0e88509ef0b3ab5c739"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/64x64_待审/09_裁定印记_v0.1.png",
+      "to": "资料/美术素材/状态图标/64像素/待审/终局裁定.png",
+      "sha256": "a96cf2d135cf4984850486181e3f5abb373d0fcc3a81defeb6dc22c73ba2e8b7"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/01_螺丝_v0.1.png",
+      "to": "资料/美术素材/历史稿/状态图标/螺丝.png",
+      "sha256": "dfbd83846603195441b17f89fc8f6f29a4d4ad0d40fa30d2f73a85452c49908e"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/64x64_待审/01_螺丝_v0.1.png",
+      "to": "资料/美术素材/历史稿/状态图标/64像素/螺丝.png",
+      "sha256": "e2a946feaa05248ac303e4d0597ce81da862e03cd4ab721e7d834fa168900b3d"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/06_插地小剑_v0.1.png",
+      "to": "资料/美术素材/历史稿/状态图标/插地剑.png",
+      "sha256": "6f48d0098473a5661fe335da0e13e125e90a2617f366a9aeae10093b476987b6"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/64x64_待审/06_插地小剑_v0.1.png",
+      "to": "资料/美术素材/历史稿/状态图标/64像素/插地剑.png",
+      "sha256": "2dcc84d7e511bac44eb9c0dd4e49d33518ee49b265897bf04967675a3610a712"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/状态图标草稿_v0.1/九张图标_实际尺寸与放大预览.png",
+      "to": "资料/美术素材/历史稿/状态图标/初次图标总览.png",
+      "sha256": "1050d9aa610965a5f8eb2c0f1f9ff05c45b33e924e277b7c1a5551eb31fff55f"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_卸甲成军_v02.jpg",
+      "to": "资料/美术素材/历史稿/卡牌/卸甲成军/稿件1/卸甲成军.jpg",
+      "sha256": "25a61547457772088273539f96ef74573973ccb98801de5fcbf5c731b87fadc9"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_卸甲成军_v03.jpg",
+      "to": "资料/美术素材/历史稿/卡牌/卸甲成军/稿件2/卸甲成军.jpg",
+      "sha256": "f895c44432ec8b069f20d60644971936052a7af58d5005c7d01195d260e06fbf"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_卸甲成军_v04.jpg",
+      "to": "资料/美术素材/历史稿/卡牌/卸甲成军/稿件3/卸甲成军.jpg",
+      "sha256": "5a5974ece5963e32675be216671c4c0d9f1a599f502da02df66f8faedcbd9669"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_卸甲成军_v05.jpg",
+      "to": "资料/美术素材/历史稿/卡牌/卸甲成军/稿件4/卸甲成军.jpg",
+      "sha256": "c0151a7e7ad004d2589226bee8a494f362bf4f71a9b1cf624ac1fd9d2d0ce01a"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_厄运共鸣_v02.jpg",
+      "to": "资料/美术素材/历史稿/卡牌/厄运共鸣/稿件1/厄运共鸣.jpg",
+      "sha256": "5ae80bf96e1f4f75d08e7d267024e5315e4db982c80fd09cfe1bec73660e3128"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_厄运共鸣_v03.jpg",
+      "to": "资料/美术素材/历史稿/卡牌/厄运共鸣/稿件2/厄运共鸣.jpg",
+      "sha256": "166b80a2f207dddc4b5252cd3d48efba804f7f358a304ac4075024bf8aea21a9"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_小斩波_v0.1.png",
+      "to": "资料/美术素材/历史稿/卡牌/小斩波/稿件1/小斩波.png",
+      "sha256": "c4e2d6ff58b2e1b0497004303973ac20cdd7b73cc116f9a9cd6d26aabd597e35"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_拳王形态_v0(1).jpg",
+      "to": "资料/美术素材/历史稿/卡牌/拳王形态/稿件1/拳王形态.jpg",
+      "sha256": "b570aaeed5fc786448ba61a66b590ec7cf31d6147c68ab8aaa4a1b373066aa11"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_王者风范_v0(1).jpg",
+      "to": "资料/美术素材/历史稿/卡牌/王者风范/稿件1/王者风范.jpg",
+      "sha256": "1c57e544ae0216a4a4b0ec10d698b92f714f0cec1f1ba3a3bc8c94142eeea9b1"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_王者风范_v0.jpg",
+      "to": "资料/美术素材/历史稿/卡牌/王者风范/稿件2/王者风范.jpg",
+      "sha256": "5f97712f279e6e42feada56dfe6d858c20a14b7d59463fda6b423403114a0ded"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_趁热打铁_v0(1).jpg",
+      "to": "资料/美术素材/历史稿/卡牌/趁热打铁/稿件1/趁热打铁.jpg",
+      "sha256": "400c6eba2ea58df3949d73691657f420d172b79af6de63482674c0441f2cb295"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_趁热打铁_v0(2).jpg",
+      "to": "资料/美术素材/历史稿/卡牌/趁热打铁/稿件2/趁热打铁.jpg",
+      "sha256": "b9896f5b7d689492c0e241cb72b11a42b8351651659874095a9a9b895ceb2637"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_趁热打铁_v0.jpg",
+      "to": "资料/美术素材/历史稿/卡牌/趁热打铁/稿件3/趁热打铁.jpg",
+      "sha256": "f595f2fe5c0ac3bbf2fc6a7eb1ac19d78ac8ab01e521a0016a9f8e4033745952"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_铁斩波形态_v0.2.png",
+      "to": "资料/美术素材/历史稿/卡牌/铁斩波形态/稿件1/铁斩波形态.png",
+      "sha256": "2472c1c5a2aa8bb3042fd4682a9f693fbdc68bb002f167e6f2cab6865155e92d"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_铁斩波形态_v0.3.png",
+      "to": "资料/美术素材/历史稿/卡牌/铁斩波形态/稿件2/铁斩波形态.png",
+      "sha256": "992d643cec07f4ad359e0cf40ad751f05b13c99034e400d5e98a58c451db4441"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_铁斩波形态_v0.4.png",
+      "to": "资料/美术素材/历史稿/卡牌/铁斩波形态/稿件3/铁斩波形态.png",
+      "sha256": "bc7cb0cb18b22974337d7065d32b7d64ab401e6937f2f96279d626d28472babd"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_铁斩波形态_v0.jpg",
+      "to": "资料/美术素材/历史稿/卡牌/铁斩波形态/稿件4/铁斩波形态.jpg",
+      "sha256": "2f46d4f96081ae57cd1cdef125bcac5cb0158ee609e720add180136de4f181ca"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_锻造车间_v0(1).jpg",
+      "to": "资料/美术素材/历史稿/卡牌/锻造车间/稿件1/锻造车间.jpg",
+      "sha256": "1b1930d545e9b6a329b27130023ee1e2cda0642be2d2d3657d0faeba48068bcc"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_锻造车间_v0(2).jpg",
+      "to": "资料/美术素材/历史稿/卡牌/锻造车间/稿件2/锻造车间.jpg",
+      "sha256": "13c6526cfc4e38a05d5bd70a7e451502960023b6118da6b315d746421e0316b6"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/卡牌_锻造车间_v0.jpg",
+      "to": "资料/美术素材/历史稿/卡牌/锻造车间/稿件3/锻造车间.jpg",
+      "sha256": "56e454b57388d61a088ef863e4623e256f88dcf57256c6ac8af953f89972e99a"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/搁置素材/头像_像素_v0.1.png",
+      "to": "资料/美术素材/历史稿/角色/头像/稿件1/头像.png",
+      "sha256": "1f759f62eb003b8332fc344b03dacc751920f35126ecd80d22e9e7af847ece61"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/素材接入说明.txt",
+      "to": "资料/美术素材/制作记录/早期素材接入记录.txt",
+      "sha256": "b0e57b3a5c6ff5d9601915b34c703654a2cf11e7287d6f870bbb5aa78f35c527"
+    },
+    {
+      "action": "move",
+      "from": "资料/美术草稿/采用素材清单.json",
+      "to": "资料/美术素材/素材清单.json",
+      "sha256": "98540e42de6eeacff91486991d26922a9c74514c5b43e291cc61c89eed0a05c2"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/build_relic_review.py",
+      "to": "资料/历史资料/遗物参考数据/build_relic_review.py",
+      "sha256": "05896e2f7da03ba7f95e28d06524f7a3381c2239acb0d09ff471bb6ed2c8a91b"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/cards_bite.json",
+      "to": "资料/历史资料/遗物参考数据/cards_bite.json",
+      "sha256": "082b33e04c5f3f62fa5bfba903602bc2e12ccfd7514f58f209d3ddb410717480"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/cards_bright_flame.json",
+      "to": "资料/历史资料/遗物参考数据/cards_bright_flame.json",
+      "sha256": "a480f36a9cc341453ff24d31a3681b04bb12188103ab7042cc7b1ae213794c22"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/cards_glow.json",
+      "to": "资料/历史资料/遗物参考数据/cards_glow.json",
+      "sha256": "cb7c1644aeefc8997378300d7ad9ef47002dfc3fd57f804c1f05031d0c2407e2"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/cards_wish.json",
+      "to": "资料/历史资料/遗物参考数据/cards_wish.json",
+      "sha256": "193a95d7c01fffddb986c11685f7f01508ac59e5fb17f2aaa08b911ba542bee2"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/relic_review_v0.1.json",
+      "to": "资料/历史资料/遗物参考数据/relic_review.json",
+      "sha256": "fae548618d70262ccbb30dd5f8fb3676a96ae00fdfe684ff26aafa09ae6a90ca"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/relics_source_ancient_pools.json",
+      "to": "资料/历史资料/遗物参考数据/relics_source_ancient_pools.json",
+      "sha256": "d3c66c2489240f759af0fede304baef5f7ebbfc9a185d98dcd272c21a4df6236"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/relics_source_beta_version.json",
+      "to": "资料/历史资料/遗物参考数据/relics_source_beta_version.json",
+      "sha256": "fc80a4d6c2389386417938bdfef624fbd24992f8f01787af5bacd1045973f406"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/relics_source_beta_zhs.json",
+      "to": "资料/历史资料/遗物参考数据/relics_source_beta_zhs.json",
+      "sha256": "924dafba2f77ed1229425517328e30e5979ad413ca48e8c56b4f550948730995"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/relics_source_enchantments.json",
+      "to": "资料/历史资料/遗物参考数据/relics_source_enchantments.json",
+      "sha256": "398f2b7606dedb1be8505e4f7b075f07267e1e5850f369f0a951cce77861f27e"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/relics_source_helical_dart.json",
+      "to": "资料/历史资料/遗物参考数据/relics_source_helical_dart.json",
+      "sha256": "7f061ef4635f128dff02bf05900b0ff0550e8df2008c3a710ff9870092cad19b"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/relics_source_stats.json",
+      "to": "资料/历史资料/遗物参考数据/relics_source_stats.json",
+      "sha256": "d48ae8ea518c71cae9e7777c9ea3687469623e78144393c3f1798788e73165fd"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/relics_source_versions.json",
+      "to": "资料/历史资料/遗物参考数据/relics_source_versions.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "action": "move",
+      "from": "资料/遗物审查_v0.1/relics_source_zhs.json",
+      "to": "资料/历史资料/遗物参考数据/relics_source_zhs.json",
+      "sha256": "5c66e2c26894a14d356a47b1ffb1a4e6e7a1420be4d8fba1477ac1f0f3e73739"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/状态图标草稿_v0.1/01_螺丝_v0.1_生成记录.json",
+      "sha256": "65e78ccb45538375fc4518ded84579ce1641baed59558e81cc7d43ea1c7d2352",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/状态图标草稿_v0.1/06_插地小剑_v0.2_生成记录.json",
+      "sha256": "6b3cec32d39308177e1903f16b3ee6066ce6cdd3d3c7b3af02fb5820e7207b5f",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/状态图标草稿_v0.1/06_插地小剑_v0.3_王者风范_生成记录.json",
+      "sha256": "46ec7a91f1560fe72bc4e0a56460f48837faf2f244e210ec0ba9f528f4e643ef",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/状态图标草稿_v0.1/07_沙漏_v0.1_生成记录.json",
+      "sha256": "c696dc2ef65920b3131f998bf5137ac149192f7d28ded669da552f9c65a5acb5",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/状态图标草稿_v0.1/08_断甲骨手_v0.1_生成记录.json",
+      "sha256": "fa90fa776ebc58db07b9fefcae1ebc318dbc7ca3a99c278a2abee39f086cebfe",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/状态图标草稿_v0.1/09_裁定印记_v0.1_生成记录.json",
+      "sha256": "48d2ea79f1cb9cdcba176fad2335f122838adb6fe5154140bed21046823e0eb8",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/状态图标草稿_v0.1/制作预览.py",
+      "sha256": "9c4a4626809cb4644a2101e871d1daa7dc13a7011ebd8f8059d0640c1b870ebc",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/状态图标草稿_v0.1/生成记录.jsonl",
+      "sha256": "aa9e5a253f4256a7caf7e9a8a86757339dd9961ccbee301ce07a3e2bfe956916",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/状态图标草稿_v0.1/草稿检查.json",
+      "sha256": "e8e374ccdf4e30bd9b8aba2b81a834963eeda15247e6d2907cf9d3ef4d21875d",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/状态图标草稿_v0.1/说明.txt",
+      "sha256": "6b65f9766f7695c186a9671718801e0e54cada08b4d5ea8b8f98030ed76a258a",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/卡牌_小斩波_v0.1_绘图说明.txt",
+      "sha256": "34534f98dd6f31723a8b4e7d07c0bb3e6700b7c1716197e95c7ec9adf8a6b196",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/卡牌_小斩波_v0.2_绘图说明.txt",
+      "sha256": "8c0cecdab45a99155124f428eca4079377c63fdb0b797a890b7bb4549ee09587",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/卡牌_铁斩波形态_v0.1_绘图说明.txt",
+      "sha256": "edbb1387b048a9b153c4e5ef99aac85f5a1f2cd4a0dd34735b34a028714662dc",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/卡牌_铁斩波形态_v0.2_绘图说明.txt",
+      "sha256": "9e8830831c55cf25e8d486f778de632ed011ab6bef9bce339f9163e5f1a366eb",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/卡牌_铁斩波形态_v0.3_绘图说明.txt",
+      "sha256": "d6336c0769677c1816994749b4c4bfda347d8f79ec8734e66c6f841878434ac1",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/卡牌_铁斩波形态_v0.4_绘图说明.txt",
+      "sha256": "73bfd3673256cf508c06b148d87187d126924c111856ffb6063bfae14608c234",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/卡牌_铁斩波形态_v0.5_绘图说明.txt",
+      "sha256": "c16248becd84cc5d49714fc4e131dc27c9c9e17dbf76b0f9203b5ab5e97e46eb",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/头像_像素_v0.1_绘图说明.txt",
+      "sha256": "d5f8d3fde5ad1ae5489146697c2705b01f0ca7cc6144a81b224bc317b04f6625",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/头像_像素_v0.2_绘图说明.txt",
+      "sha256": "9fa29353c752c803b5f3c0d5a2670591c12b1070b91211e077326c0a326f12b7",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/架势_v0.1_绘图说明.txt",
+      "sha256": "c01c9d9e411798e0012cf3a3b87809f445105c06f21b82764d44c48b0dfee3d2",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/架势_v0.2_绘图说明.txt",
+      "sha256": "b61fa7b52e7690f7802b3d8019f285f57c4728be482153a807fa038e556553da",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/素材规格与接入检查.txt",
+      "sha256": "c382660688c304a34767871a0e9f52012f86dd8e3dbb9faa306946e316b4bc5c",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/美术反馈记录.txt",
+      "sha256": "5bd1e47d4696dd275b2245946ca35fdfb7cfd4e4b1b3c16a32e4cfaed8225fdc",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "资料/美术草稿/绘图说明/选人海报_v0.1_绘图说明.txt",
+      "sha256": "18e7b14b0ac149eec0f40ce6420fb8a83c35ee9d791c2d60bf22da376be3c59c",
+      "reason": "Superseded generated draft notes; source images and prompts retained in organized folders"
+    },
+    {
+      "action": "delete",
+      "path": "tools/ancient-card-sources.txt",
+      "sha256": "2ad1301aab6f06019f4c839f5490f016ddbc410f7fd19ecdd64f819cb63161a3",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-ancient.txt",
+      "sha256": "e524ac85a1b7c32ed2ff8f544986f055f5038932f9d6e3af0f782485dfab80b2",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-art-ui.txt",
+      "sha256": "05bc5aabeda4c8870d205e8839385f5a4162de9d4a65c1f7475867bf6f304efb",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-choice-hook.txt",
+      "sha256": "fb89de434f44d818adb8d947e8def02a08da77b60c92173138f96a684dd6e2e9",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-commands.txt",
+      "sha256": "77e617a37642c3b7272b90de539c031942c0d7ca7fccbe817e7174a905e96c3c",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-content.txt",
+      "sha256": "b5da67f2797f2b020486e4bcb9a47e2a0cff6a95701eb1f7076d429b7c188a17",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-death-flow.txt",
+      "sha256": "9c5d3e0d32b4c2c681627e5fb1a3951dcdb211f70cd21389af8df011222fa2b8",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-dialogue.txt",
+      "sha256": "ecbe8ac1e257dd219926a610caa8f9ebe24b1842413fa13f023bcabeb656f7dd",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-end-state.txt",
+      "sha256": "1af958e5b020437f0f89d4f8e59e19b4fa2eb99f6ebb20f19f4df1e91992aca7",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-flow.txt",
+      "sha256": "d927cad9e2ee572441d2ce9961f8f1404ec1b68bfd80688a7e8289bc92e5fe58",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-gameover.txt",
+      "sha256": "d5f4245cdf0bdd3055bef570adc0a6c9d648203e9da83a609117317172e1f38a",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-initial.txt",
+      "sha256": "98d67772628ee56c45de50abf266ccf46bf66d2cae21995f60eec7bff078441c",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-itemcommands.txt",
+      "sha256": "f9715a23528e9977b7eb77bec30943ddd5d4faaf23d9cc36e08049ca6a2ac8f0",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-models.txt",
+      "sha256": "da03cd2665d1e4802aedd121c106bc0592ddf0c4237a4b15247a43524a69569d",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-modloader.txt",
+      "sha256": "4521ce12cbc8a59df940c86d591c7c7984b7d9dbfaae6baefb329cb61f8d8f74",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-named.txt",
+      "sha256": "87a4f78a3966af3066b0910f23941554f4249cc0f7256a2a8f9ed086ae7f9f70",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-new-design.txt",
+      "sha256": "5bc4d39fef161d1258617d7afe8f2166e334fa40b99c26fe7ff0e0d01464bb43",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-orbs.txt",
+      "sha256": "821fdb8a882d36d7b740e0857592dc367c32c26a70499c27a101f64a4ceb0653",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-qa-add.txt",
+      "sha256": "04804d9b34384c90a7cce15c5a13b8d1709e6c05774cb143ddf4ff1c6f3b1324",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-registry.txt",
+      "sha256": "b01dcbaeb4575c1eff8eaa235a6b175a341c5b3647817c5aeeb6f1d2d725dee3",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-relics.txt",
+      "sha256": "a854e503da9acff9fd210ee5befedad2c2a874a1d8a9b0e968b9461cfefedd81",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-simulation.txt",
+      "sha256": "07fc5cc0d48ac3f0ee1a7be731f1379e31cff15ae15c95a316fbd87ec6ab1282",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-text-shop.txt",
+      "sha256": "d3a9b97058101f0a206b1aefe9b3365aa438a699026f0fab24ac2884c14acecc",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/api-ui.txt",
+      "sha256": "059a205eaefc19d8ed75a12885539b9db7ed7dcc205d393ea74d99382361c74a",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/asset-paths.txt",
+      "sha256": "34276668a615e2dcb861bf19d3aae5a711c669fd95668304e59997514cb38d01",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/event-inspect.txt",
+      "sha256": "ca17536e37f158c2695ea39dce7c771858b30ccb31856d2562db4ad5632ad0ec",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-acquisition.txt",
+      "sha256": "e572bfb4cab981469675044e951b078e5eac7bf0e816b5afab7196d41bec851e",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-ancient-match.txt",
+      "sha256": "9e4b9f2af3853977a42f92daaf931b934cc00fa3e93e2d8d30db68c134623a71",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-ancient.txt",
+      "sha256": "e501975578b30b5d56464441b219df462efd5c785d59a1e5f2a65bced0356908",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-art-relic.txt",
+      "sha256": "2a8f4b233d05311e1e5993a94cb1600a9f4c98a0dc6317ccaf5d04bf2d5e03e2",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-aux-factories.txt",
+      "sha256": "e65c9eef50c80902da597a84dc334dc0bbe116f8d050f1dd7963707414525175",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-basin.txt",
+      "sha256": "e25d391ad269a5cab487fe83755925ca0223462cdf4e38bf403510f1072cf504",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-block-state.txt",
+      "sha256": "5580463571f8b4fcc3324a6012329f27dcff4f2829f5470bc577888973f910cc",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-card-save.txt",
+      "sha256": "8d768983194339ce43b31f9c36449d145e431b8ffbf57a4ae9966899d8aef912",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-channel.txt",
+      "sha256": "b44fed771e751d83589a0217d079866f9f5e5a76c1629df364600bce06d9b3ea",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-character.txt",
+      "sha256": "9dca860ed317ed66a4497a9a850ecf30c22b8219c0010e8fe37848f20f318900",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-cheese.txt",
+      "sha256": "68f14773f18285ebd08c4aee52cf1c928a58249ccb80e9a4a8b3dcdccc186417",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-combat-status.txt",
+      "sha256": "121994c4db01302d471f6b5a2d224ceeb68e1ea33829080d7460448aa39ce60b",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-continue.txt",
+      "sha256": "fbcf7e3b15043e989d7782e997db65d2f9cdfc68ffd182a3ed1c33e79c78864c",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-death-visual.txt",
+      "sha256": "fc076e9f53cfe6dc6c04a750aabf0fe1f024496e731cd9b02a0cb1e3c10a2ca9",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-deckselect.txt",
+      "sha256": "5e6fbc7331fd900999eef75eab86539aae27fdc9bfab14d2fd6afefd536cb336",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-dialogue-init.txt",
+      "sha256": "30cea91aabb8732444122f39d1ca0253613a7da7a0e1b2230304022d1d4d0b60",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-dollroom.txt",
+      "sha256": "3316f8bf47bd218bab2b60fb45e1d2bb0c853d554dc9455c26be0e4435d1e35e",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-dolls-full.txt",
+      "sha256": "53308e8cd36a475b236611d3b639d9a311645596ee5d32174c0c4714dba5be40",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-downgrade.txt",
+      "sha256": "933172780872b094268e759c2ed00222b7425144c7d74bd4ec5fe1901052d25d",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-end-flow.txt",
+      "sha256": "db2a0e21a45739e1d05c90a669faf609b82c0f7da3dfafdee0adbb5a95ab07fb",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-fake-merchant.txt",
+      "sha256": "95f5684c34535615816ff0003a7e26ecc3568529abaf069cd12cb4161b2bc6e8",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-gainblock.txt",
+      "sha256": "5580463571f8b4fcc3324a6012329f27dcff4f2829f5470bc577888973f910cc",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-gameover-ui.txt",
+      "sha256": "0f43a7a2a02995464b84d6ddacc836169c482f5e2d0aba68b250018ba9f5d11e",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-ghost.txt",
+      "sha256": "500511a32bd570a70032d8fec3118eacca6da53c2c883ab26e8237f191b08321",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-ironwave.txt",
+      "sha256": "3f448b2d908697d5f9d87a00d401d99e4be0b419e3bf084cacd72929628cb2fc",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-localization.txt",
+      "sha256": "1ac1f5a75abb99a9ec1fad5249174423705686e74e71c068763080201635c113",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-manifest.txt",
+      "sha256": "08b0c958b9b60c4045242b493d5b72e0e8003de32c99c64d0ec97bc8e3ce3d43",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-mod-init.txt",
+      "sha256": "fd00eedb041b0b477df2e8a9048f29fe442dbfd367ea12afdb66f35b4f93495f",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-modloader.txt",
+      "sha256": "f80e3b9949d54310278a6c7f44466d04f36f66790cf606253ce37b770147c5f2",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-new-design.txt",
+      "sha256": "0271a4a71e350ef2f90b20165d6287e77304d41906cad55628e8cc8e2506c413",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-newrun.txt",
+      "sha256": "d13fd037ce289aff116f2abc673ad84065633f59b948f3a55851d27542d0df9c",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-osty.txt",
+      "sha256": "8185da3ba7031ea74d455475c7e8b111ee5a96a1ba8e3c9a1c18aa326ef354dc",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-philosopher-offer.txt",
+      "sha256": "6d5fd34ae23e49ed860bb832df1415a5e5070da9db141b36afe2ff8672335512",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-platform.txt",
+      "sha256": "b628131c934cfdd107fad30703cae265b038e4bcb42ce149e54bbaa2040fc17f",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-pools.txt",
+      "sha256": "8082734b4dfe29a3099c2e662dbee3753af0268af6cd18b52eb213370bde903f",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-power-apply.txt",
+      "sha256": "602ff9a11db43474347ba00314680ea66091a8826440d03eb7b26a4946fca349",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-regent-upgrades.txt",
+      "sha256": "5f589acb2de07cdf0798dbb54aac4031713d08c90e9ccf22acfc58c79d6cb798",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-register.txt",
+      "sha256": "45a9416b20e745a37f5db8a3d0b4e985f78f27b439d6985cfc612b3f6059d163",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-relic-base.txt",
+      "sha256": "9e968f94b38b2d30b22bdaf21cbca6ae8f16a56fe9b628b7dea90a1a42f3ed51",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-relicbag.txt",
+      "sha256": "8c57ca42abba8ac1d059aa88d9df760ea93018f0a01185f4b6c29c7443c24cba",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-relicfactory.txt",
+      "sha256": "2f804b2b3bc4232a30fd98f0b3e149882928a53c3f19f7c9dac53ecbe157cf09",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-restanim.txt",
+      "sha256": "5becfbf1fef46261ac9e85313f1ab81da9924d4cbc9207da3af3477897ebc006",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-restcallback.txt",
+      "sha256": "c0bc4263e24858c15677f80cd7f54982bf6f66c1b8d4455adc81691f8feff044",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-reward-selection.txt",
+      "sha256": "0b7853ac0d96aeae86a42ef9c5e807c906b461080cd12a766da2354b4fe327dd",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-saved-field.txt",
+      "sha256": "b3928c364c609be8e75aefeca26d061309cb46db1cdc9de26c2881b1e969fdfe",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-select-bg.txt",
+      "sha256": "4d4a63bd0227a940011d87baa4097fda91067660bc190ed1dd9b1db240b07192",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-smithselect.txt",
+      "sha256": "db91272ed2f60d053a0410275a13ecf77c4c46430d8079326cdc3770c9fb2797",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-soup.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-start-ui.txt",
+      "sha256": "b4411ce47d89c713807e77ab4d90bba6b6dd5f506a485f51a4f8999d6db8745a",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-transform-rules.txt",
+      "sha256": "9daea1f71f4004850834e6ef211639ade36bd8bacb050be808b28230672f269f",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/il-victory.txt",
+      "sha256": "51e4f01c13b28a514268049a343822debcd6617b5462510ca92902aeac0fd55f",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/references-wind.txt",
+      "sha256": "5e9be7b8d50b0cda7c43b4fbd954b7aeb82d2c75ce88f0ab0a3ee2301bb948f5",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/visual-inspect.txt",
+      "sha256": "68506fd5a2b08300a37dd93f83fe9d99f1a4ee93f7c5ec1f9ebc0c64ba56b5d2",
+      "reason": "Generated API/IL inspection dump; reproducible with tools/Inspect"
+    },
+    {
+      "action": "delete",
+      "path": "tools/update_progress.py",
+      "sha256": "f5579e8307052ec6aa4ad1035ac64112b9e10cb87faf066f36686e3fc16f1187",
+      "reason": "Obsolete one-off progress rewriting script with outdated paths"
+    },
+    {
+      "action": "delete",
+      "path": "tools/update_v031.py",
+      "sha256": "16839a9ca26692c966df5af699ed980e47204a0787c55e688107e398053b3282",
+      "reason": "Obsolete one-off progress rewriting script with outdated paths"
+    }
+  ],
+  "protected_files_unchanged": 88,
+  "game_status_icons_linked": false
+}

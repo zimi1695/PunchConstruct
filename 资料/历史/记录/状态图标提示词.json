@@ -1,0 +1,95 @@
+[
+  {
+    "file": "资料/美术素材/历史稿/状态图标/螺丝.png",
+    "prompt": "Create ONE isolated transparent-background pixel-art game status icon: a single chunky silver steel machine bolt / screw, for the mechanical Iron Wave Form ability of a yellow boxing automaton in Slay the Spire 2. This is a very small battle power-status icon, NOT a card illustration, NOT a logo, NOT a sheet. Pixel art on a simple 32 by 32 logical pixel grid; use large deliberately stepped square pixels and at most 6 muted colors. It must remain unmistakably readable at 64 by 64 physical pixels. A short stout metal bolt at a diagonal, with an unmistakably large hexagonal head at upper left, a broad short threaded shaft descending toward lower right, only 3 simple broad thread marks. A tiny visible dark central recess on the hex head. Silver-gray metal, dark charcoal outline, restrained cool gray shadow and one pale gray highlight plane. Minimal 2-3 tone shading, strong clean silhouette, flat game icon lighting. Keep silhouette around 80 percent of the square, evenly centered with modest transparent padding. Rounded/chamfered chunky geometry, not spiky. No background, no tile, no badge border, no pedestal, no shadow beneath, no text, no numbers, no particles, no sparks, no glow, no gradients, no blurry edges, no tiny texture, no photorealism, no fine polished rendering. The result should look like a simple readable small roguelike buff icon, made from a few clear pixel clusters. Save with actual alpha transparency.",
+    "tool": "image_gen",
+    "source": "C:\\Users\\li177\\.codex\\generated_images\\01a15d06-89c2-7ee2-80e3-e6218e1685d8\\exec-a47dc5fd-c490-434d-8e40-f9a69e6b60b7.png",
+    "original_name": "01_螺丝_v0.1.png",
+    "game_linked": false
+  },
+  {
+    "file": "资料/美术素材/状态图标/待审/不倒不休.png",
+    "prompt": "Create exactly ONE isolated transparent-background small pixel-art status icon for a Slay the Spire 2 character mod. NOT a card painting, sheet, scene, emoji or logo. Use a coarse 32x32 logical pixel grid with conspicuous clean stepped square pixel clusters; this will be displayed at 64x64. Simple bold silhouette, chunky rounded proportions, 5-7 muted colors, charcoal outline, restrained 2-3 tone shading and one small highlight, no tiny details. Center the object at about 80 percent canvas width with even transparent margin. Clean readable roguelike battle buff icon. Actual alpha transparency. No background or tile, no frame, no lettering, no numerals, no particles, glow, gradients, texture or photorealistic detail. Subject: A tiny empty boxing ring represented mostly as a low squat square platform, three-quarter front view. Muted blue-purple mat, warm gray thick base, three simple dark short corner posts, just one broad pale cream rope running between posts. Extremely minimal, a stage with a rope. No people, audience, trophies, flags, pillars, arena architecture or ground beneath.",
+    "tool": "image_gen",
+    "source": "C:\\Users\\li177\\.codex\\generated_images\\01a15d06-89c2-7ee2-80e3-e6218e1685d8\\exec-03000db4-6a2b-49da-87b8-a69f91fad62d.png",
+    "original_name": "02_小擂台_v0.1.png",
+    "game_linked": false
+  },
+  {
+    "file": "资料/美术素材/状态图标/待审/趁热打铁.png",
+    "prompt": "Create exactly ONE isolated transparent-background small pixel-art status icon for a Slay the Spire 2 character mod. NOT a card painting, sheet, scene, emoji or logo. Use a coarse 32x32 logical pixel grid with conspicuous clean stepped square pixel clusters; this will be displayed at 64x64. Simple bold silhouette, chunky rounded proportions, 5-7 muted colors, charcoal outline, restrained 2-3 tone shading and one small highlight, no tiny details. Center the object at about 80 percent canvas width with even transparent margin. Clean readable roguelike battle buff icon. Actual alpha transparency. No background or tile, no frame, no lettering, no numerals, no particles, glow, gradients, texture or photorealistic detail. Subject: One chunky red-hot forged iron ingot, a squat simple trapezoidal metal bar in three-quarter side view. Dark burgundy underside, brick-red sides, orange-red top with one small pale warm orange highlight. Heat conveyed entirely by its color, NO flames, sparks, smoke, aura or external light. Bold simple orange-red ingot shape.",
+    "tool": "image_gen",
+    "source": "C:\\Users\\li177\\.codex\\generated_images\\01a15d06-89c2-7ee2-80e3-e6218e1685d8\\exec-fd8254c7-8061-48d9-8528-3084eed7b0cf.png",
+    "original_name": "03_烧红铁锭_v0.1.png",
+    "game_linked": false
+  },
+  {
+    "file": "资料/美术素材/状态图标/待审/锻造车间.png",
+    "prompt": "Create exactly ONE isolated transparent-background small pixel-art status icon for a Slay the Spire 2 character mod. NOT a card painting, sheet, scene, emoji or logo. Use a coarse 32x32 logical pixel grid with conspicuous clean stepped square pixel clusters; this will be displayed at 64x64. Simple bold silhouette, chunky rounded proportions, 5-7 muted colors, charcoal outline, restrained 2-3 tone shading and one small highlight, no tiny details. Center the object at about 80 percent canvas width with even transparent margin. Clean readable roguelike battle buff icon. Actual alpha transparency. No background or tile, no frame, no lettering, no numerals, no particles, glow, gradients, texture or photorealistic detail. Subject: A very simple tiny blacksmith workshop, three-quarter front view: small squat muted gray stone hut, broad dark gray sloped roof, short square chimney, one broad open doorway with a restrained ochre-orange interior. One small dark hammer emblem on the roof only if legible. No landscape, people, tools scattered outside, fire particles, smoke, fine bricks, tiny windows or busy detail.",
+    "tool": "image_gen",
+    "source": "C:\\Users\\li177\\.codex\\generated_images\\01a15d06-89c2-7ee2-80e3-e6218e1685d8\\exec-73bc80f2-1ed0-4659-baf5-0b559b11f43b.png",
+    "original_name": "04_小车间_v0.1.png",
+    "game_linked": false
+  },
+  {
+    "file": "资料/美术素材/状态图标/待审/拳王形态.png",
+    "prompt": "Create exactly ONE isolated transparent-background small pixel-art status icon for a Slay the Spire 2 character mod. NOT a card painting, sheet, scene, emoji or logo. Use a coarse 32x32 logical pixel grid with conspicuous clean stepped square pixel clusters; this will be displayed at 64x64. Simple bold silhouette, chunky rounded proportions, 5-7 muted colors, charcoal outline, restrained 2-3 tone shading and one small highlight, no tiny details. Center the object at about 80 percent canvas width with even transparent margin. Clean readable roguelike battle buff icon. Actual alpha transparency. No background or tile, no frame, no lettering, no numerals, no particles, glow, gradients, texture or photorealistic detail. Subject: One boxing champion belt seen straight on, gently curving horizontal dark brown leather strap with a single large broad pale-gold central metal plate and two small plain gray-gold side plates. The center plate is a plain simple embossed round fist silhouette or diamond, without writing or gems. Broad gold silhouette, muted ochre shadow, tiny cream highlight; no glitter or glow. No wearer, no extra objects.",
+    "tool": "image_gen",
+    "source": "C:\\Users\\li177\\.codex\\generated_images\\01a15d06-89c2-7ee2-80e3-e6218e1685d8\\exec-ce015efc-b9a5-4e2e-a5a8-e5b06eab0b80.png",
+    "original_name": "05_拳王腰带_v0.1.png",
+    "game_linked": false
+  },
+  {
+    "file": "资料/美术素材/历史稿/状态图标/插地剑.png",
+    "prompt": "Create exactly ONE isolated transparent-background small pixel-art status icon for a Slay the Spire 2 character mod. NOT a card painting, sheet, scene, emoji or logo. Use a coarse 32x32 logical pixel grid with conspicuous clean stepped square pixel clusters; this will be displayed at 64x64. Simple bold silhouette, chunky rounded proportions, 5-7 muted colors, charcoal outline, restrained 2-3 tone shading and one small highlight, no tiny details. Center the object at about 80 percent canvas width with even transparent margin. Clean readable roguelike battle buff icon. Actual alpha transparency. No background or tile, no frame, no lettering, no numerals, no particles, glow, gradients, texture or photorealistic detail. Subject: A short broad silver straight sword planted upright into a very small flat dark-gray patch of ground, slightly tilted to the right. Broad silver blade lower half entering the ground, simple warm gold crossguard and burgundy grip. A tiny plain crown-shaped pommel optional only if readable as 3 broad pixels. The sword dominates, the ground is a minimal low base. No landscape, stone pedestal, runes, light rays, smoke or monster.",
+    "tool": "image_gen",
+    "source": "C:\\Users\\li177\\.codex\\generated_images\\01a15d06-89c2-7ee2-80e3-e6218e1685d8\\exec-bdb7f94c-5351-4da7-9f52-932695d68a90.png",
+    "original_name": "06_插地小剑_v0.1.png",
+    "game_linked": false
+  },
+  {
+    "file": "资料/美术素材/状态图标/已选/铁斩波形态.png",
+    "tool": "image_gen",
+    "prompt": "Edit reference image 1, the transparent pixel-art planted sword icon. Reference image 2, the original Slay the Spire Iron Wave card, is the authoritative reference for the SWORD DESIGN ONLY. Make ONE revised transparent pixel-art planted-sword status icon. Replace the previous golden crossguard, red grip and crown pommel entirely with the unmistakable Iron Wave sword: a short, broad, heavy silver-gray iron blade with a clean bright bevel and darker broad central flat, a couple of tiny shallow edge nicks if legible, a stout dark charcoal iron crossguard with its two ends curving down toward the blade as in reference 2, dark wrapped grip, simple small dark pommel. The silhouette must read as the chunky utilitarian Iron Wave sword, not an ornate royal sword. Blade points down, buried into a very small flat dark-gray patch of ground, leaning just a little to the right. Keep the silhouette centered, compact and fully visible, with modest transparent margins. Match the previous icon's coarse pixel-art language: a deliberate approximately 32x32 logical grid, large clean stepped square pixels, 5-7 muted colors, bold dark contour, 2-3 tone metal planes, readable at native 64x64. No realistic texture or tiny detail. No hand, person, monster, card composition, wave, white impact slash, aura, glow, text, badge, background, landscape, crown, jewel or gold decoration. Preserve actual transparent alpha background. Keep the ground small and subordinate to the sword.",
+    "source": "C:\\Users\\li177\\.codex\\generated_images\\01a15d06-89c2-7ee2-80e3-e6218e1685d8\\exec-8fb58586-e1bd-4f21-aa74-0460ed9b81b8.png",
+    "references": [
+      "06_插地小剑_v0.1.png",
+      "tools/game-reference/illustration-references/iron_wave.webp"
+    ],
+    "game_linked": false,
+    "original_name": "06_插地小剑_v0.2.png"
+  },
+  {
+    "file": "资料/美术素材/状态图标/已选/王者风范.png",
+    "tool": "image_gen",
+    "prompt": "Redesign the reference planted-sword pixel icon into a genuinely imposing royal weapon for the ability 'Royal Bearing' in Slay the Spire 2. Create ONE transparent-background pixel-art status icon, not a card illustration. This is a substantial redesign: the reference looks like a small generic fantasy sword; make the new silhouette powerful, dignified, monumental and kingly. A HEAVY BROAD SILVER-IRON GREATSWORD planted perfectly upright, front-facing with a very slight low-angle three-quarter feel. A short massive blade, about twice the old blade's perceived width, with a strong dark central fuller and clean bright steel bevels. Very thick dark iron crossguard spreading widely like a restrained crown or two blunt down-curving wings, edged with small broad antique-gold planes. Short stout black wrapped grip. A compact broad gold crown-shaped pommel with just three simple chunky teeth. Strong central symmetry and weight, the weapon should feel commanding rather than cute or delicate. The sword fills most of the icon; its tip disappears into one tiny low dark cracked stone patch. Ground takes under 10 percent of icon height. Use few bold pixel clusters on an approximately 32x32 logical grid, clearly stepped square pixel edges, thick dark contour, 6-8 flat muted colors, simple two-or-three-tone shading, readable at 64x64. Silver steel dominates, black iron plus restrained warm antique gold accents. No decorative filigree, tiny detail, gems, lettering, runes, red grip, thin needle blade, tiny ornamental rapier, giant stone pedestal, scene, landscape, person, monster, glow, aura, rays, smoke, particles or background. Real transparent alpha. Center it with even modest margins, clean small-icon design. Keep this powerful through proportions and silhouette, not by adding visual effects.",
+    "source": "C:\\Users\\li177\\.codex\\generated_images\\01a15d06-89c2-7ee2-80e3-e6218e1685d8\\exec-7e5975a5-8b11-4b0a-94e6-8ea2da538ebc.png",
+    "reference": "06_插地小剑_v0.1.png",
+    "game_linked": false,
+    "original_name": "06_插地小剑_v0.3_王者风范.png"
+  },
+  {
+    "file": "资料/美术素材/状态图标/待审/东尼斩波.png",
+    "prompt": "Create exactly ONE isolated transparent-background small pixel-art status icon for a Slay the Spire 2 character mod. NOT a card painting, sheet, scene, emoji or logo. Use a coarse 32x32 logical pixel grid with conspicuous clean stepped square pixel clusters; this will be displayed at 64x64. Simple bold silhouette, chunky rounded proportions, 5-7 muted colors, charcoal outline, restrained 2-3 tone shading and one small highlight, no tiny details. Center the object at about 80 percent canvas width with even transparent margin. Clean readable roguelike battle buff icon. Actual alpha transparency. No background or tile, no frame, no lettering, no numerals, no particles, glow, gradients, texture or photorealistic detail. Subject: One stout small hourglass for a delayed-action buff. Two broad muted golden-brown end caps, two simple dark posts, pale blue-gray glass waist, a few large warm orange sand pixels in the top and bottom. Clear compact hourglass silhouette, almost front view slightly turned. No numerals, clock face, ground, dust, extra objects or aura.",
+    "tool": "image_gen",
+    "source": "C:\\Users\\li177\\.codex\\generated_images\\01a15d06-89c2-7ee2-80e3-e6218e1685d8\\exec-6a7c886d-9243-4b76-af95-b8700c18ecdc.png",
+    "original_name": "07_沙漏_v0.1.png",
+    "game_linked": false
+  },
+  {
+    "file": "资料/美术素材/状态图标/待审/卸甲成军.png",
+    "prompt": "Create exactly ONE isolated transparent-background small pixel-art status icon for a Slay the Spire 2 character mod. NOT a card painting, sheet, scene, emoji or logo. Use a coarse 32x32 logical pixel grid with conspicuous clean stepped square pixel clusters; this will be displayed at 64x64. Simple bold silhouette, chunky rounded proportions, 5-7 muted colors, charcoal outline, restrained 2-3 tone shading and one small highlight, no tiny details. Center the object at about 80 percent canvas width with even transparent margin. Clean readable roguelike battle buff icon. Actual alpha transparency. No background or tile, no frame, no lettering, no numerals, no particles, glow, gradients, texture or photorealistic detail. Subject: A single simple ivory skeletal fist emerging from a split charcoal-purple armor cuff: one broad ivory fist shape with only three large knuckle divisions, one chunky broken dark metal wrist cuff opened into two pieces. Represents transforming defense into a skeletal ally. Compact unified silhouette, muted bone ivory and dark desaturated violet. No blood, flesh, ornate armor, debris, weapon, extra limb or busy effects.",
+    "tool": "image_gen",
+    "source": "C:\\Users\\li177\\.codex\\generated_images\\01a15d06-89c2-7ee2-80e3-e6218e1685d8\\exec-51370897-6e95-438b-a979-96fb9ccad91b.png",
+    "original_name": "08_断甲骨手_v0.1.png",
+    "game_linked": false
+  },
+  {
+    "file": "资料/美术素材/状态图标/待审/终局裁定.png",
+    "prompt": "Create exactly ONE isolated transparent-background small pixel-art status icon for a Slay the Spire 2 character mod. NOT a card painting, sheet, scene, emoji or logo. Use a coarse 32x32 logical pixel grid with conspicuous clean stepped square pixel clusters; this will be displayed at 64x64. Simple bold silhouette, chunky rounded proportions, 5-7 muted colors, charcoal outline, restrained 2-3 tone shading and one small highlight, no tiny details. Center the object at about 80 percent canvas width with even transparent margin. Clean readable roguelike battle buff icon. Actual alpha transparency. No background or tile, no frame, no lettering, no numerals, no particles, glow, gradients, texture or photorealistic detail. Subject: A simple dark muted-purple circular seal with a broad ivory balance-scales symbol: one thick vertical center post, thick crossbeam and two simple shallow pans, with a small muted red notch or slash at the bottom of the seal. Only a few bold pixel clusters, compact dark-purple and ivory silhouette. A visible physical wax-like seal, not a UI badge frame. No letters, inscriptions, runes, skull detail, glow, ornament, ribbons or background.",
+    "tool": "image_gen",
+    "source": "C:\\Users\\li177\\.codex\\generated_images\\01a15d06-89c2-7ee2-80e3-e6218e1685d8\\exec-d186474b-dee6-4e04-ba58-d76ab1b8e647.png",
+    "original_name": "09_裁定印记_v0.1.png",
+    "game_linked": false
+  }
+]

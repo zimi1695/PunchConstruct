@@ -1,0 +1,12 @@
+音效说明（0.4.23）
+
+选人音效.wav：最初0.78秒版本，单声道PCM16、44100Hz。当前恢复为首版原始字节；作者尚未试听确认，之后音色修改须先试听。源文件、游戏副本及资料/历史/旧稿/选人音效_长尾.wav一致。此前简易短版和重做稿只留历史，不作为采用依据。
+游戏副本：PunchConstruct/assets/audio/character_select.wav。播放前按游戏现有总音量／音效设置初始化Godot总线，使用原生音量滑杆相同接口；不改保存设置、静音标记或原生FMOD音量。真实按钮最终Master混音已核对，重复点击停止前一次。
+
+攻击声音恢复原生播放通路，撤回0.4.22直接FMOD实例／定时裁剪：
+单拳：event:/sfx/enemy/enemy_attacks/punch_construct/punch_construct_attack_single
+双拳：event:/sfx/enemy/enemy_attacks/punch_construct/punch_construct_attack_double
+防御：event:/sfx/enemy/enemy_attacks/punch_construct/punch_construct_buff
+保留原录音、音高、动作循环与命中等待；当前不再宣称尾响裁剪已完成。
+
+愈战愈勇变牌：event:/sfx/ui/cards/card_transform，跟随原生闪光动画实际卡面替换，非确认选牌时提前播放。该规则保留。

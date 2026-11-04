@@ -1,0 +1,1147 @@
+[
+  {
+    "source": "资料/美术素材/角色/头像.png",
+    "source_sha256": "e810c1b78dae2df7a35440c305f0997e8380f4af674d26bb29c97088564fbd70",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/portrait.ctex",
+    "size": [
+      32,
+      32
+    ],
+    "conversion": "nearest resize"
+  },
+  {
+    "source": "资料/美术素材/角色/选人图标.png",
+    "source_sha256": "87f29a90f15bcf8e6187367ffdb2eb7f1956c36e245cebfab6214b263422bcec",
+    "source_size": [
+      1032,
+      1524
+    ],
+    "output": "PunchConstruct/assets/art/character_select_icon.ctex",
+    "size": [
+      132,
+      195
+    ],
+    "conversion": "resize without crop"
+  },
+  {
+    "source": "资料/美术素材/角色/选人海报.png",
+    "source_sha256": "81e5fd681df29aba7d6802ade9a61f203db76dc1a6726520a0fb00d24dd487ad",
+    "source_size": [
+      1672,
+      941
+    ],
+    "output": "PunchConstruct/assets/art/character_select.ctex",
+    "size": [
+      1920,
+      1080
+    ],
+    "conversion": "resize without crop"
+  },
+  {
+    "source": "资料/美术素材/角色/选人背景.png",
+    "source_sha256": "f09ec964cdfe530616d567464635fb81ca0849414fad77d404bd1217e8f8382f",
+    "source_size": [
+      1672,
+      941
+    ],
+    "output": "PunchConstruct/assets/art/character_select_background.ctex",
+    "size": [
+      1920,
+      1080
+    ],
+    "conversion": "resize without crop"
+  },
+  {
+    "source": "资料/美术素材/角色/选人角色.png",
+    "source_sha256": "013c588cafd5c9eebe4060083bb49af8c204b05c0ad3d85b99d5e42ec8215c59",
+    "source_size": [
+      1672,
+      941
+    ],
+    "output": "PunchConstruct/assets/art/character_select_actor.ctex",
+    "size": [
+      1920,
+      1080
+    ],
+    "conversion": "resize without crop"
+  },
+  {
+    "source": "资料/美术素材/卡牌/小斩波.png",
+    "source_sha256": "47a0f53fbff4ef2187780b2a12bc7495d77508defd0ca53d752ecac1f90e22a4",
+    "source_size": [
+      1439,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/small_wave.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 79
+  },
+  {
+    "source": "资料/美术素材/卡牌/铁斩波形态.png",
+    "source_sha256": "0892c9bb6870c5c883a6b21252036a9bf72ca5f79c9755a595a64705ad17ce7a",
+    "source_size": [
+      1439,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/iron_wave_form.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 66
+  },
+  {
+    "source": "资料/美术素材/卡牌/与我一斗.png",
+    "source_sha256": "bc7cb0cb18b22974337d7065d32b7d64ab401e6937f2f96279d626d28472babd",
+    "source_size": [
+      1439,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/fight_me.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 69
+  },
+  {
+    "source": "资料/美术素材/卡牌/愈战愈勇.png",
+    "source_sha256": "2472c1c5a2aa8bb3042fd4682a9f693fbdc68bb002f167e6f2cab6865155e92d",
+    "source_size": [
+      1438,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/battle_fervor.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 70
+  },
+  {
+    "source": "资料/美术素材/卡牌/东尼斩波.jpg",
+    "source_sha256": "766e299d37f0d7b751aeb8038da469246aa966a78d8d6f1e2f2c1f7bd03330c1",
+    "source_size": [
+      1312,
+      1199
+    ],
+    "output": "PunchConstruct/assets/art/tony_wave.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "contain without crop, black side padding",
+    "card_number": 80
+  },
+  {
+    "source": "资料/美术素材/卡牌/铁斩波.png",
+    "source_sha256": "49225d7a43b59af6fcdce423cbe6b8ebb8f5151f0ea3867dc586e0b3d7babc75",
+    "source_size": [
+      1438,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/iron_wave.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 82
+  },
+  {
+    "source": "资料/美术素材/卡牌/灼热铁斩波.png",
+    "source_sha256": "696e0851a8314021e79352d7edbf11acb494a1b44a6df6fed56b1c246a3da099",
+    "source_size": [
+      1438,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/scorching_iron_wave.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 2
+  },
+  {
+    "source": "资料/美术素材/卡牌/锻造车间.jpg",
+    "source_sha256": "61d4f75ed20df23e5b1c83690e52ed2feeac49d1110d14f89af84025c3731cca",
+    "source_size": [
+      2560,
+      1946
+    ],
+    "output": "PunchConstruct/assets/art/forge_workshop.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 60
+  },
+  {
+    "source": "资料/美术素材/卡牌/王者风范.jpg",
+    "source_sha256": "18a406c6df510398832613b710a73a98806777fd3226f9cf41c2e964a30b16d0",
+    "source_size": [
+      2560,
+      1946
+    ],
+    "output": "PunchConstruct/assets/art/royal_bearing.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 61
+  },
+  {
+    "source": "资料/美术素材/卡牌/趁热打铁.jpg",
+    "source_sha256": "b35ec0c17dd4d0489f6922d0329ac24f6178593f4df49004644cd8bc32611c83",
+    "source_size": [
+      2560,
+      1946
+    ],
+    "output": "PunchConstruct/assets/art/strike_while_hot.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 62
+  },
+  {
+    "source": "资料/美术素材/卡牌/终局裁定.jpg",
+    "source_sha256": "f417ca05ee541725b5ec42f51ac5c9f3bfbb008a76511b484c61cf4e0354af67",
+    "source_size": [
+      2560,
+      1946
+    ],
+    "output": "PunchConstruct/assets/art/final_judgment.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 63
+  },
+  {
+    "source": "资料/美术素材/卡牌/卸甲成军.jpg",
+    "source_sha256": "d4fe4106804f7c74d572721e4bf93e1e11ed3352e43ddd67e737e9e02c44b8a4",
+    "source_size": [
+      2560,
+      1946
+    ],
+    "output": "PunchConstruct/assets/art/unarm_to_arms.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 64
+  },
+  {
+    "source": "资料/美术素材/卡牌/厄运共鸣.jpg",
+    "source_sha256": "286a6722016e807ba742fd2ce0b40d750fb477bf71826243729d0cbd81140dc2",
+    "source_size": [
+      2560,
+      1946
+    ],
+    "output": "PunchConstruct/assets/art/doom_resonance.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 65
+  },
+  {
+    "source": "资料/美术素材/卡牌/不倒不休.jpg",
+    "source_sha256": "15df2b303ab2a55cd96a0c5ccfe420e95ce4dda36fc8111bf8ccfef7b126eaa2",
+    "source_size": [
+      2560,
+      1946
+    ],
+    "output": "PunchConstruct/assets/art/never_back_down.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 67
+  },
+  {
+    "source": "资料/美术素材/卡牌/拳王形态.jpg",
+    "source_sha256": "b8eb78b30b417ecef22b4c83cf7dc28f210d2056e61ed5a5ae4706c689af81b2",
+    "source_size": [
+      2048,
+      2880
+    ],
+    "output": "PunchConstruct/assets/art/boxing_champion_form.ctex",
+    "size": [
+      606,
+      852
+    ],
+    "conversion": "resize without crop",
+    "card_number": 68
+  },
+  {
+    "source": "资料/美术素材/卡牌/披荆斩棘.png",
+    "source_sha256": "7368ba450e99f8f8c73b7b78069a9d21b56ac5c05fc9b4a30054b9ef22c48122",
+    "source_size": [
+      1438,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/bramble_field.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 71
+  },
+  {
+    "source": "资料/美术素材/卡牌/左勾拳.png",
+    "source_sha256": "ad1fe2f5cb6a205ee75b61b94e45ff3468400047cd298f8a565486b31362e376",
+    "source_size": [
+      1438,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/left_hook.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 72
+  },
+  {
+    "source": "资料/美术素材/卡牌/右勾拳.png",
+    "source_sha256": "68b8a97556a0a3439ab252addd0f9c22221588c808f2165f5fccc1c51ec90d65",
+    "source_size": [
+      1438,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/right_hook.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 73
+  },
+  {
+    "source": "资料/美术素材/卡牌/格斗流程.png",
+    "source_sha256": "e27be9ae0f67a91e68670122e42ee69fe919839637f07795e78ae365a79913cb",
+    "source_size": [
+      1439,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/combat_routine.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 74
+  },
+  {
+    "source": "资料/美术素材/卡牌/快速拳.png",
+    "source_sha256": "9381dcc379d3ca195d9842a615e63a75299e9d76b9dea0370f2420ed24dff3cd",
+    "source_size": [
+      1438,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/quick_punch.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 75
+  },
+  {
+    "source": "资料/美术素材/卡牌/连环拳.png",
+    "source_sha256": "9ac44f2bde728baea3de7b554cfd744238b10312a99f091649707a415eb5913e",
+    "source_size": [
+      1439,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/combination_punch.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 76
+  },
+  {
+    "source": "资料/美术素材/卡牌/格挡.png",
+    "source_sha256": "2292814d28fc5e1183cc279f3563d7e5d6f141ce2921fee98d8c9b23fae0bc08",
+    "source_size": [
+      1439,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/boxing_guard.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 77
+  },
+  {
+    "source": "资料/美术素材/卡牌/过载.png",
+    "source_sha256": "5ca269b9c8395d2e30392b8ac8dc38beea3a8e73ed40952d1f15ef11ca1c0a66",
+    "source_size": [
+      1438,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/furnace_overload.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_number": 78
+  },
+  {
+    "source": "资料/美术素材/遗物/架势.png",
+    "source_sha256": "290c1dd8757108cad6d1fc3339558748079b5262b1516e6ff7362d99284e8b73",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/guard_stance.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.94, transparent padding",
+    "visible_bounds": [
+      4,
+      6,
+      124,
+      121
+    ],
+    "visible_size": [
+      120,
+      115
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/架势.png",
+    "source_sha256": "290c1dd8757108cad6d1fc3339558748079b5262b1516e6ff7362d99284e8b73",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/guard_stance_outline.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "white silhouette using the matching icon alpha",
+    "visible_bounds": [
+      4,
+      6,
+      124,
+      121
+    ],
+    "visible_size": [
+      120,
+      115
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/架势.png",
+    "source_sha256": "290c1dd8757108cad6d1fc3339558748079b5262b1516e6ff7362d99284e8b73",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/guard_stance_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.94, transparent padding",
+    "visible_bounds": [
+      7,
+      13,
+      248,
+      243
+    ],
+    "visible_size": [
+      241,
+      230
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/先古架势.png",
+    "source_sha256": "23f28105ca1a2503e1c704fa9c9c78b400faed82f56c9d11b9c1a8a0fedba341",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/ancient_guard_stance.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.88, transparent padding",
+    "visible_bounds": [
+      10,
+      7,
+      117,
+      120
+    ],
+    "visible_size": [
+      107,
+      113
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/先古架势.png",
+    "source_sha256": "23f28105ca1a2503e1c704fa9c9c78b400faed82f56c9d11b9c1a8a0fedba341",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/ancient_guard_stance_outline.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "white silhouette using the matching icon alpha",
+    "visible_bounds": [
+      10,
+      7,
+      117,
+      120
+    ],
+    "visible_size": [
+      107,
+      113
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/先古架势.png",
+    "source_sha256": "23f28105ca1a2503e1c704fa9c9c78b400faed82f56c9d11b9c1a8a0fedba341",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/ancient_guard_stance_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.88, transparent padding",
+    "visible_bounds": [
+      21,
+      15,
+      234,
+      240
+    ],
+    "visible_size": [
+      213,
+      225
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/自旋螺丝.png",
+    "source_sha256": "dfbd83846603195441b17f89fc8f6f29a4d4ad0d40fa30d2f73a85452c49908e",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/spinning_screw.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.9, transparent padding",
+    "visible_bounds": [
+      10,
+      6,
+      117,
+      121
+    ],
+    "visible_size": [
+      107,
+      115
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/自旋螺丝.png",
+    "source_sha256": "dfbd83846603195441b17f89fc8f6f29a4d4ad0d40fa30d2f73a85452c49908e",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/spinning_screw_outline.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "white silhouette using the matching icon alpha",
+    "visible_bounds": [
+      10,
+      6,
+      117,
+      121
+    ],
+    "visible_size": [
+      107,
+      115
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/自旋螺丝.png",
+    "source_sha256": "dfbd83846603195441b17f89fc8f6f29a4d4ad0d40fa30d2f73a85452c49908e",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/spinning_screw_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.9, transparent padding",
+    "visible_bounds": [
+      21,
+      13,
+      234,
+      243
+    ],
+    "visible_size": [
+      213,
+      230
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/开口扳手.png",
+    "source_sha256": "1eb05f1c46f2774f406089f983cd5bf9d87c6a3ac93c66a241a6cb3e4490e117",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/open_end_wrench.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.9, transparent padding",
+    "visible_bounds": [
+      6,
+      6,
+      121,
+      121
+    ],
+    "visible_size": [
+      115,
+      115
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/开口扳手.png",
+    "source_sha256": "1eb05f1c46f2774f406089f983cd5bf9d87c6a3ac93c66a241a6cb3e4490e117",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/open_end_wrench_outline.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "white silhouette using the matching icon alpha",
+    "visible_bounds": [
+      6,
+      6,
+      121,
+      121
+    ],
+    "visible_size": [
+      115,
+      115
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/开口扳手.png",
+    "source_sha256": "1eb05f1c46f2774f406089f983cd5bf9d87c6a3ac93c66a241a6cb3e4490e117",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/open_end_wrench_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.9, transparent padding",
+    "visible_bounds": [
+      13,
+      13,
+      243,
+      243
+    ],
+    "visible_size": [
+      230,
+      230
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/备用指节.png",
+    "source_sha256": "56924b7c0a351f00b18e75fa1bfde5c495bad59320cb0fd44f78e968fada719e",
+    "source_size": [
+      1414,
+      1113
+    ],
+    "output": "PunchConstruct/assets/art/spare_knuckles.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.92, transparent padding",
+    "visible_bounds": [
+      5,
+      30,
+      123,
+      98
+    ],
+    "visible_size": [
+      118,
+      68
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/备用指节.png",
+    "source_sha256": "56924b7c0a351f00b18e75fa1bfde5c495bad59320cb0fd44f78e968fada719e",
+    "source_size": [
+      1414,
+      1113
+    ],
+    "output": "PunchConstruct/assets/art/spare_knuckles_outline.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "white silhouette using the matching icon alpha",
+    "visible_bounds": [
+      5,
+      30,
+      123,
+      98
+    ],
+    "visible_size": [
+      118,
+      68
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/备用指节.png",
+    "source_sha256": "56924b7c0a351f00b18e75fa1bfde5c495bad59320cb0fd44f78e968fada719e",
+    "source_size": [
+      1414,
+      1113
+    ],
+    "output": "PunchConstruct/assets/art/spare_knuckles_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.92, transparent padding",
+    "visible_bounds": [
+      10,
+      59,
+      246,
+      196
+    ],
+    "visible_size": [
+      236,
+      137
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/应急油壶.png",
+    "source_sha256": "a06102009d64b80f8588a502ae5a96ce11714a87ace43aacef5b824e0be2a6bd",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/emergency_oil_can.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.9, transparent padding",
+    "visible_bounds": [
+      6,
+      10,
+      121,
+      117
+    ],
+    "visible_size": [
+      115,
+      107
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/应急油壶.png",
+    "source_sha256": "a06102009d64b80f8588a502ae5a96ce11714a87ace43aacef5b824e0be2a6bd",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/emergency_oil_can_outline.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "white silhouette using the matching icon alpha",
+    "visible_bounds": [
+      6,
+      10,
+      121,
+      117
+    ],
+    "visible_size": [
+      115,
+      107
+    ]
+  },
+  {
+    "source": "资料/美术素材/遗物/应急油壶.png",
+    "source_sha256": "a06102009d64b80f8588a502ae5a96ce11714a87ace43aacef5b824e0be2a6bd",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/emergency_oil_can_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.9, transparent padding",
+    "visible_bounds": [
+      13,
+      20,
+      243,
+      235
+    ],
+    "visible_size": [
+      230,
+      215
+    ]
+  },
+  {
+    "source": "资料/美术素材/状态图标/东尼斩波.png",
+    "source_sha256": "fcd25935fe12b39f309d9a5dc4f977d1fd9fcf9209888b2f0a1386852d810a62",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_delayed_wave.ctex",
+    "size": [
+      64,
+      64
+    ],
+    "conversion": "nearest resize",
+    "card_number": 80
+  },
+  {
+    "source": "资料/美术素材/状态图标/东尼斩波.png",
+    "source_sha256": "fcd25935fe12b39f309d9a5dc4f977d1fd9fcf9209888b2f0a1386852d810a62",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_delayed_wave_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "nearest resize",
+    "card_number": 80
+  },
+  {
+    "source": "资料/美术素材/状态图标/铁斩波形态.png",
+    "source_sha256": "28c8603b7c88c5489329314aed77532702127131e77661c13980dbd3b5a27b78",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_iron_wave_form.ctex",
+    "size": [
+      64,
+      64
+    ],
+    "conversion": "nearest resize",
+    "card_number": 66
+  },
+  {
+    "source": "资料/美术素材/状态图标/铁斩波形态.png",
+    "source_sha256": "28c8603b7c88c5489329314aed77532702127131e77661c13980dbd3b5a27b78",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_iron_wave_form_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "nearest resize",
+    "card_number": 66
+  },
+  {
+    "source": "资料/美术素材/状态图标/锻造车间.png",
+    "source_sha256": "667df1821cf4bf01e43960d4ac8b6418ae09c5bd672949f598d5b175c0c3920a",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_forge_workshop.ctex",
+    "size": [
+      64,
+      64
+    ],
+    "conversion": "nearest resize",
+    "card_number": 60
+  },
+  {
+    "source": "资料/美术素材/状态图标/锻造车间.png",
+    "source_sha256": "667df1821cf4bf01e43960d4ac8b6418ae09c5bd672949f598d5b175c0c3920a",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_forge_workshop_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "nearest resize",
+    "card_number": 60
+  },
+  {
+    "source": "资料/美术素材/状态图标/王者风范.png",
+    "source_sha256": "8447d72285da2bb60d7dd51860067038c6899b2e21302e0bf8e016a454ea9b95",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_royal_bearing.ctex",
+    "size": [
+      64,
+      64
+    ],
+    "conversion": "nearest resize",
+    "card_number": 61
+  },
+  {
+    "source": "资料/美术素材/状态图标/王者风范.png",
+    "source_sha256": "8447d72285da2bb60d7dd51860067038c6899b2e21302e0bf8e016a454ea9b95",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_royal_bearing_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "nearest resize",
+    "card_number": 61
+  },
+  {
+    "source": "资料/美术素材/状态图标/趁热打铁.png",
+    "source_sha256": "f2c11bbdd8a85d13284a165359ab7035b2587df619103f0c87fcf7f89f1c4945",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_strike_while_hot.ctex",
+    "size": [
+      64,
+      64
+    ],
+    "conversion": "nearest resize",
+    "card_number": 62
+  },
+  {
+    "source": "资料/美术素材/状态图标/趁热打铁.png",
+    "source_sha256": "f2c11bbdd8a85d13284a165359ab7035b2587df619103f0c87fcf7f89f1c4945",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_strike_while_hot_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "nearest resize",
+    "card_number": 62
+  },
+  {
+    "source": "资料/美术素材/状态图标/终局裁定.png",
+    "source_sha256": "3baa873815a975080ac218fdb27b1d2931d394fb2f04f5d7385be5279dd41c1b",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_final_judgment.ctex",
+    "size": [
+      64,
+      64
+    ],
+    "conversion": "nearest resize",
+    "card_number": 63
+  },
+  {
+    "source": "资料/美术素材/状态图标/终局裁定.png",
+    "source_sha256": "3baa873815a975080ac218fdb27b1d2931d394fb2f04f5d7385be5279dd41c1b",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_final_judgment_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "nearest resize",
+    "card_number": 63
+  },
+  {
+    "source": "资料/美术素材/状态图标/卸甲成军.png",
+    "source_sha256": "1b77d41074de357a7fb7f4df282d1ac5f681dfb2679e91eff7ac42f760aa4adb",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_unarm_to_arms.ctex",
+    "size": [
+      64,
+      64
+    ],
+    "conversion": "nearest resize",
+    "card_number": 64
+  },
+  {
+    "source": "资料/美术素材/状态图标/卸甲成军.png",
+    "source_sha256": "1b77d41074de357a7fb7f4df282d1ac5f681dfb2679e91eff7ac42f760aa4adb",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_unarm_to_arms_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "nearest resize",
+    "card_number": 64
+  },
+  {
+    "source": "资料/美术素材/状态图标/不倒不休.png",
+    "source_sha256": "b07f0bb6d0e0e55302144c2ed65af65d37a39b27574ada7684d239c3b1584e91",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_never_back_down.ctex",
+    "size": [
+      64,
+      64
+    ],
+    "conversion": "nearest resize",
+    "card_number": 67
+  },
+  {
+    "source": "资料/美术素材/状态图标/不倒不休.png",
+    "source_sha256": "b07f0bb6d0e0e55302144c2ed65af65d37a39b27574ada7684d239c3b1584e91",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_never_back_down_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "nearest resize",
+    "card_number": 67
+  },
+  {
+    "source": "资料/美术素材/状态图标/拳王形态.png",
+    "source_sha256": "56169b1a3f9512a3fe32612caac2600f6abc9737194d1ba61b92114067dd77d8",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_boxing_champion_form.ctex",
+    "size": [
+      64,
+      64
+    ],
+    "conversion": "nearest resize",
+    "card_number": 68
+  },
+  {
+    "source": "资料/美术素材/状态图标/拳王形态.png",
+    "source_sha256": "56169b1a3f9512a3fe32612caac2600f6abc9737194d1ba61b92114067dd77d8",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_boxing_champion_form_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "nearest resize",
+    "card_number": 68
+  },
+  {
+    "source": "资料/美术素材/状态图标/黄铜螺帽.png",
+    "source_sha256": "6ef94e46470f0fbc33c533f0a0d21e1994b452c3d426e5ea8598ddaa64ad09b8",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_brass_nut.ctex",
+    "size": [
+      64,
+      64
+    ],
+    "conversion": "nearest resize"
+  },
+  {
+    "source": "资料/美术素材/状态图标/黄铜螺帽.png",
+    "source_sha256": "6ef94e46470f0fbc33c533f0a0d21e1994b452c3d426e5ea8598ddaa64ad09b8",
+    "source_size": [
+      64,
+      64
+    ],
+    "output": "PunchConstruct/assets/art/power_brass_nut_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "nearest resize"
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "source": "https://github.com/megacrit/sts2-mod-uploader/releases/tag/v0.2.0",
+  "archive_url": "https://github.com/megacrit/sts2-mod-uploader/releases/download/v0.2.0/ModUploader-win-x64.zip",
+  "archive_sha256": "2b55c19cc5932235ca9dbd663ca07d04e5d5a0018402303199f9b4ec8ca06578",
+  "sha256_matches_official": true,
+  "zip_crc": "PASS",
+  "help_commands": "PASS",
+  "upload_executed": false,
+  "files": {
+    "ModUploader.exe": "7d5283dbaff01ec5182bc08a09f4aac864cff870d7d692af08daf3830b4efa19",
+    "ModUploader.pdb": "7e1182d037f9cb9a40de673845795ffa03bac86ef60098236be52d9d8634aa73",
+    "steam_api64.dll": "eb17909a76668cf9ae0b92a618a34a50f6c73d3a6787cb4dd8ce36a8b10bfb75",
+    "steam_appid.txt": "bc80578ba89b7f67e609974743e33203e7da3d1eaae0b1c0bb1ddbb9b4f104f5",
+    "template/image.png": "2f01accfc29c5de3f6dd9e141461267533590115e6df45e00df325ea362659e0",
+    "template/README.md": "f281d9d1ab96190534355f944878a25fe7db723cffe4f751c392e21ccd527850",
+    "template/workshop.json": "203b1b436e4a88cde33a68cd7b6dc0f20f0483f902eb794ad777a082e2abc737",
+    "template/content/README.md": "c09582610cbdb0a2a9a97516b824d719ddcae9fc41d2924c6d9cae36f3c49f3f"
+  }
+}

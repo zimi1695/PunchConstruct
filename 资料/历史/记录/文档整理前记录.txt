@@ -1,0 +1,1589 @@
+2026-10-26 文档整理前原文存档
+
+仅保留修改过程，不作为当前设定或安装依据。
+
+===== README.md =====
+
+# 拳击构装体
+
+双击 **TryPrototype.cmd** 进入本地试玩。本机基线为杀戮尖塔2 **0.111.0**、BaseLib **3.4.7**；只需BaseLib前置，无需安装观者；本地依赖已准备，无需打开Steam。
+
+## 当前资料
+
+- [卡牌清单](资料/卡牌清单.txt)：唯一维护完整牌序的文档，01—82连续编号，含类型、品质、原创效果、发牌和先古渠道。
+- [角色设计](资料/角色设计.md)：角色配置、结算规则、遗物、美术和当前平衡反馈。
+- [问题记录](资料/问题记录.txt)：当前修复结论、验证日志与未完成项。
+- [发布前清单](资料/发布前清单.txt)：最终候选验收、素材来源、分发验证与作者审查的待办状态。
+- [角色对白](资料/角色对白.txt)：对白正文及已接入／未接入范围。
+- [美术说明](资料/美术素材/README.md)、[素材清单](资料/美术素材/素材清单.json)、[图标总览](资料/美术素材/图标总览.png)。
+- [原始设定](资料/原始设定.txt)保留原文；[历史目录](资料/历史/记录)保留旧稿和过程，不作为当前数值依据，不压缩。
+
+当前82种牌：26白、32蓝、15金、4基础、5先古。灼热铁斩波为02，愈战愈勇70，新增无色原创71—78，四种初始牌79—82。右勾拳仅定向生成，快速拳／连环拳／格挡局外仅由害虫杀手提供；这四张排除普通随机来源。灼热铁斩波是可多次升级的白卡，首次升级＋2伤害、＋2格挡，此后依次＋3／＋3、＋4／＋4；普通铁斩波退出常规获取池，保留初始牌、融合者固定合成与营养汤的既定替换。审阅编号不改存档模型ID。
+
+最新规则已写入上述正文：愈战愈勇先加1张灼烧再变为5动量普通拳斗，普通版消耗、强化去消耗；不倒不休金卡2费、强化1费，均生成普通拳斗及一张弃牌堆灼烧；紧追不放取消奥斯提伤害要求和护卫发牌门槛，改由角色造成伤害；出击／守护者改由角色攻击，保留奥斯提现有／最大生命值加伤；地毯大幅提高奖励中无色牌出现概率，当前权重×5；棱彩宝石保留加能量，战斗卡牌奖励排除无色牌；架势递增活力，古铜之拳递增下回合临时力量，每场从1重置；营养汤只将未附魔小斩波变为0费永恒铁斩波；开口扳手每个敌人1生命＋5金币；自旋螺丝在敌人回合后判定上一轮有伤害且无受伤，下回合多抽1；备用指节击败敌人获得16格挡；应急油壶有剩余能量时回合结束随机给同一敌人1易伤、1虚弱。
+
+格斗流程当回合立即生成快速拳、连环拳、格挡各一张，强化获得固有，消耗不变；披荆斩棘给予所有活着的单位2层原版荆棘，包含队友与奥斯提，使用原版震荡波同类特效。新事件文本见角色对白第六部分。
+
+## 工作区
+
+`PunchConstruct`是源码与游戏资源，`tools`是开发工具。源码与工作区试玩版现为 **0.4.20**，新增八张无色牌及卡面、害虫杀手三选一、淡灰暗港背景选人图标，并包含多人宝箱指向修正、草稿第一段调整、自制选人音效及原版构装体战斗动作／音效。单段攻击按重拳、重拳、双连拳循环，多段攻击使用双连拳，双连拳后重计；技能牌和能力牌播放防御动作，每次出牌只播放一次对应声音，不增加伤害段数。作者已确认正常更新本机试玩，朋友需要时再取新文件；重开 **TryPrototype.cmd** 加载。Steam目录安装未自动改写，Steam发布继续暂停。发布候选仍为已完成验收的 **0.4.15**，包含单人／联机日志、卡池挑战、东尼斩波转向、图标定位和活力消耗修复。古铜之拳改为下回合临时力量并连续显示黄铜螺帽状态图标，出击／守护者改为角色本人攻击；巨大扭蛋给两张小斩波，神格恢复原观者模组规则和表现。全部自定义状态说明已按实际数值、条件和强化情况核对，趁热打铁要求格挡≥10；完全格挡触发遗物时缩短伤害结尾的展示等待。磨蚀在本角色中为2费，另有蜈蚣吸入特效的局部兼容版本。0.4.11补断开后的地图清理与ENet主机失效玩家连接通知，保留原生组队及存档流程。通过启动器重开加载。0.4.12另按确认排除本角色的化学物X，并补齐宝箱共享遗物抽取遗漏；与我一斗普通／强化均6伤害2次，敏捷分别2／3；0.4.13接入新的四件遗物设定、三份美术及旧遗物存档兼容；0.4.14加入灼热铁斩波并同步斩波遗物判定；`dist/SteamWorkshop/content`已同步0.4.15三个模组文件，包含上述修改；旧0.4.11及0.3.1候选分别保留在`tools/runtime/qa/candidate-0.4.11`和`tools/runtime/qa/candidate-0.3.1`。实际候选验收结论见[发布审查](dist/SteamWorkshop/发布审查.txt)及verification.json，安装见[安装说明](dist/SteamWorkshop/安装说明.txt)。0.4.15已创建并上传私密工坊条目3826907330，未公开；作者要求先补美术，Steam回下载／启动验证暂停。新海报与动态暂不导出或上传。
+
+0.4.16采用作者确认的大幅半身选人海报，拆分背景和透明角色；胸肩起伏、点头、护拳与冷青微光／暖金火星组成9.6秒循环。画面按实际视口适配，补偿原版背景容器的额外缩放；原生标题、说明和按钮保留在上方。切换离开后停止更新，各实例独立计时。旧海报与两次未采用重绘均在`资料/历史/旧稿`。选人27项检查、启动和smoke专项通过；[动态预览](资料/美术素材/选人动态预览.html)来自实际选人界面。此版未重做全量验收。
+
+0.4.15补齐神格表现：按原观者模组隐藏底部状态，真言扣除不再闪动数值；20道光束立即在中心闪现，眼睛与光束不继承角色翻转／缩放；真言及神格音效使用原生SFX通道，移除重复音量衰减。最新专项与覆盖范围见[问题记录](资料/问题记录.txt)及tools/runtime/current-verification.json；0.4.14全量验收只适用于其历史文件。
+
+用户试玩存档位于`tools/runtime/play-userdata/PunchConstructTest`，与自动测试存档分开。整理资料不修改该存档或Steam游戏文件。
+
+开发命令见[工具说明](tools/README.md)。资料核对运行`python tools/check_documents.py`；实际卡池核对使用菜单模式`python tools/check_current.py pool`。不为单点问题运行完整对局。
+
+## 联机试作版
+
+沿用游戏原生联机。所有玩家需使用相同游戏版本、BaseLib版本和本模组同一构建；无需Watcher。紧追不放的召唤标记按施加者独立结算，架势／古铜之拳的递增值和头盔触发状态加入保存与同步。
+
+原生握手会拒绝游戏版本不同、缺少影响玩法的模组或模组版本号不同的连接，并显示版本／模组不匹配提示；本模组已声明影响玩法。相同版本号下自行替换文件的情况不保证能全部识别，联机仍应使用同一份文件。
+
+当前0.4.15的26项功能验收及8项联机／恢复专项全部通过。2—4个独立游戏进程经原生ENet连接，九阶段状态一致；四人另测单程100±40毫秒、5%丢包及5秒断流。普通／强制断开、四人客端进程丢失、三人混组主机进程丢失后的重新组队读档均通过，倒序加入后身份、灼热铁斩波的精确强化次数／数值、附魔和四件工坊遗物一致。测试静音、使用隔离档，具体证据见[问题记录](资料/问题记录.txt)、tools/runtime/current-verification.json及qa-completion-0.4.15.json；0.4.14历史完整验收另保留在tools/runtime/qa/verification-0.4.14.json。发布候选0.4.15与该版验收一致，已私密上传，后续Steam验证因补美术暂停。0.4.16的选人动态另做定向验收，不沿用0.4.15全量结论。本机ENet热加入受原版开局关闭新连接限制；Steam邀请／Steam热重连、真实互联网线路和实际工坊订阅安装尚未实测，作者暂不能安排Steam双人实测。`TryPrototype.cmd`仍是关闭Steam接口的本地试玩入口。
+
+正常试玩诊断日志位于`tools/runtime/play-userdata/PunchConstructTest/PunchConstruct/logs`，原生完整日志为`tools/runtime/play.log`。使用`python tools/diagnose.py`汇总；字段、轮转和联机对照方式见[工具说明](tools/README.md)。后续自动测试默认静音，不修改正常试玩音量。
+
+自定义模式勾选某个原版角色卡池时，加入该角色原版完整卡池；不勾选时继续使用本角色选定名单与体系获取规则。色彩哲学家和海玻璃仍使用各自已确认的专用范围。
+
+
+===== tools/README.md =====
+
+# 开发工具
+
+当前0.4.20新增`python tools/check_current.py boxing --rendered`：直接跳转害虫杀手和短战斗夹具，覆盖八张无色新牌、卡面／存档、获取限制、荆棘含奥斯提反伤、左右勾拳顺序、格斗流程当回合生成、过载与满手牌弃牌计数。联机增加boxing-generated／boxing-resolved两阶段快照，核对远端生成牌与所有单位荆棘。当前完整功能验收要求30项；本轮证据只适用于实际当前构建，未自动更新Steam候选。
+
+## 本地使用
+
+`launch.ps1`启动本地试玩，`launch.ps1 -PrepareOnly`只同步当前本地DLL／清单与资源，运行中的本地试玩会阻止同步。用户存档在`runtime/play-userdata`，不能清空或用测试档覆盖。`sync_runtime_art.py`令资源包与源码资产集合完全一致，避免旧包已删除资源残留；不写dist。0.4.15历史源码包含此前化学物X／宝箱过滤，以及开口扳手、自旋螺丝、备用指节、应急油壶，并加入灼热铁斩波／多次升级／斩波遗物兼容；发布候选已同步0.4.15并包含上述修改；旧0.4.11完整保留在runtime/qa/candidate-0.4.11。若试玩正在运行，退出后通过启动器同步，不能热替换。
+
+仅编译：
+
+```powershell
+$env:DOTNET_CLI_HOME = Join-Path (Get-Location) '.dotnet-local'
+dotnet build PunchConstruct/PunchConstruct.csproj -c Release --no-restore
+```
+
+`build.ps1`会同时调用打包；`package.py`、`release.py`也是发布工具，只有明确要求导出／发布时使用。日常整理、修复和验证不运行这些打包入口。
+
+## 文档与素材
+
+- `check_observer_art.py`：只读比对13张采用观者纹理与本机Watcher包的导入记录及真实纹理，`--record`仅更新现有来源表的路径核对记录。
+- `check_documents.py`：只读核对82张牌的连续编号、名称／类型／品质统计、源码成员、素材来源／编号／导出覆盖、当前文档链接和关键规则，不启动游戏。
+- `prepare_art.py`：按已采用素材导出纹理并更新素材清单。卡面和状态图标的审阅编号从主卡牌清单读取，轮廓图也计入清单，源图不改。
+- `prepare_text.py`：由角色对白正文生成已接入对白；文件头的草稿状态不参与导出。
+- `preview_icons.py`：根据状态图标清单生成全部已采用图标总览。
+- `Inspect`与`game-reference`：本地游戏接口、IL和原版资料。游戏参考与历史资料不是当前角色设定。
+
+## 定向验证
+
+统一入口：`python tools/check_current.py 模式`。使用独立临时副本和测试存档，结束后清除副本，仅保留`runtime`对应日志。一般仅加载BaseLib与本模组；modes另加载临时QaExitProbe，在133项原生种子／挑战检查结束后释放离开场景树的闲置卡牌缓存，等待渲染帧再退出，不改测试内容或正常游戏。该QA程序集及指纹登记在日志和结果中，不装入候选／试玩。通过判定同时检查成功标记、失败标记、退出码及未分类错误，PASS之后的资源／脚本错误同样判失败。已在BaseLib单独启动中复现的精确底层诊断形式，以及调试房间未自动保存时原版清理两个不存在临时存档文件的提示，会单独分类；其他异常不放行。
+
+单人专项的新归档同时保留DLL／PCK／清单的SHA256、临时QA助手指纹及原始游戏日志；`result.json`的`build`记录实际测试文件。`persist`与`observerpersist`的写档和续玩日志分别保留在同一个证据目录，避免只留下第二次启动的记录。历史归档保持原样，不能因工具补充了字段而视作已经重测。
+
+| 模式 | 范围 |
+|---|---|
+| animation | 原版构装体单拳／双拳／防御的真实动画与声音调用；重拳、重拳、双连拳节奏，多段攻击，伤害段数不变，技能／能力去重，原版角色隔离和跨战斗重置；真实原版动作帧逐步录制，静音隔离 |
+| adapt | 紧追不放取消护卫门槛、角色伤害／召唤、逐段触发、叠加／预览／致死；出击与守护者的角色攻击、当前／最大奥斯提生命加伤、缺席基础伤害、升级／预览／活力消耗／战斗复制；地毯原生奖励抽样、去重、限定标志、恢复和角色隔离 |
+| startup | 干净隔离环境，仅BaseLib与本模组，无QA参数，普通启动至主菜单及公共预加载完成，不开局；使用--rendered验证实际渲染 |
+| startupbase | 只加载BaseLib的普通启动对照，核对底层诊断是否依赖本角色；不用于验证角色发布文件 |
+| observerpersist | 两个全新进程间，用旧Watcher卡ID经原版继续恢复8张牌、强化和附魔；仅修改隔离测试档 |
+| observer | 独立观者八牌、真言／神格、预见、回防、旋身、斋戒及旧卡ID迁移；神格粒子／眼睛／着色器及退出清理；断言未加载Watcher |
+| vigor | 定向复现格挡荆棘反伤后活力不再消耗；连续攻击、三段攻击、伤害实际加成及剩余活力清理；实际异鸟三连击比较无遗物、旧处理、压缩等待和未格挡节奏 |
+| pool | 仅菜单核对完整名单、归属、品质、边框和药水工厂 |
+| icons | 仅加载十张状态图标与大图，核对各自主体占比 |
+| regentvisual | 菜单实际卡牌控件检查七张能量替代星费牌、升级／降级／费用刷新、原角色隔离及真正0星牌 |
+| relicvisual | 使用实际渲染器检查遗物栏小图／轮廓、预览大图、刷新和角色隔离；仅菜单，不开局 |
+| architect | 直接跳转建筑师，检查首遇／重逢对白、逐句点击、原版结尾及通关结算 |
+| additions | 愈战愈勇1张灼烧／5动量普通拳斗、基础消耗／强化去消耗、升降级关键词、空手自动变牌、满手溢出、动画与弃牌计数；不倒不休金卡2／1费、均生成普通拳斗及灼烧、混合叠加；自旋螺丝与对应素材 |
+| focus | 震荡、架势递增活力、先古替换、古铜之拳下回合临时力量累计／生效／消退／永久力量保留及跨战斗重置；黄铜螺帽图标／悬浮说明；跨回合实际NPower控件实例连续保留；原版和遗物触发的能力获得耗时 |
+| soup | 自动筛选小斩波可合法附加的原版附魔，核对普通／升级及已有永恒的附魔小斩波全部跳过，原牌与附魔不变；未附魔小斩波保留强化后变为0费永恒铁斩波，已有铁斩波／灼热铁斩波不变；包含克隆和序列化；仅直接事件房间 |
+| persist | 建立营养汤／魔典／储君费用存档，关闭进程，再启动全新进程从主菜单继续；另留seed日志 |
+| update | 无色来源、镇纸、海玻璃、树叶药膏及近期卡牌 |
+| edge | 商店补货、体系门槛与权重、锻造／召唤／灾厄；全部17种自定义状态的实际HoverTips及飞镖状态，覆盖数值、条件、叠加、剩余次数与隐藏内部状态 |
+| boundary | 头盔跨战斗重置、重复／跨组权重、能力联动 |
+| relics | 宝箱／普通奖励／商店获取排除及角色隔离，木偶、种子、水盆、飞镖与延迟结算；另测灼热铁斩波连续8次升级、复制／还原／降级及两种木偶单独／叠加的实际出牌 |
+| treasure | 单独复现原生宝箱共享池抽取；64组种子、混组角色隔离、同种子结果一致、玩家及随机数作用域恢复 |
+| workshop | 四件遗物的获取与品质、旧ID兼容、图标尺寸、击败结算、油壶能量与随机数、自旋螺丝在实际敌人回合后判定及存档字段 |
+| events | 巨大扭蛋实际领取随机遗物与两张小斩波，原角色隔离；直接跳脑蛭、三色色彩哲学家、重拳出击并实际领取；核对9张候选跨轮去重及六张体系原创准入 |
+| capsulecontrol／capsuleconstruct | 铁甲战士／构装体单独领取巨大扭蛋，并进入原生重拳出击场景；比较事件退出渲染诊断，不代替完整events专项 |
+| eventscontrol | 铁甲战士实际完成脑蛭、三色色彩哲学家和重拳出击的相同领取流程；构装体特有规则断言跳过，只作原生事件渲染退出对照，不算角色功能验收 |
+| shadernative／shaderoriginal | 直接进入蜈蚣战斗并显示再生特效，检查本角色兼容路径／原角色原生路径、三段实际材质、纹理绑定及退出恢复 |
+| eventscene／eventroom／eventbrain／eventphilosopher | 分离原版特效、原版房间、脑蛭领取与哲学家领取，用于定位退出诊断；不代替完整events |
+| doll | 玩偶三条路线 |
+| end | 放弃／死亡、结算、回菜单及重开；--rendered另逐帧核对死亡朝向及原版敌人隔离 |
+| facing | 直接跳转帝王蟹战斗，实际攻击左右蟹钳，核对画面朝向、背击倍率、重复攻击与死亡朝向；使用--rendered检查画面 |
+| smoke | 基础模型和资源冒烟检查 |
+
+有明确问题时使用对应模式、控制台命令或直接调试房间，不运行整局自动游玩。旧`playtest.ps1`仍可用于指定视觉专项，不把综合游玩模式作为默认测试。历史日志对应当时构建，不等于每次改动都全部重跑。ordinary_launch_check.ps1现在调用startup --rendered，使用同一临时环境与清理流程。启动检查只识别对照中已有的精确底层诊断形式，其他Godot ERROR、脚本异常和加载异常均判失败。
+
+专项开始前会等待原版Common资源加载会话真正完成，避免只做菜单检查后过早退出引发资源加载错误；普通游戏不使用该等待。无界面专项超时60秒，实际渲染专项超时90秒。
+
+事件专项全部结束、即将退出QA进程时，释放原生卡牌池中已闲置且离开场景树的控件，等待渲染帧后退出，防止把进程缓存误当作玩法泄漏；正常游玩不调用。`NativeProbe`是独立QA程序，不引用或加载PunchConstruct，可用`dotnet build tools/NativeProbe/NativeProbe.csproj -c Release`和`python tools/check_native.py --release-pools`进行相同原生奖励流程对照；仍使用BaseLib、隔离档和静音，不装入试玩或发布文件。去掉`--release-pools`会保留原生缓存退出诊断，不放宽失败判定。
+
+`python tools/check_graphics_compat.py`逐字核对蜈蚣兼容场景及Shader仅有登记的引用／乘加差异，并验证原包与输出指纹。
+
+`python tools/check_local.py`针对当前本地DLL执行26个角色功能专项（0.4.13新增workshop遗物专项），最多并行3个；活力节奏对照在其余专项全部结束后单独运行。`--package-dir dist/SteamWorkshop/content`则对现有候选的实际三个文件执行同一验收，写入`runtime/candidate-batch-版本.json`，不重新导出。每完成一项便记录进度，中断不冒充全部通过。modes需先编译`tools/QaExitProbe/QaExitProbe.csproj`。`shaderoriginal`另为原版角色诊断对照，仍严格记录其原生fma错误，不算本角色功能验收，也不改动原版角色来消除此对照的报错。`python tools/report_local.py`按实际DLL指纹汇总单人及2／3／4人日志，原版对照列入`diagnostic_controls`，列出缺失、失败与覆盖边界，更新`runtime/current-verification.json`；同时逐字核对当前候选资源和本地验收状态，不生成候选、不沿用另一份DLL的结论。
+
+需要检查实际画面时使用`python tools/check_current.py 模式 --rendered`，仍然只执行所选专项。
+
+## 日志与自动测试约定
+
+后续自动测试一律静音：临时测试档的总音量、音乐、音效和环境音均为0，显式游戏测试入口另设置主音量为0。此设置仅用于隔离测试档，不修改作者正常试玩音量；音效专项仍可检查事件是否调用。
+
+单人与联机共用JSONL诊断结构。正常试玩日志位于`runtime/play-userdata/PunchConstructTest/PunchConstruct/logs`，原生完整日志仍是`runtime/play.log`；实际日志目录会在启动时以`[PunchConstruct LOG]`输出。Steam环境使用对应游戏用户目录下的`PunchConstruct/logs`，不写入模组安装目录。
+
+每条记录包含schema、UTC时间、递增序号、进程会话、局次、级别、事件名、当前上下文和数据。启动记录包含DLL指纹、模组／BaseLib版本；开局记录包含种子、挑战参数和玩家槽位／角色。行动使用原生actionId，选牌使用choiceId；不同机器应以同种子、房间、行动／选择编号和玩家槽位对照，不使用各进程不同的session字段匹配。
+
+记录房间、战斗、回合、行动开始／完成／耗时、等待选牌、发出／收到选择、退出、断开和状态分歧；行动异常、房间异常保留异常类型、信息和堆栈，分歧附玩家状态摘要。原生警告／错误另标为native.message，不能仅据此认定是本模组造成。玩家使用槽位，原生消息使用游戏自带Steam ID清理，不主动记录昵称、账号、聊天或网络地址；日志只保存在本机，不自动上传。
+
+日志每份约2MiB轮转，最多保留12份；重复的相同原生警告／错误在5秒内合并并记录压制数量，最多缓存128种消息。轮转和写入异常不会中断游戏；无法写入时只提示一次，并保留原生游戏日志。日志不加入存档、状态校验或网络消息，不消费游戏随机数。
+
+`python tools/diagnose.py`只读汇总正常试玩日志；`python tools/diagnose.py 路径 --events`查看完整时间线，也可用`--session`限定某个进程。联机排错保留所有玩家同一次运行的日志和原生日志。测试原始日志及结果按时间分别留在`runtime/qa/场景-时间/`，含构建指纹与日志SHA256；失败和中止也保留证据，不覆盖成通过。旧平铺日志仅为最近一次便捷副本。
+
+## 联机定向验证
+
+当前本地源码、试玩及已验收候选均为0.4.15。以下命令检查两人组合、三人混组和四人构装体，也支持`--package-dir`只读测试现有候选的三个文件：
+
+```powershell
+python tools/check_coop.py --guest construct
+python tools/check_coop.py --guest necrobinder
+python tools/check_coop.py --guest ironclad
+python tools/check_coop.py --guest necrobinder --players 3
+python tools/check_coop.py --guest construct --players 4
+python tools/check_coop.py --guest construct --latency-ms 70 --jitter-ms 20 --loss-percent 2 --blackout-seconds 3
+python tools/check_coop.py --guest necrobinder --players 3 --latency-ms 90 --jitter-ms 30 --loss-percent 3 --blackout-seconds 4
+python tools/check_coop.py --guest construct --players 4 --latency-ms 100 --jitter-ms 40 --loss-percent 5 --blackout-seconds 5
+```
+
+每次启动2—4个独立游戏进程，使用原生ENet连接、原生大厅及真实网络行动／选牌消息。默认实际渲染、静音；不关闭原生状态校验。临时文件只协调测试布置和比较结果，不传输玩家选择。直接进入测试战斗与事件，不自动打完整局。仅结束该脚本自己启动的进程，用户存档和Steam游戏文件不变，不更新dist。
+
+弱网参数启用仅绑定127.0.0.1的独立UDP代理，各客端经过独立端口与主机通信。latency是单程延迟，jitter是每个数据报的随机偏移，loss是双向随机丢包百分比；代理随机数独立于游戏随机数。blackout会在第一张愈战愈勇的真实手牌选择前丢弃双向数据报，持续指定秒数后恢复，不传递或伪造游戏选择。结果记录各方向实际收发、丢包、断流计数、延迟和阶段事件；必须确实发生丢包／断流并且全部端断言、原生状态校验和九阶段快照通过才算成功。每轮上限300秒。
+
+Windows可能在原生主机正常退出后向UDP代理报告端口关闭；只有所有端均已完成最后checked屏障时才作为退出事件保留。提前发生则仍判失败，游戏错误判定不变。网络压力结果以独立-network键写入current-verification.json，不覆盖普通直连证据；若已有当前构建的网络压力失败，汇总也会列为失败。历史失败结果始终保留在自己的qa目录。
+
+以上2／3／4人弱网配置已在0.4.10通过，各组九阶段快照全部一致。断流结束后的恢复是同一连接上的短时断流恢复，不是掉线后重新加入；不据此宣称已验证Steam或热重连。实际数据报计数和对应目录见问题记录。
+
+测试覆盖独立召唤标记、遗物成长和归属、回合结束、普通／升级生成牌、延迟随机伤害、真实手牌变牌选择、战斗结束重置及海玻璃远端奖励选择；另检查连续战斗、各玩家同时提交攻击、队友死亡后的胜利与开口扳手归属；0.4.13另核对新螺丝的独立伤害标记／下回合抽牌、油壶同步目标随机数及指节击败格挡。比较战斗开始、标记、神格、下一回合、临时力量消退、变牌、奖励、并发行动、幸存者胜利九个阶段的所有进程快照。0.4.14另让每位玩家通过原生网络队列打出强化三次的灼热铁斩波，核对11伤害／11格挡；快照包含精确强化次数和动态数值。未知错误、诊断观察器异常、异常退出、缺失快照或任一快照不同均判失败。
+
+`runtime/coop-verification.json`保留0.4.1汇总，随后构建的证据也保留在`runtime/qa`。最新专项汇总见`runtime/current-verification.json`，版本、DLL指纹及覆盖以文件内记录为准，不能把旧汇总视为新版全量验收。0.4.15历史验收资源为158份，包括灼热铁斩波、新遗物、黄铜螺帽图标及大图、隐藏能力的透明纹理、神格光束原图集及4份蜈蚣局部兼容资源。图标更新使用icons／focus定向检查。汇总必须同时具备26项功能、2／3／4人直连、四人弱网和四项断线恢复的成功证据，才标记full_local_verification；missing_multiplayer和missing_recovery列出缺项。
+
+这组本机测试不证明Steam邀请、真实互联网线路、Steam热重连或其他模组组合。`launch.ps1`是关闭Steam接口的本地试玩入口。发布候选保留0.4.15，本地工作区试玩已更新0.4.19；联机证据与适用构建见[问题记录](../资料/问题记录.txt)。
+
+`python tools/check_current.py modes --rendered`通过原生自定义模式界面输入种子、勾选挑战；逐项检查界面列出的挑战、原生初始化选牌、卡牌奖励、商店和磁盘保存重建，再检查代表性组合。此专项上限300秒，不自动推进地图。勾选原版角色卡池挑战时允许该角色完整卡池；普通模式仍使用选定名单与体系门槛，海玻璃和色彩哲学家的专用范围保持其设定。
+
+## 联机断开与存档恢复
+
+`RecoveryProbe`是独立QA模组，仅复制进临时环境，不能装入试玩或发布目录。支持2—4人，两阶段各启动全新游戏进程：先建立原生联机、准备升级／附魔牌和专属遗物并等待主机存档落盘；一名客端退出后，其余客端检查连接与对局仍保留，再由新进程实际加载主机磁盘存档、经原生LoadRunLobby重新组队，核对状态并实际网络出牌。每阶段上限150秒，静音、独立档，不推进整局。
+
+```powershell
+dotnet build tools/RecoveryProbe/RecoveryProbe.csproj -c Release
+python tools/check_recovery.py
+python tools/check_recovery.py --players 3 --party mixed
+python tools/check_recovery.py --players 4
+python tools/check_recovery.py --players 3 --party mixed --resume-order reverse
+python tools/check_recovery.py --abrupt
+python tools/check_recovery.py --kill-client --players 4 --resume-order reverse --package-dir dist/SteamWorkshop/content
+python tools/check_recovery.py --kill-host --players 3 --party mixed --resume-order reverse --package-dir dist/SteamWorkshop/content
+dotnet build tools/RecoveryProbe/RecoveryProbe.csproj -c Release -p:NativeOnly=true
+python tools/check_recovery.py --independent --abrupt
+```
+
+`--party mixed`使用构装体主机、亡灵契约师客端和铁甲战士客端；其他配置为全构装体。构装体各槽位设置不同数量的测试牌和不同层数的附魔，避免同牌组掩盖身份互换。`--resume-order reverse`只在读档时倒转客端实际加入顺序，玩家网络身份保持原值；快照仍须逐玩家与保存前完全一致。该参数不伪造或改写原生身份分配。
+
+历史0.4.14的26项功能和8项联机／恢复已全部通过，使用该版本地试玩的实际三文件，未重新导出候选。RecoveryProbe为各构装体另准备不同强化次数的灼热铁斩波与开口扳手／自旋螺丝／备用指节／应急油壶，快照包含CurrentUpgradeLevel及全部动态数值；正常与强制断开、四人客端丢失／三人混组主机丢失后的倒序回组都核对逐玩家身份及物品。恢复四项分别45／45／123／50项，目录及QA助手指纹见问题记录。此QA助手仅放临时测试环境。
+
+0.4.10补充三人混组40项、四构装体88项、三人倒序回组40项通过；全部保存前／恢复后快照一致。各组合与顺序以独立键保存到current-verification.json，保留原双人结果；具体目录及QA构建指纹见问题记录。没有改变游戏DLL或重新导出候选。
+
+0.4.10普通退出／续玩30项通过，强制关闭时原生MapDrawingModeChangedMessage报错的严格失败及独立对照均保留。0.4.11仅对包含构装体的对局补地图断开清理和ENet终止peer的原生通知，强制关闭／恢复首轮37项通过。恢复前先实际同步地图绘图模式，断开后再核对本地模式已复位，防止将整个绘图功能禁用来消除报错。
+
+`--kill-client`／`--kill-host`由脚本直接终止自己启动的对应隔离进程，不调用正常退出；存活端必须由真实原生断开通知／菜单状态完成断言，再用全新进程组队读主机磁盘存档。被故意终止的一端标记expected_termination，不冒充执行过退出后断言。文件只补齐已终止进程的QA屏障，不能满足存活端的原生断开条件；不修改游戏超时参数。两参数与--abrupt互斥。
+
+`--native-control`仅更换原版角色但仍加载角色模组；`--independent`使用不引用角色程序集的NativeOnly产物，移除角色模组并在各进程检查程序集缺席。两种对照不能混称。NativeOnly的输出在bin/Native下，与普通QA产物分开。
+
+本机原生ENet开局调用SetHostIsClosed(true)，会拒绝运行中新连接。`--live-join`仅用于保留原版加入界面的诊断，实际超时不能算热重连通过。没有为测试打开原生关闭的端口。Steam线路仍须单独验证。报告中的recovery_checks保存本角色退出／强制关闭／进程丢失恢复结果，diagnostic_controls保存热加入和原版／独立对照，失败保持失败；所有快照、原始日志和隔离存档留在qa独立目录。
+
+## 创意工坊发布准备
+
+作者已授权同步候选，当前候选为0.4.15，实际文件26项功能及8项联机／恢复验收通过，与源码和试玩三个文件一致。旧0.4.11及0.3.1完整保留在runtime/qa/candidate-对应版本目录，不以旧报告证明新文件。没有生成ZIP。作者暂不能安排Steam双人实测；上传和创建条目仍须最后审查并明确同意。
+
+运行`python tools/workshop.py --status`只读核对候选与最新构建／资源、报告覆盖和日志变化、发布文案同步；不生成候选或修改报告。发布前待办见[发布前清单](../资料/发布前清单.txt)。当前候选已通过要求的26个角色功能专项：原25项另加workshop，检查新遗物、回合边界和旧存档身份，覆盖紧追不放、地毯／宝石、种子／挑战适配、活力消耗和节奏及蜈蚣兼容渲染。通过verify的最终日志另外保存在候选的验收日志目录，报告引用该副本，后续本地专项不会覆盖；它们不随content上传。
+
+此前使用`python tools/workshop.py --prepare`生成`dist/SteamWorkshop`，采用官方上传工具的目录格式；不会上传，也不生成ZIP。封面从已采用的小斩波源图等比缩小，不修改源图。
+
+`python tools/check_current.py 模式 --package-dir dist/SteamWorkshop/content`直接检查发布候选的三个文件，记录包内文件的SHA256。完成专项后运行`python tools/workshop.py --verify`核对完整资源、BaseLib唯一依赖、存档未变及对应日志；另须通过同一DLL／PCK／清单的2／3／4人联机、普通及强制断开、四人客端进程丢失与三人混组主机进程丢失恢复。release_evidence.py只按实际三个文件指纹筛选，联机证据另复制进验收日志并记录全部校验值。--status为只读核对。旧release.py仍针对历史版本，不作为这次发布入口。
+
+`python tools/check_candidate_network.py`顺序补齐当前候选缺失的8项联机／恢复验收，包含四人弱网。已通过且三个文件指纹完全相同的证据直接复用；不同构建绝不复用。进度写入runtime/candidate-network-版本.json，测试直接跳转房间，不运行整局。
+
+创意工坊标题、正文、可见性和BaseLib工坊ID位于`dist/SteamWorkshop/workshop.json`。仅`content`上传；验证报告及本地存档校验值不在上传目录。未取得作者明确同意前，不运行上传、创建条目或公开发布。观者素材已注明Boninall及来源页面，用户确认没有该作者授权；来源标注不能当作许可结论。
+
+官方上传工具v0.2.0已放在`tools/ModUploader`，下载包SHA256与官方发布一致；`--help`与`upload --help`已验证。获得作者最后上传许可后，才在工作区根目录运行`.\tools\ModUploader\ModUploader.exe upload -w .\dist\SteamWorkshop`。帮助命令不初始化Steam；实际账号权限和工坊协议状态尚未验证。
+
+0.4.15仅补神格表现与音频：observer新增隐藏状态、同次调用立即显示20道中心光束及实际WASAPI混音采样检查；测试将Master输出静音后读取SFX采样，逐一验证真言／神格有非零信号，并验证总音量／音效音量为0时不播放，不改作者设置。edge对隐藏神格单独验证无状态行悬浮项，并核对供卡牌使用的说明。0.4.15随后补齐26项功能与8项联机／恢复，current-verification.json按实际构建汇总；qa-completion-0.4.15.json另逐项核对功能专项的实际三个文件及归档内容。158份包内资源与源码一致，本机验收期间试玩存档及旧候选校验未变。作者随后授权同步发布候选，0.4.15候选与上述实际文件一致，日志独立归档，旧0.4.11完整留存；未上传。历史0.4.14证据单独保留。
+
+## 选人动画专项（0.4.16）
+
+`python tools/check_current.py poster --rendered`仅进入真实选人界面，检查透明分层、动作像素变化、粒子实际绘制、循环接缝、原生标题可见性、切换角色、独立实例及4:3／宽屏适配，录制128帧供预览，不开始对局。此隔离档关闭后台限帧以避免录制超时，不改作者设置。0.4.16的验收增加poster，共27项；0.4.17再增加draft，共28项；0.4.19增加animation，共29项；旧候选0.4.15仍按原26项核对。源码与当前候选版本分开记录，不自动导出或上传。
+
+Steam状态更新：作者曾授权执行Steam最终验证，官方工具已将0.4.15成功上传至私密条目3826907330，BaseLib依赖已添加，远端API确认private。作者随后要求先补美术，回下载／Steam启动验证暂停，未公开。当前0.4.16美术工作不更新该条目。状态记录见runtime/steam-release-0.4.15.json；此前“未上传”说明均为该次授权前的历史状态。
+
+## 多人宝箱手势专项
+
+`python tools/check_coop.py --treasure-only --players 2 --guest construct`直接进入共享宝箱，使用真实ENet鼠标状态同步和真实视口移动／按下／释放事件检查选择；`--players 4 --guest ironclad`覆盖混合角色及四个手势方向。检查三种窗口比例和不同端尺寸、指向与猜拳纹理、旧错误映射对照、悬停命中及领取结果。scenario为coop-treasure，与九阶段战斗套件分开，不把单独宝箱通过计入完整联机验收。全部静音隔离。该宝箱修复最初仅在工作区开发；作者现已确认照常更新本机试玩，随草稿第一段及后续修订同步0.4.19。Steam候选及私密条目不变。
+
+## 草稿第一段专项
+
+`python tools/check_current.py draft --rendered`仅创建临时静音存档，直达漩涡、融合者及受控战斗，检查涅奥护符、先古营养汤候选条件、古老牙齿预览与实际领取、已附魔小斩波排除、递增强化与存档、打击木偶加成、品质隔离、不倒不休状态说明及自制选人音效播放路由。`soup`另检查所有已附魔小斩波被汤跳过后的原样保留、克隆与存读档；`additions --rendered`检查实际回合发牌、灼烧动画与弃牌计数。测试工具本身只构建临时QA资源包；按作者最新指示另将已核对版本同步到工作区试玩，不更新好友包、候选或Steam。
+
+
+===== 资料/角色设计.md =====
+
+# 拳击构装体：当前设定
+
+更新：2026-10-26。卡牌名称、品质与审阅编号以[卡牌清单](卡牌清单.txt)为准；本文件集中说明角色、规则和遗物。原始构想保留在[原始设定](原始设定.txt)，过程记录放在现有[历史目录](历史/记录)。
+
+## 角色与初始配置
+
+| 项目 | 当前设定 |
+|---|---|
+| 角色 | 暗港「重拳出击」中的拳击构装体 |
+| 基线 | 杀戮尖塔2 0.111.0、BaseLib 3.4.7；不依赖观者模组 |
+| 风格 | 边打边防；不要求每张牌都同时伤害和格挡，虚弱、易伤等行为也可符合整体风格 |
+| 构筑目标 | 每局朝1～2个方向发展，允许无限流 |
+| 机制 | 使用现有游戏框架；后续原创设计优先考虑完全格挡一段伤害后的进攻收益 |
+| 生命 | 75，与本机故障机器人相同 |
+| 充能球栏 | 初始0，后续遵循非机器人角色的原版充能规则 |
+| 药水 | 公共药水＋本角色独立空专属池；不继承机器人专属药水 |
+| 初始遗物 | 架势：完全格挡伤害依次获得1、2、3……点活力，每场从1重新开始 |
+| 影响范围 | 卡牌、遗物、发牌、图标和事件适配仅限本角色，不改变其他角色的池与效果 |
+
+初始牌组共8张，无打击／防御：
+
+| 张数 | 卡牌 | 费用 | 普通效果 | 升级效果 |
+|---|---|---|---|---|
+| 5 | 小斩波 | 1 | 3伤害、3格挡 | 5／5 |
+| 1 | 铁斩波 | 1 | 5伤害、5格挡 | 7／7 |
+| 1 | 东尼斩波 | 1 | 下回合开始对随机敌人造成7伤害，获得7格挡 | 9／9 |
+| 1 | 震荡 | 1 | 全体1易伤、1虚弱，消耗 | 各2层，仍消耗 |
+
+东尼斩波与震荡为技能牌；初始8张牌中6张攻击、2张技能。东尼斩波在下回合结算时按实际随机目标转向，普通／升级和多张蓄力逐段处理，不为转向额外抽取随机数。
+
+## 卡池与归属
+
+共82种：58张搬运牌、1张铁斩波改版、19张原创设计、4种初始牌。品质为26白、32蓝、15金、4基础、5先古。普通品质共73张，其中29攻击、29技能、15能力；4张仅固定渠道获取，不进入普通随机池。
+
+审阅编号连续01—82；灼热铁斩波为02，愈战愈勇70，新增无色原创71—78，小斩波79、东尼斩波80、震荡81、普通铁斩波82。编号用于查阅，不修改存档模型ID。护卫仍为29。
+
+归属与获取池分开：锻造车间、王者风范、趁热打铁归储君；终局裁定、卸甲成军、厄运共鸣归亡灵契约师。铁斩波形态、不倒不休、与我一斗、愈战愈勇为无色。拳王形态及三种自制初始牌归拳击构装体。所有搬运牌保留原归属，普通铁斩波与灼热铁斩波归铁甲战士；灼热铁斩波只加入本角色获取池。灼热铁斩波白卡1费，造成5伤害、获得5格挡，可多次升级，首次＋2／＋2，此后＋3／＋3、＋4／＋4依次递增。普通铁斩波不再从常规奖励、商店、随机生成或变化获得，保留初始牌、融合者两张小斩波合成铁斩波，以及营养汤只替换未附魔小斩波的固定效果。
+
+新增原创牌只登记在本角色的获取池，不追加到原角色或全局无色池；搬运牌不改变原角色的原有卡池。当前无色来源共7张：非凡技艺（1白）；拳斗、震荡波、与我一斗、铁斩波形态（4蓝）；不倒不休、愈战愈勇（2金）。
+
+各牌普通／升级效果、搬运星费适配、小组成员与前提、先古渠道，统一见[卡牌清单](卡牌清单.txt)。不在本文件重复维护第二套牌序和效果表。
+
+八张观者搬运牌已在本模组内独立实现，紫色归属池仅负责显示，不把牌加入其他角色的获取池。真言、神格、斋戒能量下降、以手拒之和冷眼旁观均由本模组结算；旋身使用游戏自带的免费攻击能力。冷眼旁观单人也可正常出现，不继承外部观者模组的仅联机标记。
+
+神格按原观者模组规则：单次真言变化回调达到10点时扣除10点，再进入神格；一次大额获取不循环扣除全部阈值，余量保留供之后的真言变化结算。进入时获得3能量，攻击三倍伤害，己方回合结束退出。已经处于神格时不重复获得入场能量。
+
+神格不显示底部状态图标，真言扣除使用原模组的静默数值更新。神格表现恢复原观者模组的紫雾、光点、七帧眼睛、粉色线状光束向内收束、入场边缘及神格／真言音效。眼睛使用原帧序、持续时间、淡入淡出、偏移、倾角、生成间隔和最多4个的上限；粒子参数按原实现。退出／移除／战斗结束时清理，联机不添加全屏边缘，光束在入场同次调用立即于中心闪现，随机延迟仅用于之后的收束动作；眼睛与光束使用世界坐标，不随角色翻转／缩放。音频走原生SFX通道，由原生总音量／音效音量控制，不叠加额外衰减，短暂进入后退出也不会截断入场音效；全部资源由本模组独立加载，无需Watcher。
+
+旧存档中这八张牌的Watcher模型ID在读取时迁移为本地ID，保留强化与附魔；不修改用户存档文件。若另行安装观者，仍可由其读取原有ID，本模组独立卡不覆盖观者定义。
+
+## 获取与结算规则
+
+- 永久牌组拥有某组任意成员后，该组卡牌权重×2；重复成员和跨组不叠乘。移除最后一张成员后取消加权。具体前提见卡牌清单，加权不解除前提。
+- 色彩哲学家使用本角色选入的储君、亡灵契约师、机器人卡牌，包含对应六张体系原创：共36种，分别15／11／10。三次各3选1、不分品质，三次合计9张候选全部不重复；豁免小组前提、加权和外来角色解锁限制，不含先古卡及其他归属的原创牌。
+- 海玻璃仍从三系原版搬运子集（共30种，12／8／10）各展示5张，共15张，任意选取；每色内部不重复，不限品质。当前实现同样豁免小组前提、加权和外来角色解锁限制，保证每色候选数量。
+- 商店压制、流星雨、守护者、吹哨使用先古卡渠道；守护者另有牌组前提。拳王形态只走尘封魔典，古老牙齿将铁斩波替换为灼热铁斩波并强化三次。吹哨保留原先古之民渠道。
+- 普通随机奖励、商店、战斗生成及随机变化均检查本角色卡池成员。明确指定的事件专属牌、诅咒／状态／任务牌、小刀、君王之剑等固定衍生牌保留原机制。
+- 未明确改动的机制沿用原版。卡牌描述顺序就是结算顺序；灾厄免伤条件为大于等于生命值。
+- 铁斩波形态逐段计次，只按未格挡伤害获得格挡，叠加增加可触发次数。
+- 卸甲成军强制将本回合新获得的格挡替换为等量召唤，已有格挡保留，格挡修正只计算一次。
+- 愈战愈勇先将一张灼烧加入手牌，再选一张手牌变化为附魔5动量的普通拳斗；普通版消耗，升级仅去除消耗，两版均不生成拳斗+。新加入的灼烧也可选择。只变化战斗手牌，不改永久牌组。
+- 不倒不休金卡2费，强化后1费；回合开始时将一张普通拳斗加入手牌、一张灼烧加入弃牌堆。强化只减费用，多张能力各生成一张普通拳斗及一张灼烧。
+- 趁热打铁在回合结束时格挡大于等于10点触发，锻造7／升级10；状态图标悬浮说明显示当前总锻造值。锻造车间、王者风范及拳王形态的状态悬浮说明同样显示实际数值。
+- 紧追不放改为角色造成5（升级6）点伤害，再为目标附加本回合的召唤标记；角色及自己的奥斯提击中该目标时，每段召唤3（升级4），不要求奥斯提已存在或先攻击。取消护卫发牌前提，保留召唤组加权。其余角色仍用原版。
+- 出击／守护者改由角色本人攻击，分别保留奥斯提现有／最大生命值的加伤；奥斯提缺席时仍造成基础伤害，使用角色的力量、活力等修正。数值与强化见卡牌清单；发牌前提和先古渠道不变，其他角色保持原版奥斯提攻击。
+- 各小组×2、先古商店5%、金卡基价1.5倍和护卫按白卡发放是当前试玩安排，尚未作为最终平衡参数定稿。
+
+## 遗物
+
+下表为当前效果，全部仅对本角色生效：
+
+| 遗物 | 当前效果 |
+|---|---|
+| 架势（初始） | 每次完全格挡伤害，获得1点活力。此效果每次触发后+1。 |
+| 古铜之拳（先古） | 每次完全格挡伤害，下回合获得1点临时力量。此效果每次触发后+1。无抽牌效果。 |
+| 开口扳手 | 本角色专属普通遗物；每击败一个敌人回复1生命、获得5金币，承接旧自旋螺丝的效果及存档身份 |
+| 自旋螺丝 | 本角色专属普通遗物；下一回合开始时，上一轮造成过伤害且未受到伤害则额外抽1张牌；包括敌人回合后再判定，完全格挡不算受伤 |
+| 备用指节 | 本角色专属罕见遗物；每击败一个敌人获得16格挡，不受敏捷加成 |
+| 应急油壶 | 本角色专属罕见遗物；回合结束时若有未使用能量，给同一名随机敌人1易伤、1虚弱；不消耗能量，也不随剩余能量提高层数 |
+| 螺线飞镖（专属修改版） | 每打出一张攻击牌，本回合获得1敏捷 |
+| 损毁头盔（专属修改版） | 每场首次获得力量／敏捷时，获得等量另一项属性；两者共用整场一次机会 |
+| 营养汤 | 未附魔的小斩波变为0费、永恒的铁斩波，保留强化；已有附魔的小斩波跳过 |
+| 幽灵种子 | 小斩波获得虚无，其他牌不额外受此适配影响 |
+| 正版／假打击木偶 | 作用于小斩波、东尼斩波、铁斩波、灼热铁斩波；伤害分别＋3／＋1，不提高格挡 |
+| 波纹水盆 | 本回合打出过攻击牌时，在原时点获得4格挡 |
+| 肮脏地毯（无色地毯） | 卡牌奖励中无色牌出现概率大幅提高；当前试玩在原版品质抽取之后，将已选无色牌的抽取权重×5，不扩充卡池、不修改品质概率，不影响商店／普通战斗生成、色彩哲学家或海玻璃 |
+| 棱彩宝石 | 保留原有每回合加能量；本角色的战斗卡牌奖励不再出现无色牌，替代原版跨颜色奖励效果。事件、商店和战斗内生成不受此限制；与地毯共存时仍无无色战斗奖励 |
+| 树叶药膏 | 失去原版12最大生命，变化至多两张可变化的小斩波，跳过永恒 |
+| 海玻璃 | 选入的储君／亡灵契约师／机器人原版子集各5张候选，共15张，任意选取 |
+| 涅奥的护符 | 强化两张小斩波；不足两张时强化现有可强化小斩波，不影响其他角色 |
+| 古老牙齿 | 将一张铁斩波替换为灼热铁斩波并强化三次（14／14），保留附魔；替换目标固定为三次强化，不叠加原牌强化次数 |
+| 尘封魔典 | 在本角色给予拳王形态，保留原版领取时升级处理 |
+| 巨大扭蛋 | 保留原版随机遗物奖励，额外将两张小斩波加入牌组；本角色的领取与事件预览说明同步，其他角色仍为各自打击／防御 |
+
+架势与其先古版本古铜之拳都按完全格挡的伤害段递增，跨回合继续，下场战斗从1重新开始；部分格挡不触发也不推进。遗物计数显示下一次给予的数值。每段触发保留原版能力提示及结算钩子，不再额外等待原版能力获得的0.25秒（快速模式0.1秒）展示停顿。活力如何使用由玩家决定。
+
+古铜之拳把各次触发值累积至下回合开始，一次获得对应临时力量，在该回合结束时失去等量力量；不影响其他来源的永久力量。临时力量期间的新格挡继续为再下一回合积累，不延长已有临时力量。同一个可见状态连续显示待生效与已生效数值，内部到期能力不另占图标；两部分都归零才移除。图案采用黄铜螺帽，64×64透明画布内主体56×50像素，256大图最近邻放大；层数与悬浮说明保留。
+
+全部17种自定义能力的可见性及说明按实际层数、强化和触发条件核对；神格与内部临时力量到期辅助能力按原规则隐藏，神格说明仍供卡牌悬浮使用。不倒不休列出当前会生成的普通拳斗及灼烧数量；锻造车间、王者风范、趁热打铁等列出实际数值，趁热打铁要求格挡大于等于10。铁斩波形态显示本回合剩余次数，东尼斩波列出各段伤害／格挡。
+
+完全格挡并触发架势／古铜之拳时，进一步缩短原生伤害结尾的纯展示等待，仍逐段结算。异鸟三连击对照中，旧处理约1.90秒，压缩后约1.45秒，活力依次1、2、3；未格挡保持原节奏。专项只覆盖该受控招式，不能当作所有敌人动画的统一耗时。
+
+营养汤得到的永恒铁斩波为0基础费用，在永久牌组不可移除／变化；已有营养汤标记的旧存档牌也补为0费。普通铁斩波仍为1费。原版临时费用修正照常适用。
+
+地毯的×5是同品质候选中的抽取权重，不是最终出现概率直接乘5；实际比例也受品质抽取、候选数量及体系权重影响。暂用此数值试玩，其他角色保持原版加入无色池的效果。地毯图标、轮廓和大图左右镜像，源图不改。
+
+棱彩宝石的无色排除仅作用于战斗卡牌奖励，沿用原生强制跳过卡池修改的特殊标志；不改原角色的宝石效果。小图、轮廓、大图旋转180度，以区分修改版，并保留原图集留白与主体位置。
+
+获取调整限定为以下13件，不因其他遗物间接支持体系便自动加权：
+
+| 遗物 | 获取处理 |
+|---|---|
+| 铜质鳞片、精致折扇、苦无、招架盾、彩虹戒指、闪亮口红、开信刀、木札 | 在各自原渠道权重×2，效果不变 |
+| 开口扳手、自旋螺丝、备用指节、应急油壶 | 按作者确认，在各自原品质候选池中权重×2 |
+| 风的女儿 | 玩偶事件固定第一：随机拿一个必得；看两个必含；看三个排第一；其他两个人偶保持随机顺序 |
+
+专属修改版螺线飞镖、损毁头盔仍为正常权重×1，未加入提高名单。×2是相同原版品质／候选池中的抽取权重，不是保证最终获得概率翻倍。原生事件固定发放沿用各自事件规则，风的女儿单独按上表处理。
+
+奥利哈钢及假商人版本、化学物X从本角色可获取来源排除；其他角色不受影响。宝箱共享遗物抽取按原生循环中对应的玩家应用过滤和权重，沿用宝箱同步随机数；混组时其他角色贡献的候选保留原版规则，共同挑选流程不改。当前选定卡池没有X费牌，因此不提供化学物X。未确认的其他排除项不自行扩充。
+
+## 美术与文本
+
+战斗表现：直接引用原版拳击构装体骨骼。单段攻击按单次重拳、单次重拳、双连拳循环，多段攻击始终双连拳，双连拳后单段计数重置；技能牌、能力牌使用原版防御动作。每次实际出牌只触发一次动作与对应原版单拳／双拳／防御声音，搬运牌内部重复调用合并；伤害段数、数值与目标不变。各玩家、各场战斗独立计数，不使用游戏随机数。东尼斩波在打出时播放防御，延迟伤害不额外打拳；原版其他角色和奥斯提自身动作不套用。
+
+已采用素材共44份：5份角色图、23张独立卡面、6张遗物图、10张状态图标，共66份纹理导出。实际文件与导出路径见[素材清单](美术素材/素材清单.json)，命名和复用关系见[美术说明](美术素材/README.md)。
+
+| 内容 | 当前采用 |
+|---|---|
+| 头像／选人图标 | 游戏内32×32像素头像；下方选人按钮使用新绘浅灰暗港背景胸像，独立导出132×195竖图，二者分开 |
+| 与我一斗 | 卡牌/与我一斗.png，来源为铁斩波形态稿件3 |
+| 愈战愈勇 | 卡牌/愈战愈勇.png，来源为铁斩波形态稿件1 |
+| 自旋螺丝 | 遗物/自旋螺丝.png，来源为螺丝.png |
+| 开口扳手／备用指节／应急油壶 | 各自同名源图，128小图、256大图及轮廓已采用；最长边分别按90%、92%、90%适配，保持原长宽比 |
+| 震荡 | 复用原版震荡波卡面 |
+| 铁斩波形态／王者风范状态图标 | 分别使用插地铁剑／黑金重剑 |
+| 架势／古铜之拳／螺丝 | 各自去除外围低透明杂点并按主体留白；128图的主体约120×115、107×113、107×115，不统一放大整张源图 |
+| 波纹水盆 | 倒扣，保留原版图集85×85画布和主体偏移，轮廓同步 |
+| 肮脏地毯 | 左右镜像；遗物栏、轮廓、预览大图一致 |
+| 棱彩宝石 | 主体旋转180度；遗物栏、轮廓、预览大图一致，保留原图集画布 |
+| 螺线飞镖／损毁头盔 | 原方向不变，主体改为银色 |
+| 营养汤／幽灵种子／正版与假木偶 | 原图，无镜像 |
+| 古老牙齿／尘封魔典 | 当前沿用原图 |
+
+选人短介绍、27组先古对白和重拳出击三段正文已接入。重拳出击保留两条原版路线，并使用已确认的同类互动简短文本。长背景与专属死亡记录仍为未接入草稿；具体文本和接入范围见[角色对白](角色对白.txt)。
+
+## 联机试作版（0.4.11）
+
+使用游戏原生联机与行动／选牌同步。所有玩家须使用同一份模组构建和相同游戏／BaseLib版本。普通游戏不启用测试参数或文件协调。
+
+- 紧追不放保留原卡ID与数值，召唤标记改用本角色独立能力，并按施加者分别叠加；两个构装体及原版亡灵契约师可同时标记同一敌人，各自仅由本人或本人的奥斯提触发。
+- 架势／古铜之拳的下一次给予值，以及损毁头盔的整场一次触发标记，写入原生保存和联机重建所用的扩展字段；复制也保留状态。战斗重置规则不变。
+- 愈战愈勇的手牌选择、海玻璃的奖励选择走原生远端选择消息，不由主机替队友选择。发牌规则仍按牌／遗物的所属玩家判断。
+- 包含本角色的对局中，断开后地图仍执行本地模式／光标清理，只停止向已关闭连接发送该外观消息；ENet主机对终止peer调用原生断开通知，避免失效连接留在心跳统计。联网时的地图同步、短时丢包和普通角色单独对局保持原逻辑。
+
+本机ENet定向测试扩展至2—4进程，包括同时出牌、并行选牌、连续战斗及队友死亡后的结算；0.4.15的26项功能和8项联机／恢复专项全部通过，适用文件与证据见[问题记录](问题记录.txt)及tools/runtime/current-verification.json。四人模拟延迟／丢包／断流及重新组队读档已验证；Steam邀请、真实互联网线路和Steam热重连仍未验证。单人／联机共用结构化诊断日志，记录构建、种子、挑战、玩家槽位、房间、行动及选牌编号，具体字段和排错工具见[工具说明](../tools/README.md)。
+
+自定义模式勾选某个原版角色卡池时，按作者确认加入该角色原版完整卡池；仅对明确勾选的原版角色放宽普通名单和体系门槛，不修改全局卡池。正常模式仍遵循本角色选定名单；色彩哲学家和海玻璃仍使用各自专用范围。原版解锁、候选去重和原生挑战本身的选牌流程继续生效。
+
+## 当前平衡反馈与未完成项
+
+磨蚀在拳击构装体持有时改为2费，强化后仍为2费；原牌效果和强化数值保留，其他角色保持原版3费。属于本角色费用适配，不修改全局卡牌定义。
+
+兼容渲染下，包含拳击构装体的对局为蜈蚣三段选择独立兼容场景，只将原版吸入Shader保存代码的两处fma替换为普通乘加；原贴图和动画保留。其他角色单独对局与其他渲染模式使用原资源路径。事件专项退出报错已定位为QA退出时原生闲置卡牌缓存未释放，仅修正QA退出，不修改正常游玩对象池或错误判定。
+
+源码与工作区试玩版为0.4.20，包含新增八张无色牌、八张卡面、害虫杀手三选一、新选人图标，以及多人宝箱指向修正、草稿第一段调整及原版构装体战斗动作／音效。作者已确认照常更新本机试玩，朋友需要时再取新文件；Steam目录未自动改写，发布候选和Steam私密条目仍保持0.4.15。此前0.4.16加入作者确认的半身近景选人海报及分层循环动画、背景微光和拳套火星，并对选人界面做渲染验收。0.4.15补齐神格隐藏状态、即时入场及音效。此前0.4.14包含四件工坊遗物及美术、灼热铁斩波与其多次升级、独立卡面和斩波遗物兼容，已通过该版实际文件的26项功能及8项联机／恢复验收；精确强化次数和动态数值加入跨进程存档快照，四人及倒序回组后身份／物品归属一致。黄铜螺帽状态、神格原版规则／表现、活力结算和断开清理等既有功能也通过0.4.14回归。发布候选现已同步0.4.15；旧0.4.11及0.3.1分别保留在tools/runtime/qa/candidate-0.4.11和candidate-0.3.1。后续源码不自动导出到候选；0.4.15已私密上传至条目3826907330；订阅回下载开始后因作者要求补美术而暂停，文件校验和Steam启动尚未完成，具体阶段见[发布前清单](发布前清单.txt)。
+
+- 用户实测反馈：成长型终端偏少、后期输出不足，通关乏力。卡牌数量和品质比例合理不能证明实战强度足够；这是后续平衡重点。
+- 本轮已确认并实现的成长调整：愈战愈勇动量5、架势递增活力、古铜之拳递增下回合临时力量、营养汤只将未附魔小斩波变为0费永恒铁斩波，以及灼热铁斩波可多次升级。其他成长牌构想尚未作为新卡加入。
+- 愈战愈勇当前为一张灼烧、普通版消耗／强化去消耗，两版均变化为普通动量5拳斗；旧0.4.15营养汤专项曾覆盖18种附魔的36个替换用例；当前按作者最新规则跳过已附魔小斩波，重新验证，旧结论不作为当前规则。0.4.15实际候选的26项功能及8项联机／恢复验收通过；含2—4人直连、四人100±40毫秒／5%丢包／5秒断流、普通与强制断开、四人客端进程丢失及三人混组主机进程丢失后倒序回组读档，身份／升级／附魔／费用及遗物一致。历史失败保留，不放宽错误判定。本机ENet未开放热重连，作者暂不能安排Steam双人实测。高进阶、其他模组及全部事件／附魔战斗组合尚未穷尽。
+- 最新源码已补齐变牌音效、生成牌入弃牌堆动画与计数通知，并修复死亡转身、帝王蟹转向相反、0星角标、色彩哲学家遗漏与重复、架势能力展示等待及断开清理。dist/SteamWorkshop/content保留通过验收的0.4.15三个文件；0.4.16起的新选人海报、动态和后续改动尚未同步至候选。0.4.15已创建并私密上传工坊条目3826907330，未公开；补美术期间暂停Steam验证，没有新建ZIP。
+
+0.4.12新增本角色化学物X获取排除，并修复宝箱共享遗物路径绕过角色过滤的遗漏；其他角色保留原版规则。此前只测普通奖励／商店不足以证明宝箱规则正常，现补原生宝箱生成专项，修复前复现、修复后核对64组种子、混合角色、同步结果及作用域恢复。此次只做遗物获取相关定向回归，不将0.4.11全量验收算作0.4.12结果。该次调整当时未重新导出候选；现已随0.4.15一并同步。
+
+0.4.15的26项功能、8项联机／恢复验收现已补齐，全部对应当前实际三个文件，证据见问题记录与tools/runtime/current-verification.json。qa-completion-0.4.15.json逐项补核包校验值和归档日志内容，158份资源与源码一致，作者存档校验未变。验收工具现同时归档包／QA助手指纹和存档两阶段日志，历史原始证据保持原样。0.4.14完整报告另保留，未用不同构建的结果代替本轮检查。发布候选此前按作者要求同步0.4.15，验收日志及版本说明一并更新；随后已私密上传，因补美术暂停后续Steam验证。
+
+0.4.16选人动态：使用同画布的选人背景与透明角色，网格局部驱动胸肩、头和护拳，9.6秒循环；按作者反馈放大运动幅度，增加22个冷青背景微光与12个暖金拳套火星。粒子仅用场景本地时间和固定路径，不使用对局随机数。隐藏或销毁选人场景后不再更新，无音效；实际视口适配并保持原生UI绘制层级。新构建的验收不冒用0.4.15历史结果。
+
+第一段草稿适配（2026-10-26，已同步工作区试玩，未发布Steam）：
+- 螺旋漩涡：观察为一张小斩波附魔涡旋，沿用原生选牌和附魔动画。
+- 融合者：第一项移除两张小斩波并取得一张铁斩波；第二项将一张铁斩波变为灼热铁斩波并强化一次。所需牌不存在时只锁定对应选项；两项均不可用时不出现。
+- 先古之民的营养汤候选条件改为检查未附魔的小斩波；汤只替换未附魔的小斩波为0费永恒铁斩波，已附魔者保持原样。悬浮提示改为永恒与铁斩波，不再沿用原版附魔额外加伤说明。
+- 选人音效使用自制0.78秒机械锁定与拳套碰击声，经SFX音量总线播放。
+- 草稿第二段已在0.4.20实现：八张无色牌与卡面、所有单位荆棘与震荡波同类特效、底部新图标和害虫杀手三选一。格斗流程按最新修订为当回合立即生成三张普通拳法，强化固有，不再创建下回合状态；受限牌不会通过奖励、商店、随机变化／生成或卡池挑战额外出现。
+
+2026-10-26 后续确认：巨大铁斩波删除，不再注册模型或进入卡池；旧存档中的该牌载入时转为灼热铁斩波，保留原强化及附魔数据，避免无法继续。拳斗保持蓝卡，非凡技艺保持白卡。该次工作区试玩为0.4.18；新增四件遗物已纳入×2名单。
+
+事件正文见[角色对白](角色对白.txt)第四部分。漩涡要求至少一张可附魔且未附魔的小斩波；融合者要求至少两张可移除小斩波或一张可变化铁斩波，不满足材料的选项锁定，两项都不满足则不出现。联机沿用全部玩家均满足各自要求的原版检查。
+
+0.4.20第二段接入说明：
+- 八张新牌全部无色：披荆斩棘、左勾拳、右勾拳、快速拳、连环拳、格挡为白卡，格斗流程为蓝卡，过载为金卡。完整费用、效果、强化及编号见主清单71—78。
+- 右勾拳只由左勾拳生成；三张基础拳法局外只由害虫杀手提供，格斗流程可定向生成，四张均排除普通奖励、商店、随机生成／变化及卡池挑战。
+- 格斗流程当回合立即生成，不再创建延迟状态或额外状态图标；升级只增加固有，生成牌均为普通版。
+- 披荆斩棘使用原版荆棘，给予当前所有存活单位，包含队友及奥斯提；特效调用与原版震荡波一致的flying_slash，未修改全局荆棘规则。
+- 左勾拳先攻击后格挡，右勾拳先格挡后攻击；过载先格挡、力量、抽牌，再加入两张灼烧。满手牌沿用原生规则，溢出的生成牌通过原生预览动画通知弃牌堆计数。
+- 新选人图标已采用，浅灰米色外壳、蓝灰软管、青色面部缝隙，淡灰暗港背景；旧拉长头像和蓝底稿均归档。菜单图导出132×195并改用线性过滤，HUD的32×32头像保留。
+
+
+===== 资料/美术素材/README.md =====
+
+# 美术素材
+
+目录只分**角色、卡牌、遗物、状态图标**，共44份已接入游戏的源图：5份角色图、23张独立卡面、6张遗物图、10张状态图标。文件按用途命名，不加编号、类型前缀或版本后缀。
+
+[素材清单](素材清单.json)列出每份导出来源、源图校验值、尺寸、游戏路径及卡牌审阅编号；覆盖66份纹理，包含遗物轮廓图。卡牌编号读取[主卡牌清单](../卡牌清单.txt)，不另维护一套编号。
+
+## 角色
+
+选人按钮蓝底稿已被作者明确否定，归档至`资料/历史/旧稿/选人按钮_蓝底.png`。作者要求淡灰色、类似暗港的背景，可以有零星环境元素，不能使用纯蓝色底。现使用内置imagegen仅替换背景，保留人物，去掉亮蓝边框，加入低对比灰色墙面、局部立柱及管道。作者已确认灰底稿，正式源图现为`角色/选人图标.png`（1032×1524），旧图已归档至`资料/历史/旧稿/选人图标_旧头像.png`。132×195预览同步更新，游戏纹理已导出为132×195并在0.4.20接入。生成源：`C:/Users/li177/.codex/generated_images/01a15d06-89c2-7ee2-80e3-e6218e1685d8/exec-d46d4e00-ab0a-45a6-83fa-426a30d613a4.png`。
+
+<details><summary>选人按钮淡灰暗港背景提示词</summary>
+
+```text
+Use case: precise-object-edit.
+IMAGE 1 is the EDIT TARGET, a complete character selection button portrait of a pale ivory-grey boxing automaton against a blue background. IMAGE 2 is an original Underdocks environment atlas: structural/motif reference ONLY. It is a disassembled atlas, not a scene to paste; do not reproduce its black/transparent areas, palette, layout or loose pieces.
+Requested SINGLE CHANGE: replace image 1's entire BLUE background and bright blue border with a PALE LIGHT GREY, restrained Underdocks setting. The author explicitly rejected the solid blue background. No blue backdrop anywhere, no flat saturated colored studio background.
+BACKGROUND DESIGN: light neutral grey with a very subtle cool grey-violet cast, predominantly pale grey across the small visible areas. Sparsely suggest the Underdocks with just a cropped broad grey masonry/support column along one upper side and one faint narrow pipe bending behind a shoulder near the opposite edge. A few broad, soft grey shadow planes imply a wall receding behind the figure. Keep these environmental traces LOW CONTRAST, simple and subordinate, mostly confined to corners and side gaps. No black or dark navy void. No repeated block grid, rows of rivets, crates, ropes, multiple pipes, detailed industrial scenery or busy texture. The background should visibly be a quiet fragment of a place, not a plain grey fill, but remain pale and uncluttered.
+Remove the vivid cyan-blue outer edge line. Let the pale grey environment extend to all four outer edges. If an edge line is necessary, use only an almost invisible neutral grey line. No ornamental border.
+LOCK THE CHARACTER: preserve exact same silhouette, head and facial proportions, small head spikes, cyan U-shaped slit, center bolt, connected neck, all contours, plate shapes, soft painted rendering, matte PALE GREY-IVORY / SLIGHTLY BEIGE shell, blue-grey pipes, shoulders, arms, lower-right fist and crop. No character recoloring, new pose, redesign, extra hand, gold/yellow brass, texture additions or composition change. Background replacement ONLY. Keep the current near full-height bust and face focus. Avoid background lines tangentially touching or appearing to grow out of the spikes/head.
+Match the existing hand-painted game portrait's economical shapes; no 3D rendering, photographic environment, haze halo, glow, particles, added text, logo, symbols or UI.
+Final: fully OPAQUE image, vertical aspect 132:195, same framing and dimensions as image 1, complete pale-grey Underdocks portrait button.
+```
+
+</details>
+
+
+- 透明胸像角色层保留于`资料/历史/旧稿/选人胸像_角色层.png`，不作为完整按钮图。
+- 选人图标.png为已确认的淡灰暗港背景新图；下方“补背景提示词”仅为已否定蓝底稿的历史记录。
+
+<details><summary>选人按钮补背景提示词</summary>
+
+```text
+Use case: precise-object-edit.
+IMAGE 1 is the EDIT TARGET, a newly drawn pale grey-ivory boxing automaton bust. IMAGE 2 is the actual original game's character-selection button, REFERENCE FOR BACKGROUND AND BORDER TREATMENT ONLY; do not copy its character.
+Deliver a complete OPAQUE rectangular CHARACTER SELECTION BUTTON ILLUSTRATION in vertical 132:195 aspect ratio, with background extending to all four edges.
+Keep image 1's character identity, rounded broad head, cyan U facial slit, center face bolt, short spikes, attached neck, blue-grey flexible pipes, shoulder plates, chest, lower-right clenched fist, pose and composition unchanged. Lock the PALE LOW-SATURATION GREY-IVORY / SUBTLY BEIGE shell, not gold, not yellow brass. Do not change it into the robot from image 2.
+Replace ONLY the transparent area, all diffuse halos and black-looking empty area around the character with a simple flat muted medium SLATE BLUE background, in the same clean treatment as the native selection button. Use a subtly lighter blue-grey toward the upper-left and slightly darker at lower-right, extremely restrained, essentially one clean colored plane. Remove all beige atmospheric glow, fog, fuzzy aura and black vignette. Make the character's outer silhouette crisp and clearly separated from this blue background.
+Add a very THIN, straight, unobtrusive cool pale-blue rectangular edge line at the outer image boundary, analogous to image 2, about 1 output pixel at a final 132px width. No ornamental frame, corners, badges, inset panels or exaggerated border.
+Preserve the entire head with comfortable small edge margins. Shoulders and forearms may crop naturally at the lower canvas edges as in a native selection portrait; remove the original horizontal blurred/faded strip at the very bottom. Continue the existing torso/arm colors naturally to a clean lower crop. No squash/stretch, no wide blank padding. The face must remain prominent, fist secondary.
+Retain the original restrained painted contour/shading quality, no added details or texture. NO scene, props, ropes, particles, smoke, lighting effects, drop shadow halo, typography, UI symbols or logos. A complete clean button portrait: pale grey-ivory character on slate blue, simple fine edge. OPAQUE background, no transparency.
+```
+
+</details>
+
+
+- 头像.png：游戏内32×32像素头像。
+- 选人图标.png：已采用新绘淡灰暗港背景胸像，原图1032×1524，导出132×195，用于选人下方按钮；旧的拉长头像已归档。
+- 选人海报.png：作者确认的大幅半身近景，导出1920×1080；前两次全身构图及最初海报已归档至`资料/历史/旧稿`。
+- 选人角色.png／选人背景.png：同画布透明角色与不透明背景，分别导出1920×1080。原画不裁切、不重新居中。角色网格按胸肩、头部和护拳区域轻微运动，背景固定，按作者反馈加大动作，加入冷青微光与暖金拳套火星；9.6秒无缝循环，隐藏后停更，场景退出随节点释放。静态海报保留为加载失败时的后备。
+
+[选人动态预览](选人动态预览.html)是实际界面录制的9.6秒循环；动态WebP与HTML仅供预览，不打进游戏资源包。
+
+## 卡面
+
+当前0.4.20已接入新八张卡面：披荆斩棘、左勾拳、右勾拳、格斗流程、快速拳、连环拳、格挡、过载。下方各稿提示词及失败原因按阶段保留；过载只采用第三稿，格斗流程不作为其他卡面的画风范本。新选人图标采用淡灰暗港背景，旧头像及蓝底稿已归档。
+
+披荆斩棘首稿已使用内置imagegen生成，保存为`卡牌/披荆斩棘.png`（1438×1093），作者已确认可以采用，生成阶段尚未关联，现已在0.4.20接入。作者明确主题应为大量荆棘，构装体和地精次要，且动作须有合理性。构思为大面积前景荆棘与中景连续生长的藤条，两角色在间隙中侧身护臂／持棒退让，双方身上亦有荆棘。参考原版上勾拳的卡面轮廓和色块、原版构装体防御动作的角色结构、原版地精图集的造型配色；未以格斗流程或过载作为风格范本。生成源为`C:/Users/li177/.codex/generated_images/01a15d06-89c2-7ee2-80e3-e6218e1685d8/exec-75838e29-11aa-4ddc-8fd7-d9385d2cf223.png`。
+
+<details><summary>披荆斩棘首稿提示词</summary>
+
+```text
+Use case: stylized-concept.
+Asset: original Slay the Spire-style CARD ILLUSTRATION for 披荆斩棘 ("Thorns"), landscape 1000:760 aspect, artwork only, no text or card frame.
+REFERENCES: IMAGE 1 (original Uppercut card) is the STYLE reference: bold contours, strongly designed large color shapes, simple two/three-value painting, clean small-scale readability. Do not copy its fist, fire or palette. IMAGE 2 is only the boxing automaton's native anatomy and pale desaturated brass/navy color reference, not its battle-sprite rendering. IMAGE 3 is a DISASSEMBLED native gremlin texture atlas, identity/color details only: rusty reddish face, big round nose, long greenish pointed ears, muted tan rough clothing. Assemble ONE normal connected gremlin; never reproduce atlas pieces, floating limbs, or sprite-sheet layout.
+SUBJECT HIERARCHY: A HUGE MASS OF THORNY BRAMBLES is the absolute main subject, filling 75–80% of the composition. The automaton and ONE gremlin are small supporting actors seen through gaps, not portraits, no giant hands. This card gives thorns to BOTH sides, so the same thorn growth also winds around an arm or shin of each figure.
+COMPOSITION: slightly elevated oblique view across a pale warm-grey stone floor. Three or four LARGE curved foreground bramble stems rise diagonally from the bottom and side edges, with thick tapered stems and widely spaced big sharp hooked thorns, clearly silhouetted. Their branches connect and recede into a middle-ground bramble thicket. More smaller thorns behind imply abundance. Use near-big/far-small scale, natural branch junctions and clear overlaps; all stems grow continuously from this same ground. Keep several broad pale gaps between the main plant masses. Dense thorns, CLEAN design: a few readable branching gestures rather than a scribbled web.
+The characters are separated behind the dominant foreground thorn shapes, automaton in a gap at upper-left, gremlin at upper-right. Each is roughly a quarter of canvas height, mostly visible enough to read its body action; both remain far less prominent than the brambles.
+ACTION AND CONTACT LOGIC: the slender automaton turns its torso sideways to squeeze through the growth, rear foot firmly planted and front knee bent in a careful step. It raises one connected bent forearm across its upper body to push aside a thorn stem, contacting the smooth span BETWEEN the thorns with its brass forearm plate; its other arm balances lower. The stem bends away slightly from that exact contact. A thin connected offshoot winds loosely around its other forearm, giving it an outward thorn silhouette. Head, narrow neck, shoulders, elbows and hips align naturally. No detached limbs or huge swollen armor.
+The short stocky gremlin leans BACK with weight on the rear leg, lifting the front foot clear of a low thorn branch. It holds ONE plain wooden club in BOTH hands across its body, pressing the middle of the club against another approaching stem to hold it away from its face. Both hands plausibly grip that same continuous club, wrists and elbows line up with shoulders. The bramble stem bends at the club contact. A small connected thorn offshoot winds around its planted shin. Face reacts to this immediate obstacle. The two characters contend with the SAME continuous bramble patch in ONE space. No attacking each other, no posed floating figures, no generic battle portrait, no extra units.
+PALETTE: dark forest-green and grey-green brambles, pale warm-grey ground visible through openings, subdued ivory-brass automaton with navy joints, muted rust-red/tan gremlin. A restrained cool plum shadow plane gives depth. Foreground thorns use clear light/shadow planes; the plants must separate from each other without excessive black. No bright green glow. Ground shadows anchor BOTH feet and plant stems in one perspective.
+STYLE: original CARD ART illustration with confident uneven contours, broad graphic matte color blocks, economical shading, distinctly designed silhouettes. NO polished 3D metal, small decorative facets, grain, patina, dense leaf texture or painterly mud. No generic dark teal industrial setting.
+Avoid thorn spaghetti, excessive micro-thorns, tangled thin lines everywhere, leaves hiding the hard thorns, flowers, flames, sparkles, smoke, magic circles, glowing eyes/effects, UI, borders, lettering, logos, floating props, collage or anatomical distortions. Central card window must remain legible at thumbnail size: BIG THORNS FIRST, the two reacting characters second.
+```
+
+</details>
+
+
+过载第二稿亦被作者否定：头小如珠、颈部摇摇欲坠，胸肩头缺乏一致透视；粗胸肋、装甲碎面和外溅火星堆叠，画面脏乱。该稿已归档至`资料/历史/旧稿/过载_火星透视.png`，不得作为后续参考。
+
+当前`卡牌/过载.png`为第三稿（1438×1093），使用内置imagegen新绘：头颈完全出画，靠胸腔边框、侧壁与肩根建立空间；胸腔为一个主要大形，三条横向结构遮挡内部火星，减少外溅。作者已同意保留此稿（“就这样吧”），生成阶段尚未关联，现已在0.4.20接入；该确认不代表可用作后续卡面画风范本。生成源为`C:/Users/li177/.codex/generated_images/01a15d06-89c2-7ee2-80e3-e6218e1685d8/exec-e7e19555-44cd-41b7-87c9-163e0c01fa07.png`。
+
+<details><summary>过载第三稿提示词</summary>
+
+```text
+Use case: stylized-concept. NEW card illustration, OVERLOAD, horizontal 1000:760. No frame or text.
+REFERENCE 1 (original Uppercut) is the sole STYLE guide: confident dark contours, large simple flat painted shapes, just two or three values, lively silhouette, very economical detail. REFERENCE 2 (boxing automaton) is CHARACTER IDENTITY and COLOR only: pale grey-beige brass supports and dark blue-grey flexible chest framework. Do not copy its pose or battle-sprite rendering. Do not reuse any earlier generated card, no Combat Routine.
+SUBJECT: EXTREME CLOSE-UP of a boxing automaton's open chest cavity packed with sparks as it strains into overload. The CHEST, including its visible interior, occupies 85% of the picture. HEAD AND ENTIRE NECK COMPLETELY OUT OF FRAME, including all face fragments. No hands or legs.
+COMPOSITION AND PERSPECTIVE: one solid coherent torso, seen obliquely from below and slightly to its left. The near lower-left chest rim is large, projecting toward the camera; the far upper-right chest rim is narrower and recedes into depth. Both rims and the interior side walls follow the SAME perspective. No fisheye distortion, no giant swollen torso with shrunken appendages. The sternum twists forward while the shoulders pull back. Two partially cropped shoulder ROOTS along the upper sides attach naturally to the same chest framework, establishing the braced pose. Arms recede out of frame. Strong asymmetrical diagonal arrangement and clear overlapping planes create tension.
+SIMPLIFY THE CHEST into ONE readable deep opening bounded by a pale brass structural rim. Only THREE slender curved dark rib/conduit struts partly bridge it at different depths, leaving most of the inner space visible. Inside: a deep maroon rear plane, ember-red inner sidewall, and a cluster of orange-hot mechanical contacts emitting sparks. The nearer sidewall is visibly broader than the farther one; use the rim's overlap to establish depth. Mechanical parts should be broad and simple. No pile of identical thick sausages, rubber ribs, abdominal muscles, layered armor scales or intricate engine maze.
+SPARKS: fiery energy is CONCENTRATED WITHIN the cavity. Several crisp angular orange sparks and small pale-gold strokes cluster around the hot contacts inside, with DARK GAPS keeping them individually readable. A few sparks nearer the rim overlap the internal struts. Outside the chest, only THREE short restrained ember strokes total. NO huge foreground spark shards, radial explosion, crisscrossing spark trails, flame blanket, smoke or confetti. The glowing interior is the focal mass, the foreground rim remains clean and solid.
+PALETTE: desaturated pale grey-brass rim, dark indigo-grey framework, burnt red/orange interior, tiny pale-gold spark accents. Keep hot light mostly inside; avoid turning all the armor saturated yellow. Background is limited to large quiet muted plum and slate shadow shapes around the edges, no repeated wall bricks or pipes. Strong warm/cool separation without neon bloom.
+Paint with Uppercut's simple decisive graphic shapes. Minimize decorative facets and surface texture. NO 3D/plastic rendering, dense bevels, mottled grime, lightning, magic circle, floating objects, extra anatomy, head, neck, portraits, giant sparks, blurry bloom, lens effects, text, card border or UI. The whole scene must stay readable as a small card thumbnail.
+```
+
+</details>
+
+
+过载首稿被作者否定，已归档至`资料/历史/旧稿/过载_胸肩特写.png`：静态胸口特写、排骨状胸腔、厚重塑料般的明暗，且错误沿用了格斗流程作为画风范本。格斗流程仅配色获认可，不能据此作为后续整张卡面的画风标准。
+
+以下为已弃用过载第二稿的历史提示词，对应图为`资料/历史/旧稿/过载_火星透视.png`，未关联游戏。
+
+<details><summary>过载重画提示词</summary>
+
+```text
+Use case: stylized-concept.
+Create a completely NEW illustration for the card OVERLOAD (过载), landscape 1000:760 card-window composition. No text or card frame.
+Only TWO references: IMAGE 1 is the original Slay the Spire UPPERCUT CARD ART, the primary STYLE reference: energetic bold contour design, strongly exaggerated perspective, simple graphic painted shapes and decisive two/three-value shadows. IMAGE 2 is the native boxing automaton, CHARACTER DESIGN and restrained pale grey-brass COLOR reference only, not sprite rendering. Do NOT reference or imitate any previously generated Combat Routine or Overload image. Entirely redesign the composition, pose and mark-making.
+AUTHOR'S PRIORITY: extreme visual tension and perspective, the automaton's CHEST CAVITY FILLED WITH HOT SPARKS occupies an ENORMOUS part of the picture. The focal point is the energized interior, not a portrait or armor surface.
+CAMERA / ACTION: extremely close wide-angle low three-quarter viewpoint, looking upward past the chest, with the camera slightly canted. The machine violently thrusts its ribbed chest toward the viewer while pulling its shoulders and elbows back, like a loaded spring about to release. The near lower edge of its chest is huge and breaks the lower frame; the upper chest, small head and far shoulder rapidly recede toward the top-right. Strong overlap and converging structural lines make depth unmistakable. Its huge central chest assembly occupies about 80 percent of the card window, asymmetrically tilted. Head and shoulder fragments are secondary, tiny by perspective. A naturally connected narrow neck leads to a cropped portion of the small cyan-U-slit head near the top-right. Upper arms splay backward to the sides, then exit the image. No visible hands or legs. Never paste a disconnected head into a corner.
+CHEST: preserve this unusual spindly brass boxing machine's design: a narrow structural torso with dark blue-grey segmented flexible conduits and ribs surrounded by a few thin pale brass supports. NOT a broad muscular human in heavy armor. Through the strained, slightly separated chest ribs, show a DEEP OPEN mechanical cavity crowded with ember-orange and red-hot sparks. The interior opening itself must be LARGE and immediately legible; do not draw merely thin red glowing seams over a closed breastplate. Dark rib struts overlap the hot interior on different depth planes; near struts have foreshortened broad edges, far struts small and close together. NOT an evenly stacked pile of identical rubber ribs, not a metal six-pack, not a circular Iron Man reactor.
+SPARKS: one coherent forceful burst originating INSIDE the chest, bright angular gold-orange strokes and ember shards streaking outward toward the lens in foreshortened fans. A few large foreground sparks and smaller interior sparks show depth and violent energy. Arrange them in clear directional GROUPS with generous dark gaps, not random noise/confetti. The cavity glows burnt red-orange, hottest sparks pale yellow; keep the dark structure readable. This must visibly feel FULL OF SPARKS while remaining a clean card illustration. Sparks are illustrated with crisp designed shapes, not realistic particles or blurry lens effects.
+PALETTE / STYLE: original CARD ART with a lively hand-painted graphic character, clean intentional dark contours, large uneven flat color planes, very economical shading, strong silhouettes. Restrained pale grey-beige brass, dark indigo/charcoal joints, vigorous orange-red interior and a few pale sparks. Local firelight only; the armor is not saturated yellow and the entire image is not orange. Sharp punchy warm/cool contrast. No smooth molded-plastic 3D sheen, no densely beveled faceting everywhere, no photorealism, no shiny concept-art rendering.
+BACKGROUND: only a few coherent cool slate-blue and muted plum shadow planes glimpsed around the huge foreground chest. Asymmetric diagonal masses support the action; no visible stone block grid, no pipes, no ropes, no boring room backdrop. The silhouette and light clearly separate machine from background.
+Keep chest focal action in the center of the card window with no border. All features belong to ONE connected machine. No enemy, weapons, extra hands, detached parts, ornate surface engraving, excessive grime, glowing magic circles, lightning web, floating icons, giant fireball, blanket smoke, bloom, lens flare, captions, logo or UI. Avoid static catalog close-up, calm pose, evenly spread detail, and any reuse of the prior chest portrait composition.
+```
+
+</details>
+
+
+以下为已弃用过载首稿的历史提示词，不能作为后续画风或构图参考。对应图已归档至`资料/历史/旧稿/过载_胸肩特写.png`，未关联游戏。
+
+<details><summary>过载提示词</summary>
+
+```text
+Use case: stylized-concept.
+Asset: NEW landscape card illustration for "Overload" (过载), Slay the Spire character mod. Artwork only, horizontal aspect ratio 1000:760.
+REFERENCE ROLES: Image 1 is the approved Combat Routine card, for its desaturated PALE GREY-BEIGE BRASS armor palette, dark navy joints, clean economical painted facets and contour quality ONLY. Do not repeat its giant hands, wrist-grip pose, frontal crop, training ropes or background. Image 2 is the actual native boxing automaton, for CHARACTER IDENTITY AND ANATOMICAL CONNECTIONS ONLY: slender ribbed dark torso, rounded small brass shoulder plates, long neck and small rounded head with a cyan U-shaped face slit. Its battle-sprite rendering is NOT the requested art style. Image 3 is the original Uppercut CARD ILLUSTRATION: use its deliberate bold focal scale, strong simple contour and clear graphic two/three-value shapes, NOT its punching action, flames or saturated yellow.
+AUTHOR-APPROVED CONCEPT: the boxing automaton forces its own machinery beyond safe limits. A tightly framed oblique three-quarter SIDE VIEW of its CHEST AND SHOULDERS dominates the canvas, roughly 75 percent of the frame. The chest runs on a clear diagonal from lower-left toward upper-right. The machine braces its shoulders and arches its upper torso under internal pressure. The sternum and ribbed chest assembly are at image center, visibly overheated: a few narrow gaps between dark rib plates and the edges of adjoining pale brass panels glow dull burnt-orange/red from within. This is mechanical overheating, not magic and not a circular glowing reactor. A narrow shoulder-side vent lets out ONE small coherent curl of pale steam, secondary and localized.
+Body structure must be coherent: both shoulder roots attach naturally to the same torso, a long narrow neck connects to the head. Only a naturally cropped PART of the small head is visible at the upper-right edge, with its connected neck visible; the main face may be mostly out of frame. No detached head, floating mask or portrait inset. Upper arms are drawn back and visibly tense at either side, then cropped by the edges; hands, wrists, lower body and legs stay OUT OF FRAME. No fist-dominated composition. Keep the slender, peculiar native automaton rather than redesigning it as a bulky armored human or Iron Man.
+COLOR AND LIGHT: pale subdued grey-beige old brass plates, ivory-brass highlights, muted taupe/olive shadows, navy-blue-grey ribbed joints. Strictly avoid making the entire robot bright yellow or orange gold. Restrained orange-red heat is limited to a few thin chest seams plus a small local reflected accent on neighboring edges. The normal armor color remains plainly visible. No white-hot core, bloom or whole-image warm filter.
+ENVIRONMENT: a cool grey-blue stone wall close behind the machine, divided into a few broad asymmetric light and shadow planes. One strong diagonal cast shadow helps the tilted chest read. The wall is subordinate but visibly separate in hue and value, not a featureless monochrome void. Keep depth and perspective coherent, no teal industrial columns or repeated pipes, no ropes, no scenery montage.
+RENDERING: original Slay the Spire CARD ART, bold readable silhouettes, simple angular painted color masses, restrained dark outlines, matte surfaces and two/three clear shade values, minimal texture. Distinct intentional color regions, clean at thumbnail scale. No photo/3D metal rendering, mottled grime, densely engraved plates or excessive tiny details.
+Avoid extra characters, weapons, hands, floating parts, anatomical twists, magic circles, electric arcs, sparks, showers of embers, flames engulfing body, excessive smoke, speed lines, UI, text, card borders, logos or watermark. One continuous scene, no panels.
+```
+
+</details>
+
+
+作者已确认格斗流程浅灰黄铜调色版，并要求左右勾拳同步配色。已将`卡牌/右勾拳.png`用内置imagegen改为同一低饱和浅灰黄铜，按作者原先明确指定的配对方式，以Pillow左右镜像生成`卡牌/左勾拳.png`；两张均为1438×1093，已检查逐像素镜像一致。沿用既定文件归属与方向，不重新对调名称。动作、构图、关节与背景保持原有设计；调色前两张分别存于`资料/历史/旧稿/左勾拳_亮黄配色.png`和`资料/历史/旧稿/右勾拳_亮黄配色.png`。勾拳新配色已按作者继续执行的指示采用，生成阶段尚未关联，现已在0.4.20接入。
+
+<details><summary>勾拳装甲调色提示词</summary>
+
+```text
+Use case: precise-object-edit.
+IMAGE 1 is the edit target: the approved RIGHT HOOK card illustration, a single bent brass mechanical arm with its fist at the LEFT and elbow at the RIGHT. IMAGE 2 is the AUTHOR-APPROVED armor COLOR reference (Combat Routine).
+Change ONLY the armor palette of image 1 to match image 2's desaturated pale grey-beige old brass. Remove its currently oversaturated bright yellow and orange-gold. Highlights should be pale ivory-brass, midtones subdued buff/khaki brass, shadows muted grey olive-brown/taupe. Keep recognizably old light brass, not silver, not vivid yellow. Match image 2's restrained saturation, hue and tonal range while preserving image 1's existing light direction.
+STRICT INVARIANTS: preserve exactly the existing full composition, arm position, fist on the LEFT, elbow on the RIGHT, anatomy, foreshortening, silhouette, knuckles, fingers, thumb, joint construction, panel boundaries, painted facets and contour edges. Keep ALL dark navy joints unchanged. Keep the entire muted plum-grey background and ALL existing subtle sweeping streaks unchanged. Do not mirror, rotate, crop, extend, change framing, add objects, add a head/body or alter pose. No global color filter; armor-only recoloring. Preserve the clean bold original card illustration shading with minimal details; do not add speckles or weathering. No text, frame, particles or effects. Preserve landscape ratio and original size.
+```
+
+</details>
+
+格斗流程第三张的动作构图获作者认可，但装甲过黄，偏离原本角色配色。已用内置imagegen仅针对装甲调色，参考原版构装体的低饱和浅黄铜，压低亮黄／橙金色，保留胸肩、弯回双臂、中央握腕动作及原有背景。当前`卡牌/格斗流程.png`为作者已确认的调色结果，生成阶段尚未关联，现已在0.4.20接入；调色前图保留于`资料/历史/旧稿/格斗流程_亮黄配色.png`。原版精灵只作本次配色参考，不作为卡牌画风参考。作者的配色要求适用于后续构装体卡面：避免无故将角色画成高饱和亮黄色。
+
+<details><summary>格斗流程装甲调色提示词</summary>
+
+```text
+Use case: precise-object-edit. Edit IMAGE 1 ONLY: the approved composition of the Combat Routine card showing a brass boxing automaton gripping its wrist.
+IMAGE 2 is a COLOR REFERENCE ONLY, the actual native boxing automaton. Use the pale, subdued old brass of its armor, not its sprite rendering or pose.
+Single requested change: recolor ONLY the yellow/gold armor surfaces in image 1. They are currently much too saturated bright yellow-orange. Change them to the original character's desaturated pale buff brass: soft grey-beige/khaki gold midtones, pale ivory-brass highlights, muted taupe/olive-brown shadows. Strongly reduce yellow saturation and remove the orange-gold cast, while keeping it recognizably light old brass rather than silver or white. Match reference 2's restrained armor color family under the existing light. Preserve the graphic two/three-value painted planes and crisp contours.
+LOCK EVERYTHING ELSE: exact identical composition, crop, camera angle, both hand shapes, finger counts, anatomy, wrist-grip contact, armor panel boundaries, forearm and shoulder geometry, head remaining completely outside the image, ribbed chest, navy joints, existing background warm-grey wall, brick-red post, rope and blue-grey shadow. No changes to pose, scale, placement, lighting direction, objects, textures or linework. Keep all dark non-armor areas and background colors unchanged. This is solely a targeted armor palette correction, not a redraw or global color filter. No new details, text, frame or effects. Preserve landscape aspect and original resolution.
+```
+
+</details>
+
+<details><summary>格斗流程身体连接修正提示词</summary>
+
+```text
+Use case: stylized-concept. NEW illustration for a Slay the Spire-style card called Combat Routine, horizontal 1000:760 composition, illustration only.
+References: image 1 is the original Uppercut CARD ART, for bold simplified painted shapes, decisive contour, economical value blocks and enlarged action focal point ONLY. Do not copy the upward punch or fire. Image 2 is the accepted brass mechanical arm for clean gold armor construction and dark joint materials only. Do not copy its pose.
+SUBJECT: ONE brass boxing automaton tightening its own wrist cuff before a fight. Extreme action close-up. Its HEAD AND NECK ARE COMPLETELY OUT OF FRAME. No face anywhere, no floating head, portrait, masks or inset.
+Establish believable body continuity FIRST: camera in front and slightly above the chest, looking down into the gesture. Frame starts below the neck at upper chest level. A narrow strip of ribbed dark blue-grey chest spans the upper background, with both rounded brass shoulder roots partially visible at upper-left and upper-right. Each upper arm descends naturally from its own shoulder toward an elbow near the lower side edge; bent forearms return diagonally inward toward the center. This creates a readable enclosing arm shape around the chest. The two hands belong to THIS SAME BODY, not two people. Clear unbroken joint connections, no detached parts. Use natural foreshortening, no twisted arm joints or disconnected arm stumps.
+THE ACTION DOMINATES: the large wrist, clenched fist and other gripping hand occupy most of the central foreground, approximately two thirds of the canvas. One brass fist is clenched near upper-center-left, the wrist directly below it stays straight, its forearm broadens down toward the lower right elbow. The other hand comes naturally from its bent arm on the left to firmly wrap around the wrist cuff. Its thumb braces on the near top surface of the cuff and its grouped curled fingers wrap the far side, visibly tightening the cuff. Show physical contact and distinct silhouettes between the two hands. Contact point at canvas center, biggest detail emphasis there. Four simple grouped finger segments and one thumb per hand, mechanically plausible thumb opposition. No loose bracelet, tools or extra hands. The chest and shoulder fragments are subordinate and partly occluded by the enlarged hands, enough to make the anatomy understandable.
+RENDERING: stylized original Slay the Spire CARD ILLUSTRATION, not a screenshot or sprite. Strong graphic shape design, broad clean matte painted gold and ochre facets, cool dark navy joints, minimal two- or three-tone modeling, confident dark contours. No mottled grunge, ornate seams or smooth metallic 3D shine. Enlarged hands, crisp readable grip at small card size.
+ENVIRONMENT: the few visible corner gaps show a pale warm grey training wall, a cropped muted brick-red support, and a blue-grey diagonal shadow. One subdued rope segment behind the body is enough to suggest a training space. Warm grey, brick red, gold and blue-grey form distinct coherent color areas. Background subordinate with coherent perspective, not empty monochrome and not an industrial corridor of teal pipes. Do not add details inside the hand silhouettes.
+ABSOLUTE EXCLUSIONS: no head, no face, no neck, no separate portrait; no human skin; no opponents; no extra arms or hands; no missing anatomical connections; no floating objects; no weapons; no flames, glow, rings, particles, fog or speed lines; no panels, text, card frame or UI.
+```
+
+</details>
+
+格斗流程第二张腕部特写亦被作者否定，已撤下并保存至`资料/历史/旧稿/格斗流程_腕部特写.png`，未关联游戏。失败原因：上角半张脸没有可理解的颈部／身体连接，像一张悬空面具；双臂与身体的空间关系也不清楚。作者要求动作占大面积、允许脸只露半张，不代表可以将脸作为独立装饰拼入画面。后续特写必须先保证肩、臂、腕的连接与透视成立；脸可以完全出画，若露出则必须有合理身体连接。原图的简练色块、米灰／赭红／蓝灰配色不能抵消结构错误。使用内置imagegen，参考原版上勾拳卡面、铁斩波形态角色特征和勾拳机械手臂；下方保留失败提示词用于复盘。
+
+<details><summary>格斗流程重画提示词</summary>
+
+```text
+Use case: stylized-concept. Create a NEW card illustration for Combat Routine (格斗流程), landscape 1000:760 aspect, no lettering or frame.
+REFERENCE ROLES: Image 1 is original Slay the Spire Uppercut CARD ILLUSTRATION: refer to its bold graphic painted color blocks, deliberately exaggerated focal scale, confident contours and economical shading, NOT its pose or flames. Image 2 is character identity ONLY: rounded gold automaton head with cyan U face slit and dark mechanical joints. Do NOT copy its silver armor, sword or portrait composition. Image 3 is the approved brass hook card: use the clean simplified angular gold hand/forearm construction and dark navy joint material, not its punching pose.
+CRITICAL NEW COMPOSITION: extreme close-up of TWO brass mechanical hands preparing for a fight by adjusting a wrist cuff. The gesture MUST dominate roughly 70-80 percent of the image. The contact where the adjusting hand grips the wrist cuff is the visual center and largest area of attention. One large clenched mechanical fist rises diagonally toward the upper left, its thick forearm running into the lower-right edge. The OTHER hand reaches naturally from the lower left, thumb braced on the top of that wrist cuff and curled fingers wrapping its far side, firmly turning/tightening the cuff just below the clenched fist. Make the contact and grip legible, no merged hands. Exactly two hands with correct opposing thumb anatomy, straight wrist alignment and coherent connected forearms. Keep finger construction simple: broad brass plates, four grouped curled fingers and one thumb each, dark navy joint gaps. Show active firm pressure through the grip; not a hand casually touching an arm. No detached accessory or tools.
+A fragment of the automaton's head peers down at the hands at the UPPER RIGHT EDGE, with approximately half the face cut off by the top/right frame. The head must remain secondary and small compared with the hands. Most shoulders, elbows, torso and ALL legs are OUT OF FRAME. Do not draw another waist-up character portrait. The wrist adjustment fills the card window and is immediately readable at thumbnail size.
+STYLE: original Slay the Spire CARD ART rather than its in-battle sprite rendering. Deliberate chunky graphic shapes, crisp painted edges, simplified two-or-three-value shadow planes, varied contour weight. Strong intentional framing and foreshortening. Bright ochre-brass highlights, warm amber midtones, cooler navy mechanical shadows. Matte painted color, no mottled noise, patina speckles or soft 3D shading.
+BACKGROUND: a tightly cropped training corner arranged in a few strong asymmetric shapes: pale warm grey wall plane, a large muted brick-red structural plane, deep blue-grey diagonal shadow and one short off-white rope segment receding behind the hands. Use warm/cool and light/dark color relationships rather than a monochromatic wash. These shapes establish a coherent setting but remain far subordinate to the giant foreground gesture. No repeating pillars or pipes, no dark teal-purple industrial corridor. Avoid clutter and excessive blank space.
+No sword, weapon, enemy, third hand, mangled fingers, extra digits, loose floating parts, human skin, flames, magic, glowing wrist, rings, particles, motion ghosts, panels, text, border or UI. No photorealism or polished 3D.
+```
+
+</details>
+
+作者否定格斗流程首张试图：这批图片应参考原版卡牌插画的画风，而不是战斗场景中的精灵／截图画风；背景单调无趣，色块单一，青紫暗港管柱反复使用导致同质化。原版动作只作为动作和角色结构参考，不能继续决定卡面的笔触、镜头、背景与配色。后续每张分别设计视觉重点、构图与配色，大色块要有明暗和色相关系，简洁不等于空洞或通篇同色。参考上勾拳对拳头的夸张聚焦、铁斩波的剑与波纹组织画面；避免用同一场景换姿势。
+
+格斗流程首张试图已弃用，移至`资料/历史/旧稿/格斗流程.png`。侧前方半身构图，一手调整另一侧腕部，表现拳法开始前的准备；背景为暗港训练角落的绳栏、立柱和地面。使用内置imagegen，参考快速拳卡面与原版防御动画取帧，错误延续了战斗精灵画风。未关联游戏，不计入已接入源图数量；下方保留失败提示词用于复盘，不作为后续作图标准。
+
+<details><summary>格斗流程提示词</summary>
+
+```text
+Use case: stylized-concept.
+Create a new Slay the Spire 2 card illustration, "Combat Routine" (格斗流程), landscape 1000:760 card-art aspect ratio, artwork only without lettering or frame.
+Reference image 1 is an author-approved card: use its actual game's slender boxing automaton design, broad painted shading and restrained environmental detail. Reference image 2 is the ORIGINAL native game sprite, a character identity reference only. This is a NEW preparation pose and a DIFFERENT composition, not another straight punch or blocking pose.
+Subject: the same thin brass boxing automaton, rounded pale ochre head, characteristic cyan curved U face slit, small original head spikes, narrow long neck, simple rounded brass shoulder and forearm plates, blue-grey ribbed flexible torso and joints. Preserve its peculiar native design, do not redesign it as a chunky human knight.
+Pose and storytelling: a quiet moment before starting a boxing combination. Seen from a three-quarter front angle, framed from head to waist, the automaton looks slightly down at its hands. One forearm is held across the lower chest with its fist clenched; the OTHER hand reaches across and firmly adjusts the narrow wrist cuff of that fist. Two arms only, both naturally connected through shoulders and bent elbows, neutral straight wrist. Make this clear mechanical wrist-adjustment gesture the focal point near the image center, with its face visible just above. Hands should be simple closed brass forms with minimal finger segmentation; no exposed human fingers. Asymmetric, compact silhouette and easy to read at tiny card size.
+Setting: a modest training corner inside the original game's old Underdocks, one low worn rope rail passing naturally behind the torso, a cropped support post off to one side and a small strip of worn stone floor. A few broad distant wall planes establish depth. Coherent perspective and lighting; everything belongs to the same space. The character occupies most of the card window; avoid too much empty space or cropping the head/hands.
+Style: match the original native sprite's soft economical painted appearance: broad uneven color planes, simple contours, restrained highlights and minimal surface noise. Muted desaturated purple-grey and teal background, subdued warm brass body. Moderate lighting, clear silhouette through value separation, no glaring spotlight. Allow similar color blocks; avoid muddy black masses. Distinct from the previous open corridor punch illustrations.
+No opponent, extra robot, weapons, floating props, extra hands, anatomical twists, multiple poses, storyboard panels, motion ghosts, diagrams, symbols, text, frame, UI, magic rings, sparks, particle clouds, fog, neon bloom, photorealism, intricate greebles or polished 3D rendering.
+```
+
+</details>
+
+2026-10-26补充美术方向：新一轮先制作草稿纸第二段所需卡面，每张先说明思路，再由作者确认后生成；勾拳重画已获作者确认，并按作者要求镜像制作配对图。作者随后指出原图实际为右手出拳，现已对调文件名：右勾拳为生成原图，左勾拳为其左右镜像，两张均已保存并于0.4.20接入。这批卡牌在生成阶段尚未实现，现已在0.4.20接入。卡面以原版插画的大色块、明确轮廓和简练明暗为参考，按横向1000∶760构图，不画卡框、文字。重要动作留在卡窗中央范围，并检查缩小后的辨识度。
+
+现有骨头人卡面复盘：卸甲成军、厄运共鸣反复使用巨大骨手占据前景、骨头人在后方施法的构图；背景与人物缺乏自然空间联系，部分怪物像独立贴入；发光球、骷髅标记和光环替代了卡牌动作的表达。后续以卡牌行为决定镜头，降低无关符号和特效的面积，怪物按原版参考绘制并参与场景，避免同构图换颜色。
+
+作者进一步明确：构图重复、元素像贴上去的是最关键的问题。左勾拳主要画挥拳的手臂，其他内容尽量少；借鉴原版上勾拳集中表达动作的设计思路，但不能画成上勾拳。执行构思调整为单条黄铜机械手臂的横向勾击近景，肘部弯曲，拳套横扫，背景简化，不加入地精、完整人物或额外道具；运动方向与拳面姿态须清楚表现横勾，避免向上挥拳。
+
+作者纠正：快速拳、连环拳、格挡取自原版拳击构装体作为怪物的三种行为，须先查看原版动画，再选择卡面姿势；此前凭空提出的直拳近景、交叉双臂挡地精木棒等构思作废。已直接渲染并逐帧查看本地原版attack、attack_double、block三套动画：单拳平直伸出，双连拳先平打再接抬高的勾击，防御抬起双前臂护住上身、重心后移。防御不是交叉双臂挡木棒，后续这三张卡面应以对应原版动作为依据。格斗流程已试制训练准备场景；其余卡面尚为构思：过载聚焦胸腔与关节的热量；披荆斩棘表现双方获得荆棘的场面。后续仍逐张先说明再生成。左右勾拳作为配对卡面，由作者明确指定镜像，不作为其他卡面重复构图的范例。
+
+作者进一步要求这三张尽量像原游戏截取的图片，优先原版动画取帧和卡窗取景，保留原版比例、零件、姿势及配色，不再重设计角色。三张按“玩家在左、敌人在右”的要求左右翻转。首轮三张均为1000×760，只执行原版动画取帧、Pillow裁切／左右镜像／Lanczos缩放。随后作者要求补背景并确认快速拳背景版，继而明确要求一次补齐连环拳、格挡背景，现已制作保存；三张纯色底原图均归档至资料/历史/旧稿，现卡牌目录下为背景版。连环拳、格挡沿用此前补齐背景版，随本轮接入。三张已在0.4.20接入，计入44份源图／66份纹理。
+
+| 文件 | 原版动画帧 | 裁切矩形（镜像前） | 方向／状态 |
+|---|---|---|---|
+| 快速拳.png | tools/runtime/animation-reference/native-attack-11.png | (185, 200, 805, 671) | 向右出拳，取景及背景已确认 |
+| 连环拳.png | tools/runtime/animation-reference/native-attack_double-17.png | (280, 165, 820, 575) | 向右，第二拳抬高勾击；背景已补充，供作者确认 |
+| 格挡.png | tools/runtime/animation-reference/native-block-17.png | (410, 140, 885, 501) | 面向右，双臂抬起护身；背景已补充，供作者确认 |
+
+原始帧的参考副本分别保留在tools/game-reference/illustration-references/punch_construct_attack.png、punch_construct_attack_double.png及punch_construct_block.png，未改动原始动画帧。
+
+作者反馈纯色背景不适合直接接入，要求丰富背景，并确认先试快速拳，允许色块和色调相似。背景思路为借用原版暗港的地面、管道、立柱、码头物件建立纵深；快速拳取横向通道，连环拳取向上延伸的梁柱／高处空间，格挡取较近的墙柱与遮挡层次。三张分别取景，主要用明暗和轮廓分层，控制碎纹理、雾和粒子。原版underdocks_00及underdocks_02_a纹理已通过静音无窗口方式解码为参考PNG，存于tools/game-reference/illustration-references。
+
+快速拳背景版已用内置imagegen完成并获作者确认，参考原版取帧卡面与上述两张原版暗港背景图，沿用既定人物造型、向右出拳姿势和构图，补充管柱通道、码头地面、远处木箱与桶。当前文件`卡牌/快速拳.png`为1438×1093，保持原卡窗比例，已按1000×760导出，未关联游戏。1000×760纯色底取帧图已移至`资料/历史/旧稿/快速拳.png`，未覆盖旧稿。背景试制提示词如下。
+
+连环拳与格挡背景同样用内置imagegen制作，输入分别为各自纯色底取帧卡面、作者确认的快速拳背景版和原版暗港管柱参考图。连环拳以高处梁架和纵向管柱衬托抬高勾击；格挡以近处墙柱、弯管、栏杆与较浅空间衬托双臂护身。两张均沿用既定姿势，色调可相近，分别取景；当前`卡牌/连环拳.png`和`卡牌/格挡.png`均为1439×1093，已按1000×760导出。原1000×760纯色图分别保存于`资料/历史/旧稿/连环拳.png`和`资料/历史/旧稿/格挡.png`，未覆盖旧稿。生成阶段的背景版已随本轮0.4.20接入游戏。
+
+<details><summary>连环拳背景提示词</summary>
+
+```text
+Edit image 1, the Slay the Spire 2 boxing automaton COMBINATION PUNCH card. Add an Underdocks environment to the plain background. Image 1 is the edit target. Image 2 is the AUTHOR-APPROVED Quick Punch card, a reference for the restrained native-game rendering and background detail density only. Image 3 is the original game's Underdocks column/pipe background reference.
+
+Preserve the original character in image 1: identical thin frame, rounded old brass plates, grey-blue ribbed flexible limbs and chest, cyan U-shaped face slit, spikes, exact face and hand construction, scale, placement, pose and crop. Keep the raised punching arm angled toward the UPPER RIGHT and the other fist tucked low across its torso. Do not invent extra arms, duplicate fists or alter anatomy. Keep the original game's soft painted sprite appearance; do not make it a bulky armored robot.
+
+For this specific card, show the upper space of an old Underdocks industrial passage behind the rising second punch: a few broad vertical riveted supports receding into depth, a simple overhead crossbeam high behind the raised arm, a small dark opening between structures and a short section of dock rail near the lower edge. The background composition should follow the upward action and have a slightly low viewpoint. Use large quiet shapes and clear depth, not a repetitive wall of evenly spaced pillars. Same slate-purple, desaturated green-blue and softly warm ochre family as the approved card; similar foreground and background hues are welcome. Separate the readable character silhouette with values and restrained light, not neon outlines or glaring contrast. One coherent space with consistent perspective. The fist and face remain the focal points. Background detail stays below the character's detail level, matching original Slay the Spire 2 scenery.
+
+No new creatures, opponents, text, card frame, UI, decorative symbols, effects rings, spark showers, thick fog, high-frequency grunge, bright spotlights, photorealism or polished 3D. Preserve horizontal 1000:760 aspect ratio. Change only the background; keep all important character parts in their existing positions.
+```
+
+</details>
+
+<details><summary>格挡背景提示词</summary>
+
+```text
+Edit image 1, the Slay the Spire 2 boxing automaton BLOCK card. Replace only the flat background with a quiet but richer original-game Underdocks environment. Image 1 is the edit target. Image 2 is the author-approved Quick Punch card: match its restrained environmental density, softly painted original-game appearance and palette. Image 3 is the actual game's Underdocks pillar/pipe background reference.
+
+CRITICAL CHARACTER LOCK: preserve exactly the boxing automaton in image 1, including its slender brass mechanical frame, cyan U-shaped face slit, head spikes, thin neck, grey-blue ribbed flexible torso and elbows, two upright forearms held CLOSE TOGETHER in front of its body toward the RIGHT. Keep the original hands, defensive pose, anatomy, silhouette, proportions, placement, scale and framing. The torso leans slightly back while the forearms protect it. Do not cross the arms, add a shield, show an attack, bulk up the robot, add fingers or alter its face. Keep original game sprite material and soft painted shading.
+
+BACKGROUND FOR THIS CARD: an intimate side corner of the old Underdocks. A broad weathered slate-purple masonry pier and large recessed rectangular wall shapes occupy the left and rear, with a single thick curved pipe continuing into a dark recess on the right. A small segment of dock railing and a subdued floor edge give shallow spatial depth along the lower/right edge. This is a close sheltered corner behind a defensive pose, not the long open pillar corridor of Quick Punch or the high overhead beams of Combination Punch. Use only a few broad shapes, large quiet shadows and simple structural joins. Consistent perspective around the character, no pasted-on isolated items. Similar muted slate-purple, teal-grey and warm brass colors are allowed; organize values so face and raised forearms remain the clear focus. Moderate soft light, no theatrical glow. Keep the original game's painterly economy and readable silhouette at small card size.
+
+No opponent, incoming weapon, projectile, impact effects, shield bubble, rings, magic, floating debris, dust storm, heavy fog, bright bloom, neon, photorealism, polished 3D, excessive rusty speckles or intricate decoration. No text, frame or UI. Preserve landscape 1000:760 aspect ratio. Do not move or crop the existing character.
+```
+
+</details>
+
+<details><summary>快速拳背景试制提示词</summary>
+
+```text
+Edit image 1, a Slay the Spire 2 card illustration for Quick Punch. Replace ONLY its plain dark background with a restrained, richer environment. Image 1 is the edit target. Images 2 and 3 are ORIGINAL GAME BACKGROUND REFERENCES for the Underdocks: image 2 provides floor perspective and muted colors, image 3 provides large cylindrical riveted pillars and pipes.
+
+CRITICAL: keep the original boxing automaton from image 1 exactly as it is. Preserve its original thin body, small rounded yellow-brass plates, blue-grey ribbed flexible arms and torso, cyan U-shaped face slit, pointed feet and head spikes. Preserve its entire silhouette, anatomy, proportions, pose, face, hand structure, original soft painted texture, placement and scale. It stands on the left and punches straight toward the RIGHT. Do not redesign or repaint it into a bulky robot. Do not change either hand or add fingers.
+
+BACKGROUND DESIGN: a simple sideways view down an old Underdocks passage from the same game. Use a few large dark slate and desaturated teal shapes: one partially cropped riveted cylindrical column toward the far left, a receding row of broad pillars and one or two thick pipes behind the right half of the picture, and a subdued stone dock floor with a small amount of perspective at the bottom. A narrow quiet opening between pillars provides depth. Make this one coherent place around the character, with compatible perspective and light; not separate floating pasted-in props. Frame the action without putting a hard line through its head or fist. Keep the character's face and punching hand very readable at small card size. Broad painted planes and economical detail, matching the ACTUAL original game sprite and reference backgrounds. Similar color blocks and hues across foreground and background are allowed: separate depth mainly through controlled values and clear silhouettes, not glaring complementary colors. Moderate soft illumination, muted low contrast environment. Background is interesting but subordinate to the punch.
+
+No opponents, extra characters, text, card frame, UI, numbers, neon, bloom, fog clouds, particles, sparks, dust storm, photorealism, 3D render, highly intricate machinery, high-frequency textures or busy decoration. Keep the existing landscape 1000:760 card-window aspect ratio. Do not crop or change the automaton composition.
+```
+
+</details>
+
+动画查看记录：首次独立预览尝试重复加载游戏已注册的Spine扩展，触发重复注册与退出清理错误；作者报告出现报错弹窗，预览已停止。作者随后说明当时未在玩游戏，弹窗大意为内存报错，具体文字不详。工具已去掉重复加载和重复挂载资源包，无窗口检查与静音手动步进渲染均正常退出；日志分别保留在tools/runtime/animation-reference/inspect-fixed-headless.log和capture.log。原始失败日志inspect.log保留，不声称已完全对应弹窗文字。此次预览没有修改作者存档；后续按作者新指示另行实现战斗动作及声音接入。
+
+勾拳重画已获作者确认，生成原图现为`卡牌/右勾拳.png`，1438×1093，使用内置imagegen。参考本地原版`tools/game-reference/illustration-references/uppercut.webp`的简练色块及现用选人海报的机械装甲，改为侧上方横勾动作。`卡牌/左勾拳.png`按作者指示，使用Pillow仅对原图执行左右镜像，尺寸不变；已核对逐像素镜像结果及反向还原。最初左右命名颠倒，按作者纠正已对调文件名并核对图像内容未改变，两张生成阶段尚未关联，现已在0.4.20接入。以下提示词保留生成时的原文，其中LEFT HOOK是当时错误的命名，实际归属以当前文件名为准。
+
+<details><summary>左勾拳重画提示词</summary>
+
+```text
+Reimagine reference image 1 (the original Slay the Spire Uppercut card) as a DIFFERENT card: LEFT HOOK by a brass boxing automaton. Reference 1 is for economical shapes and clean cel-painted style only, NOT its rising fist pose, flames or red palette. Reference 2 is ONLY for the automaton's rounded brass armor and dark flexible joints, not its portrait composition.
+
+Horizontal 1000:760 card illustration, art only. A single left mechanical arm executing a tight horizontal boxing hook, viewed slightly from above and to the side. Crop out head and torso. Bent elbow low on the right, forearm directed across the picture toward a substantial clenched fist on the left. The fist and forearm share one natural axis through a straight neutral wrist; elbow bends naturally without twisting. Make the hand mechanically simple but anatomically legible: broad back-of-hand armor on top, four fingers firmly curled into the palm, four knuckles together facing toward the lateral strike at the left, thumb folded OUTSIDE the fingers across the curled index and middle finger. Finger tips tuck under the palm and are mostly hidden; no open palm, no backwards fingers, no thumb underneath the wrist. Show a readable closed fist silhouette, not a cylindrical gauntlet ending in random finger bumps. One hand with four fingers and one thumb. Simplify rather than invent complicated plates.
+
+Clean large ochre brass planes, small navy articulation gaps, two or three decisive shadow shapes. Compact convincing arm anatomy before surface detail. A single short low-contrast sideways motion streak recedes behind the arm toward the right. Quiet muted plum-grey background, no setting or objects. No flames, rings, bright aura, texture scratches, dusty brush grain, extra limbs, text or border. The illustration should have the simple strong graphic readability of the original Uppercut at card size, but unmistakably show a SIDEWAYS HOOK rather than an uppercut or straight punch. No opponent, no huge foreshortened fist aimed at the camera. Keep the entire fist and enough bent elbow visible inside safe margins.
+```
+
+</details>
+
+左勾拳首张图用内置imagegen生成后被作者否决，已移至`资料/历史/旧稿/左勾拳.png`，未关联游戏或计入已采用素材。失败重点是手部与手臂结构扭曲，握拳、拇指位置和腕部透视不可信。下一次须先依据清晰的握拳及横勾姿势参考核对结构，手腕与前臂自然连接；不能只凭机械外壳和运动线掩盖错误。以下保留失败稿提示词供复盘，不能直接复用。
+
+<details><summary>左勾拳生成提示词</summary>
+
+```text
+Use case: stylized-concept. Create one clean Slay the Spire style CARD ILLUSTRATION for LEFT HOOK 左勾拳, horizontal canvas aspect ratio exactly 1000:760. Art only, no card border, no words, no UI. A TIGHT ACTION CLOSE-UP OF ONLY ONE BENT BRASS ROBOT ARM delivering a horizontal boxing LEFT HOOK. Focus all visual storytelling on the arm, elbow and clenched mechanical fist, occupying about 75 percent of the picture. Chunky rounded old brass armored forearm and knuckle plates, a small visible dark navy flexible ribbed joint at the elbow; simple bold mechanical construction, no excessive screws. The arm belongs to a boxing automaton, not a human wearing a glove. The elbow stays bent roughly ninety degrees and the fist sweeps SIDEWAYS at shoulder height along a SHORT horizontal arc. Readable side/three-quarter view, knuckles facing along the lateral strike, not skyward; NOT an uppercut, NOT a straight jab, NOT a vertical rising fist. Cropped upper-arm entry at one side of the frame, substantial forearm and clenched fist near center, connected believable anatomy. A single broad, restrained pale grey-blue lateral brushstroke behind the forearm communicates the sweep without forming a ring. Calm desaturated blue-grey background with just two broad tonal shapes, very little scenery, no opponent, no separate objects, no face or full body. Muted ochre brass against cool background; firm dark shape boundaries, simplified large painted color planes and limited cel-shaded shadows. Match the economical, quirky, handmade fantasy card illustration language of the original Slay the Spire; slightly angular brush-painted edges, compact readable silhouette at small size. Borrow the economy and arm-only focus of the original Uppercut card but make the pose, camera and horizontal motion distinct. Avoid photorealism, 3D render, polished superhero promotional art, glowing aura, neon, sparks, smoky mist, scratchy surface texture, dense background, a huge fist pointed at the viewer, disconnected pasted-looking elements, extra arms or fingers. Keep all essential hand and elbow shapes comfortably inside the illustration frame.
+```
+
+</details>
+
+| 编号 | 采用文件 |
+|---|---|
+| 02 | 灼热铁斩波.png |
+| 60 | 锻造车间.jpg |
+| 61 | 王者风范.jpg |
+| 62 | 趁热打铁.jpg |
+| 63 | 终局裁定.jpg |
+| 64 | 卸甲成军.jpg |
+| 65 | 厄运共鸣.jpg |
+| 66 | 铁斩波形态.png |
+| 67 | 不倒不休.jpg |
+| 68 | 拳王形态.jpg |
+| 69 | 与我一斗.png；来源为铁斩波形态稿件3 |
+| 70 | 愈战愈勇.png；来源为铁斩波形态稿件1 |
+| 71 | 披荆斩棘.png |
+| 72 | 左勾拳.png |
+| 73 | 右勾拳.png |
+| 74 | 格斗流程.png |
+| 75 | 快速拳.png |
+| 76 | 连环拳.png |
+| 77 | 格挡.png |
+| 78 | 过载.png |
+| 79 | 小斩波.png |
+| 80 | 东尼斩波.jpg |
+| 82 | 铁斩波.png |
+
+普通卡面1000×760，拳王形态先古卡面606×852。81震荡复用原版震荡波卡面，其余搬运牌沿用原图。小斩波与铁斩波已按用户要求互换，现文件名对应实际用途。
+
+灼热铁斩波.png已按作者确认接入02灼热铁斩波，并加入采用导出清单。使用内置imagegen，参考tools/game-reference/illustration-references/iron_wave.webp与卡牌/铁斩波.png；提示词重点为原版宽铁剑与黑护手、构装体黄铜手、烧红剑刃、冷色石地、少量火星与短热痕，保持干净的原版卡面风格和横向1000∶760比例，不生成卡框文字，图中不添加效果文字。
+
+## 遗物
+
+遗物图标要求干净简洁、轮廓易辨、减少细碎纹理；各件使用不同主色与点缀，不把整批素材画成同一银灰色调。色彩可以相近，但应避免轮廓、构图和配色千篇一律。
+
+开口扳手.png采用暗银与砖红布柄，备用指节.png采用黄铜与青绿色连接件；均为内置imagegen生成的透明PNG。提示词分别围绕“粗短开口扳手、砖红缠柄、少色像素、清晰轮廓”和“三枚圆钝机械指节、旧黄铜、青绿底件、干净像素”展开。作者确定遗物效果后，0.4.13已关联游戏并加入导出清单。复位弹簧因不够干净且辨识度不足弃用，已移至资料/历史/旧稿/复位弹簧.png，不再作为可采用素材。
+
+应急油壶旧图因壶嘴过长弃用，已移至资料/历史/旧稿/应急油壶.png。重画文件为遗物/应急油壶.png：内置imagegen生成，提示词为“矮胖墨绿壶身、短翘铜嘴、小压柄、少色简洁像素”，强调壶嘴短于壶身宽度一半；0.4.13已采用重画版本。后续类似工具应控制突出部件长度，保持图标紧凑，避免挤占主体。
+
+| 文件 | 来源／适配 | 128画布中的主体 |
+|---|---|---|
+| 架势.png | 初始遗物专属图 | 约120×115 |
+| 先古架势.png | 古铜之拳（先古版）专属图，沿用指定早期稿 | 约107×113 |
+| 自旋螺丝.png | 螺丝.png | 约107×115 |
+| 开口扳手.png | 暗银／砖红专属图 | 115×115 |
+| 备用指节.png | 黄铜／青绿专属图 | 118×68 |
+| 应急油壶.png | 短嘴墨绿／暗铜专属图 | 115×107 |
+
+导出先清理alpha≤8的外围杂点，再按可见主体裁切，逐图设置留白，源图保留。目标占画布最长边分别94%、88%、90%；每张都导出128图、256大图和配套轮廓，不能按整图统一放大。
+
+波纹水盆倒扣；螺线飞镖和损毁头盔保留方向、改银色。营养汤、幽灵种子、正版及假打击木偶使用原图，无镜像。这些原版图的变化在本角色显示时处理，不覆盖原版文件。
+
+## 状态图标
+
+十张均已采用，64×64透明PNG，256大图最近邻放大。既有九张主体最长边62像素；黄铜螺帽因轮廓方厚，主体缩为56×50像素，四周透明留白，避免视觉过大。铁斩波形态使用插地铁剑，王者风范使用黑金重剑。
+
+古铜之拳使用一个连续显示的“临时力量”状态，分别说明本回合已获得及下回合待获得的数值，内部到期能力隐藏。可见状态采用黄铜螺帽；内部隐藏能力仍保留透明纹理。原始1254×1254生成图移入现有历史/图标原图，实际采用文件为状态图标/黄铜螺帽.png。
+
+[图标清单](状态图标/图标清单.json)列出原始底稿、实际64图及游戏路径；[图标总览](图标总览.png)用于查看实际尺寸与放大效果。旧稿、原尺寸底稿和生成记录保留在现有`资料/历史`目录，不压缩，不新建审阅目录。
+
+## 独立实现的观者搬运牌
+
+[观者搬运素材](观者搬运素材.json)另外登记8张既有卡面与5张能力纹理，按原样保留并放在本模组独立资源路径中。运行时不读取Watcher.pck。该清单记录取用来源，不表示已经取得额外再分发授权；公开发布前仍需核对相关素材许可。上述素材不混入34份原创／采用源图及56份导出纹理统计。
+
+神格表现使用本机Watcher 0.10.3（Boninall）的雾气、光点、七帧眼睛、神格／真言音频、原图集中的combat/strikeLine2光束，以及按其神格参数调整的边缘着色器。13份资源单列于[观者特效来源](观者特效来源.json)，使用本模组独立路径；没有复制观者角色或加入运行依赖。光束以原图集122×17区域显示，保留原始图集，不重新绘制；眼睛与粒子行为按原实现恢复。原图与音频保留字节指纹，着色器注明改编来源。测试设置静音时不创建音频播放。
+
+观者13张沿用纹理已逐项核对原包导入记录、实际ctex路径与SHA256，当前图片未改动。详见[核对结论](观者素材核对.txt)；具体路径记录在[来源表](观者搬运素材.json)。
+
+蜈蚣吸入特效的兼容版本单列于[兼容特效来源](兼容特效来源.json)，不属于新增美术图标：三段原生场景只改Shader引用，独立Shader只把两处fma改为普通乘加。原版贴图、材质参数、节点和动画保留，仅供兼容渲染下包含拳击构装体的对局使用；不覆盖游戏的共享场景或Shader。
+
+
+===== 资料/问题记录.txt =====
+
+2026-10-26 当前开发0.4.20：草稿第二段已实现并接入工作区试玩，Steam发布继续暂停，候选保持0.4.15。新增八张无色牌及卡面；格斗流程按最新修订当回合立即生成三张普通拳法，强化固有，消耗保留。害虫杀手改为快速拳／连环拳／格挡三选一，仅本角色生效，沿用原版准入条件与加牌预览。旧选人头像归档，新灰底暗港胸像正式采用。完整发布验收要求现为30项功能及既有联机／恢复检查，当前只按实际最终文件记录本轮相关专项；不把历史结果当作本版全量验收。详细结果见tools/runtime/current-verification.json及followup-0.4.20.json。
+
+本轮最终构建定向验证：boxing82项、edge123项、update48项、draft87项、animation63项、poster27项、focus39项、modes133项，以及pool、smoke，共10项功能专项通过。双构装体、构装体＋亡灵契约师双人、四构装体共三组原生ENet检查通过，各组11阶段快照一致、未分类错误为空。测试均直接跳转房间、静音并使用隔离存档，没有运行整局。工作区试玩三文件已同步，181份资源与源码一致；本次同步前后的153份试玩档文件、3份Steam候选文件逐一哈希不变。未创建好友包、未修改Steam目录或候选、未上传。
+
+开发中失败证据保留：旧不倒不休测试错误期待拳斗+、无色候选仍写七张，以及手牌上限／抽回已有牌的夹具预期已纠正，没有为通过断言改变原生规则。联机夹具由直接替换进行中的战斗改为走原生胜利清理，并等待抽牌／预览动画收尾；加入响应可能在原生消息分发内同步完成，测试大厅监听器切换延到后续帧，避免在回调枚举期间改监听器。没有修改正常游戏的对象池或全局消息总线。headless模式出现原生dummy纹理空参数，严格判失败；实际渲染器重测通过，错误检查未放宽。发布前全量30项及断线恢复／弱网组合未在0.4.20全部重跑，完整验收仍为false，Steam继续暂停。
+
+以下为历次构建的阶段记录；旧版本的“当前”“未实现”等表述保留其当时语境，不代表0.4.20的状态。
+
+2026-10-26 0.4.19 原版拳击构装体战斗动作／声音已按作者确认启用并同步本地试玩：单段攻击重拳、重拳、双连拳循环，多段攻击仍用双连拳，双连拳后重计；技能牌、能力牌均播放原版防御。引用原版骨骼资源与单拳／双拳／防御FMOD事件，攻击和防御不再套用机器人音效。每次实际出牌计一次；多段伤害只播放一次整套双拳；技能／能力内部原有的Cast或PowerUp调用合并，原创牌也有动作，不额外增加出牌等待。各玩家、各战斗独立计数，无游戏随机数或伤害修改；东尼在打出时防御，延迟伤害保留原有转向，不额外出拳；奥斯提和其他角色保持原版调用。
+
+最终DLL 56e4dcca762f26106aefda3cbed18bb629b4ecf4285d37e9b921a25c9faae7c8：animation 63项通过（真实骨骼动画、原版声音调用、单段实际伤害不增段、多段伤害、原版技能／能力去重、同张牌多伤害命令、跨战斗重置、铁甲战士隔离）；facing 66项通过，含螃蟹两向转身、东尼延迟、死亡朝向；ENet双人主79／客65项、九阶段快照一致，双方20条攻击表现记录逐条一致。所有测试静音、隔离档、直接房间，不运行完整对局。Release零警告零错误，文档核对通过。证据见tools/runtime/followup-0.4.19.json。当前完整验收要求29项功能及原有8项联机／恢复，本次仅做相关专项，未宣称全量完成。
+
+失败及纠正记录：初次独立动画预览误重复加载原生已注册的Spine插件，触发重复注册及清理错误；作者说明当时未在玩游戏、弹窗大意为内存报错，具体内容未保存，不能断言两者完全对应。预览已退出，工具去掉重复加载／挂载后无窗口检查和静音渲染均正常退出，原始inspect.log保留。初次动画专项在震荡附加易伤后仍按3点裸伤断言，夹具失败；清除该测试易伤后复测通过，未改变游戏伤害规则。首次动作参考录制使用冻结时间导致身体姿势未正确推进，改为原生手动逐步更新，并加入每套至少三种不同画面的断言；最终72帧参考有效，原失败及旧记录保留。没有放宽未分类错误检查。
+
+本轮只同步源码／工作区试玩0.4.19及当前文档，没有改Steam安装目录、0.4.15候选、私密工坊或好友包。新卡尚未实现；左右勾拳源图已确认并按作者纠正命名，未关联游戏。原版动画已逐帧查看：平直单拳、平打接抬高勾击的双拳、双前臂抬起护身并后移重心的防御，后续卡面以这些动作取材。
+
+2026-10-26 后续修订已同步0.4.18工作区试玩：四件新增遗物（开口扳手、自旋螺丝、备用指节、应急油壶）在各自原品质候选池权重×2，实际奖励／商店各600次对照抽取验证，原版角色保持均等抽取；提高名单共13件，风的女儿仍按玩偶事件固定第一。巨大铁斩波已删除模型与卡池／斩波木偶引用，旧存档中的该牌仅在载入时映射为灼热铁斩波，不再注册旧模型。拳斗恢复蓝卡，非凡技艺保持白卡。主清单现74张，20白／31蓝／14金／4基础／5先古，31攻击／27技能／16能力，编号01—74连续；小斩波71、东尼斩波72、震荡73、铁斩波74；美术编号与素材生成工具同步，共用素材不再列巨大铁斩波。
+
+纠正融合者第一项的理解错误：移除两张小斩波，获得一张普通铁斩波，实际奖励和悬浮预览均已修正，沿用原生选牌、锻造音效、获得动画与同步；原版角色仍给究极打击。角色对白第四部分现完整记录漩涡与融合者正文、各选项及进入条件；三种关联遗物文案也已列出。草稿纸1第一段同步后续确认，第二段原文校验未变。角色设计、卡牌清单、根说明、工具说明、发布前清单与美术元数据均同步，历史记录保留旧版本语境。新增文档校验逐条比较实际游戏事件／遗物文案与角色对白正文，防止只改代码而遗漏审阅文本。
+
+最终当前文件的draft87项、pool清单、文档核对及双人原生ENet主79／客65项通过，九阶段快照一致；Release零警告零错误。删除牌原被QA用作群攻收场，初次替代尝试的Cleave在0.111.0不存在，编译即发现；后用扫荡射线时，战斗检查全过但退出阶段出现原生卡牌对象池重复归还诊断，已将QA收场改为无抽牌的原版震荡类群攻Thunderclap（非新增卡池牌），再跑同套定向联机，严格错误检查通过。原失败证据保留，不忽略日志错误。未改正常游戏对象池逻辑。0.4.18尚未重做全部28套功能和8套联机／恢复，不沿用旧版完整验收结论。已正常同步工作区试玩，未新建好友包、未改Steam目录或候选、未上传。审计：tools/runtime/followup-0.4.18.json。
+
+2026-10-26 草稿纸1第一段完成，第二段未制作。0.4.17工作区试玩已按作者最新指示正常同步，朋友需更新时再取文件；未更新Steam安装目录、候选或私密工坊条目，未新建好友包。选人音效为自制0.78秒机械锁定／拳套碰击声，源文件在资料/音效素材，SFX总线遵守静音和音量，重复点击不叠播。漩涡观察给小斩波附魔涡旋；融合者首项移除两张小斩波取得原版究极打击，次项铁斩波→灼热铁斩波+，文本、悬浮、缺牌锁定与出现条件同步。古老牙齿改为灼热铁斩波强化三次，预览和实际领取均14／14；巨大铁斩波保留模型但旧渠道撤下，新渠道待定。灼热升级增量依次+2、+3、+4……；不倒不休金卡2／1费，两版均普通拳斗；铁斩波形态降蓝；非凡技艺和拳斗降白，仅本角色生效。卡池仍75种：21白、30蓝、14金、4基础、6先古。涅奥护符按作者确认强化两张小斩波。修正先古之民营养汤候选仍检查原版打击的遗漏。营养汤按作者最新明确选择：仅替换未附魔小斩波，已附魔者跳过，保留在原牌组；取消此前携带附魔强制替换的处理，说明和悬浮不再展示原版额外加伤附魔。旧版记录中的“保留已有附魔并替换”均已被本条规则取代。
+
+本轮最终实际文件的draft81项、soup162项（19种附魔／38个普通强化跳过用例、原样／克隆／序列化）、additions60项、persist两进程20+28项，以及pool、smoke通过；原生ENet双人79／65项、九阶段快照一致；双人退出后重新组队磁盘恢复45项通过，覆盖四张0费永恒替换牌与保留的动量小斩波、递增升级数值、归属和恢复后真实出牌。Release零警告零错误，文档／素材核对通过，165个资源与本地试玩一致。仅本轮定向验收，不宣称最新28套功能及8套网络／恢复全量验收完成。初次补丁参数名与文本入口错误、已撤回的附魔转移方案、无头渲染诊断及夹具超时均保留原失败证据；最终使用真实渲染、静音隔离档复测，没有忽略错误。Soup夹具中原生AddKeyword的临时修改不能当作永久关键词存档，已改用实际SavedSpireField永久标记再验证，未修改游戏规则来迎合测试。全部证据与实际文件校验：tools/runtime/draft-first-paragraph-0.4.17.json。
+
+2026-10-26 多人宝箱手势定位已修入工作区开发构建0.4.17：作者反馈与朋友Steam联机总体正常，但队友称选宝箱遗物时鼠标偏移，具体是点击还是队友标记尚不清楚。发现CustomArmPointingTexturePath误用defect_rock，改为原版defect_point；布、剪刀本来正确，保持不变（此前口头“全都石头”已纠正）。原版NHandImage使用固定指向定位，误用猜拳图使可见手势额外离开定位点。2人构装体各31项、4人混合角色各43项宝箱专项及smoke全部通过：覆盖四个手势方向、三种窗口比例和异端尺寸，真实ENet游标同步、视口鼠标悬停／按下／释放及实际领取；宝箱终态全部一致。旧错误图与修正图同场景截图保留，校准以原版机器人为对照，不假定原版指尖像素距离为零；首次测试的这一假设失败原样保留。日志与指纹见tools/runtime/treasure-cursor-fix-0.4.17.json。按作者要求暂不打包／发布、不更新Steam／候选／好友包，也未改作者当前Steam安装及本地试玩的0.4.16文件。原好友ZIP在本次核对时已不在原路径，未重新生成或恢复。
+
+2026-10-25 作者要求给朋友打包联机：已生成dist/拳击构装体-0.4.16-好友联机包.zip（30,664,923字节），包含mods/PunchConstruct三个文件、简单安装联机说明及版本校验；与作者当前试玩0.4.16逐字一致。ZIP完整性及文件哈希通过。对包内三个实际文件执行原生ENet双人专项，主客端与九阶段快照全部通过，证据tools/runtime/qa/coop-construct-20261025-195900-299700600。双方需安装同包、相同游戏及BaseLib版本，并从Steam启动；作者当时正在使用的TryPrototype窗口关闭Steam接口，不能直接作为Steam联机入口。未替作者关闭当前对局，未修改Steam安装目录、发布候选或私密工坊条目，真实Steam邀请仍由本次双人试玩确认。
+
+2026-10-25 0.4.16选人海报及动态已完成定向验收：采用作者确认的半身近景，原始海报与两次未采用重绘均归档旧稿。拆分背景／透明角色；按作者反馈加大胸肩起伏、点头和护拳，加入22个冷青微光、12个暖金火星，9.6秒循环，不使用对局随机数、不新增音效。修正原版AnimatedBg额外缩放造成的过度裁切，保持原生UI层级；实际画面证明动作与粒子绘制、首尾接缝、切换清理、隐藏停更、独立实例和4:3／宽屏适配。最终选人专项27项、smoke、startup通过，Release零警告零错误；文档与36份源图／58份纹理核对通过，164份资源已同步本地试玩。预览在资料/美术素材/选人动态预览.html。证据tools/runtime/poster-animation-0.4.16.json。中间的测试查找假设错误、录制后台限帧超时、临时层级方案失败及UI逻辑／像素坐标测试差异均保留在各自QA目录，不算通过；最终原生标题可见性有像素对照。仅此次相关专项，未宣称0.4.16全部27套功能和8套联机重新验收。发布候选及Steam私密条目仍0.4.15，本次未导出或上传；Steam验证继续按作者要求暂停。
+
+2026-10-25 Steam 验证暂停：作者要求先补美术。0.4.15 已经由官方工具成功上传私密条目 3826907330（https://steamcommunity.com/sharedfiles/filedetails/?id=3826907330），远端 API 确认可见性 private，BaseLib 依赖已添加，未公开发布。订阅回下载已开始，作者暂停时已结束本次验证进程；下载文件校验、Steam 启动及真实 Steam 联机尚未完成。此前“未上传”记录为上传前历史；完整文档同步待恢复后处理。状态见 tools/runtime/steam-release-0.4.15.json。
+
+0.4.15／发布候选同步（2026-10-25 18:47:37）
+
+作者明确要求将发布候选同步。dist/SteamWorkshop/content现为0.4.15，与源码及本地试玩三个文件完全一致，158份资源；verification.json及独立验收日志已同步，26项功能、8项联机／恢复全部对应实际文件并通过。直接复用同一SHA256的既有验收证据，没有重复自动跑整局。
+旧0.4.11完整候选保留在tools/runtime/qa/candidate-0.4.11，逐文件校验与同步前一致。小斩波封面校验值未变，作者标题／署名／正文保留，仅卡牌数74改75及更新变更说明；BaseLib前置、来源和private可见性保持原设置。安装说明、发布审查、发布前清单及当前文档已同步。
+workshop.py --prepare --verify通过，随后--status确认文件／资源／文案一致、26项全部通过、验收日志和网络副本未变化。current-verification.json当前exported=true、候选匹配且本地验收通过；full_release_verification仍为false，真实Steam邀请／订阅安装尚未验证。
+作者试玩存档校验未变。未新建ZIP、未创建工坊条目或上传。具体审计见tools/runtime/candidate-sync-0.4.15.json。
+
+0.4.15／完整本机验收补齐（2026-10-25 18:42）
+
+当前实际文件的26项功能与8项联机／恢复专项全部通过，未分类错误为空。神格相关的observer／edge及双人联机沿用同一DLL／PCK／清单已通过的证据，其余24项功能与7项联机／恢复在本轮补齐；全部静音、隔离档、直接测试房间，不运行完整对局。
+当前汇总：tools/runtime/current-verification.json，full_local_verification=true；完成审计：tools/runtime/qa-completion-0.4.15.json。功能日志共1211条断言记录，包含已归档的写档／续玩两阶段，不把日志条数等同于独立专项数量。
+DLL仍为1c2b1da25aca7c0d6f14884e95986ba99e293a53d4dc33e97da5a7b3b20356e6；PCK及清单沿用下条记录的校验值。源码与本地试玩一致，包内158份资源逐字节对照源码通过。作者试玩存档及dist/SteamWorkshop全部文件与本轮开始时一致；旧候选仍0.4.11，没有导出或上传。
+
+联机证据（相同三个实际文件，各端九阶段一致）：
+- 双人：tools/runtime/qa/coop-construct-20261025-155916-755144600。
+- 三人混组：tools/runtime/qa/coop-necrobinder-3p-20261025-182537-360021800。
+- 四人：tools/runtime/qa/coop-construct-4p-20261025-182716-361264500。
+- 四人弱网：tools/runtime/qa/coop-construct-4p-network-20261025-182908-130192900，单程100±40毫秒、5%丢包、5秒断流。
+- 普通退出／恢复45项：tools/runtime/qa/recovery-construct-20261025-183129-399049400。
+- 强制关闭连接／恢复45项：tools/runtime/qa/recovery-construct-abrupt-20261025-183211-862419600。
+- 四人客端进程丢失／倒序回组123项：tools/runtime/qa/recovery-construct-4p-reverse-process-loss-20261025-183254-588660800。
+- 三人混组主机进程丢失／倒序回组50项：tools/runtime/qa/recovery-construct-mixed-3p-reverse-host-loss-20261025-183412-505070600。
+恢复逐玩家核对身份、灼热铁斩波精确强化次数／动态数值、附魔及四件工坊遗物；实际从磁盘存档进入原生LoadRunLobby，不冒充热重连。
+
+本轮修正验收工具的归档遗漏：check_current原来只在runtime汇总日志附加包／QA助手校验值，证据目录却再次复制未附加头部的原始日志；同时存档专项只归档第二次启动日志。现归档附有校验值的日志，result.json另记录三个实际文件，并将写档日志独立保存在证据目录。已完成的旧格式证据不改写；完成审计逐项读取当次包校验头，并去除元数据头后与原归档游戏内容比对，26项完全一致。无需重复运行已通过且游戏文件未变的专项。
+check_documents.py通过：75张连续编号卡、34份采用源图／56份纹理、13份观者搬运纹理、神格特效来源与BaseLib唯一前置一致。文档旧74张及21项候选表述已更新或明确为历史记录。
+尚需外部条件：真实Steam双人邀请／线路与工坊订阅安装；重新导出候选及上传仍按作者最终审查安排。角色模板美术残留、实战平衡继续按作者原定低优先级处理。
+
+0.4.15／神格入场、音效与隐藏状态（2026-10-25 16:01，以下保留当时的定向回归记录）
+
+作者实测无音效、入场拖慢，以及询问底部神格状态。重新对照本机Watcher 0.10.3实际实现：Divinity.IsVisibleInternal为false，扣除10真言使用silent=true；原光束创建时就显示在中心，随机延迟只推迟后续收束，并非先隐藏光束。
+修正：隐藏神格底部状态并避开原生可见能力入场等待；真言扣除静默更新；20道原图集光束同次调用立即闪现。眼睛及光束使用世界坐标，避免继承角色翻转／缩放；眼睛初帧透明，边缘淡入淡出使用原InOut缓动。边缘原实现也是0.65秒淡入、0.35秒停留、2.4秒淡出，未改成持续边框。
+音频此前在播放器上再次计算总音量×音效音量的平方，同时原生Master通道已有衰减、且未选择原模组SFX通道；默认两个50%滑块时，实际比原模组低约12dB。改为SFX通道、播放器0dB，交由原生通道统一控制音量和后台静音。一次性音效挂战斗房间，快速退出神格也不会随特效节点提前销毁；音量为0仍直接不创建播放器。增加observer.audio.play／load_failed日志，包含音效名、通道、增益、播放状态、长度和实际驱动。
+Release编译0警告／0错误，本地试玩已同步0.4.15，资源仍158份。未修改卡牌数值、神格规则或Watcher运行依赖；未导出／修改旧发布候选、未上传。
+当前实际文件：
+PunchConstruct.dll SHA256：1c2b1da25aca7c0d6f14884e95986ba99e293a53d4dc33e97da5a7b3b20356e6
+PunchConstruct.pck SHA256：f3694c77de5114106e7e3b8c8df0dabd243775e27e20415055c0c835e5f8e510
+PunchConstruct.json SHA256：1c2a72bdc4a8c0f5fbc2e91d7add1b390005ec839184332afc8e07d26849041c
+
+最终相同三个文件的定向验证：
+- observer 82项通过：tools/runtime/qa/observer-20261025-155900-812208300
+  原生手动打出五体投地进入神格，验证隐藏状态、三倍伤害、能量、原阈值、退出清理、重复进入和20道即时光束。直接施加神格到特效创建实测2.3毫秒（静音QA，不代表整张五体投地的总时长）。WASAPI实际混音捕获真言峰值0.035292、神格0.070487，Master输出全程静音；检查两个音量滑块为0均不会播放，最后恢复所有临时设置。
+- edge 123项通过：tools/runtime/qa/edge-20261025-155900-838208500
+  神格单独核对不可见、无底部悬浮项，同时保留供卡牌使用的能力说明；其余可见状态仍按实际显示文本检查。
+- 原生ENet双构装体主／客端79／65项通过，九阶段快照一致：tools/runtime/qa/coop-construct-20261025-155916-755144600
+  包含神格、回合退出、选牌、奖励和队友死亡；各端退出码0，结构化日志未分类错误为空。
+所有测试为静音、隔离档、直接定向房间。该版仅重测本次相关专项，0.4.14的26＋8完整验收保留在qa/verification-0.4.14.json，不冒充新版全量验收。
+初次回归的两项QA自身适配问题保留失败证据：旧edge假定所有能力都有底部悬浮项；初次即时光束断言用重复节点名筛选，只找到首个节点。分别改为专门检查隐藏神格说明、按实际图集纹理筛选全部20道光束，未放宽游戏错误判断。
+
+历史修复与验证记录（以下“当前”“本次”均指各条记录当时的版本；最新状态以文件首部及current-verification.json为准）
+
+0.4.14／当前文件完整本机验收补齐（2026-10-25 15:24）
+游戏DLL、清单、资源包及玩法未再修改。沿用最终DLL 82b60281fd000f0d9b2b61a9c7717a1060a799a84e5ac25ffd87acaf9e79a5ab，PCK f3694c77de5114106e7e3b8c8df0dabd243775e27e20415055c0c835e5f8e510，清单4a4c270a4c6cb41c1176d591604af6ec2c99e0f115b0938ee24ea5e3a2644e2a。保留同一文件已通过的六项相关功能和双人联机证据，静音、隔离档补齐其余20项；当前26项全部通过，没有自动打完整局。功能覆盖和日志指纹见tools/runtime/current-verification.json，补测进度见tools/runtime/local-remaining-0.4.14.json。
+四组真实原生ENet联机均九阶段快照一致：双人主／客79／65项（coop-construct-20261025-145917-344316400，复用相同三文件的已验收证据）；三人混组81／65／67项（coop-necrobinder-3p-20261025-151334-418852000）；四人89／75／75／75项（coop-construct-4p-20261025-151515-726439100）；四人弱网89／75／75／75项（coop-construct-4p-network-20261025-151710-72682100）。弱网配置单程100±40毫秒、5%随机丢包及5秒断流，实际随机丢440个数据报、断流丢196个，validation_errors为空，没有误断开。
+四项新进程磁盘恢复全部通过：正常退出45项（recovery-construct-20261025-151933-153839700）、立即强制关闭连接45项（recovery-construct-abrupt-20261025-152016-891484400）、四人客端进程被结束后倒序回组123项（recovery-construct-4p-reverse-process-loss-20261025-152100-891427400）、三人混组主机进程被结束后倒序回组50项（recovery-construct-mixed-3p-reverse-host-loss-20261025-152224-60429300）。目录均在tools/runtime/qa。被故意终止的QA进程保留expected_termination，其余端必须真实收到原生断开通知；恢复后仍实际网络出牌，不冒充运行中的热重连。
+RecoveryProbe本轮只增加QA覆盖：各构装体分别保存强化3／4／5／6次的灼热铁斩波及四件工坊遗物；快照新增精确强化次数与动态数值，逐玩家核对重新载入后的次数、伤害／格挡和遗物身份。营养汤仍只覆盖小斩波，灼热铁斩波不被替换。QA助手构建0警告／0错误，SHA256 8e2871a2e691346b2608ecbe58fd5f70a88abd8a7bd9d192c57034fce9bfd5d1，仅放入隔离测试，不装入试玩或发布目录。
+修正验收汇总遗漏：此前full_local_verification检查普通联机及已有恢复失败，却未要求恢复项目必须存在。现在四人弱网、正常退出、强制断开、四人客端丢失和三人混组主机丢失均为必需；missing_recovery列出缺失，未补齐时维持false。实测在26项与四组联机都通过、仍缺两项恢复时为false，补齐后才为true。八项三文件精确证据同时经release_evidence独立核对通过，未放宽错误判定。进度tools/runtime/candidate-network-0.4.14.json的名称沿用工具命名，测试对象为本地试玩三文件，并未生成发布候选。
+发布候选dist/SteamWorkshop的全部文件与测试前完全一致，仍为0.4.11。本轮检查期间作者在15:12启动正常试玩（session 20261025T071222690-5f9fe4ad，qa=false），因此试玩存档／回放／日志有正常写入，不能声称整个试玩目录哈希未变；QA均使用临时隔离路径，未覆盖或还原作者存档，没有结束该正常试玩进程或热替换其文件。对应核对见tools/runtime/qa-completion-0.4.14.json。本次未导出、压缩、创建工坊条目或上传；Steam邀请、真实外网、Steam热重连及工坊订阅验证仍待外部环境。
+按作者要求核对原生版本保护：PeerVersionInfo携带游戏版本及影响玩法的模组ID＋版本号，HandshakeManager在不匹配时拒绝连接，NetErrorInfo提供原生版本／模组不匹配提示；本模组affects_gameplay=true。沿用此保护，没有额外重写握手；未额外运行双方不同版本的进程，不将代码核对记成联机实测。
+
+0.4.14／灼热铁斩波接入、初始牌渠道分离及针对性回归
+02改为灼热铁斩波：白卡攻击1费，5伤害／5格挡，可多次升级，每次＋2伤害／＋2格挡，游戏描述只增加“可多次升级”。采用已确认的灼热铁斩波.png卡面，保留铁甲战士视觉归属，仅加入本角色获取池。普通铁斩波改列75基础牌，初始8张配置不变；本角色奖励、商店、变化、随机生成和外来角色卡池挑战均排除普通铁斩波，原角色不受影响。营养汤完全维持原效果：只把小斩波替换为0费永恒的普通铁斩波，保留强化和附魔；不处理已有铁斩波或灼热铁斩波。正版／假打击木偶均识别灼热铁斩波，只加伤害，不加格挡。
+卡表连续01—75，共19白／32蓝／14金／4基础／6先古；32攻击／27技能／16能力，普通品质仍65张。主清单、角色设计、说明和美术清单同步；现34份采用源图、56份纹理、158份总资源。
+Release构建0警告／0错误，最终DLL SHA256为82b60281fd000f0d9b2b61a9c7717a1060a799a84e5ac25ffd87acaf9e79a5ab。静音隔离、实际渲染的六项相关专项通过：pool（tools/runtime/qa/pool-20261025-145838-567543300）、soup116项（soup-20261025-145838-510785600）、modes133项（modes-20261025-145838-593555600）、smoke（smoke-20261025-150115-370343100）、relics84项（relics-20261025-150115-274904500）、workshop27项（workshop-20261025-150115-419853000）。新增核对连续8次原生升级、复制／序列化后继续升级、降级重置，以及无木偶／正版／假版／两者叠加时普通与强化三次卡的实际出牌。
+双构装体原生ENet专项通过（tools/runtime/qa/coop-construct-20261025-145917-344316400），主／客79／65项，九阶段快照一致。每位玩家各经真实网络队列打出强化三次的灼热铁斩波，均11伤害／11格挡；快照增加精确升级次数及动态数值，不冒充真实Steam邀请测试。
+营养汤首轮矩阵失败已定位为QA夹具的旧位置假设：原版永久牌组变牌追加到末尾，增加一张不受影响的灼热铁斩波后，原测试下标读到了未附魔的替换牌。改为按唯一附魔／强化组合逐张匹配，仍检查每个来源恰有一个产物及全部原断言。调试中一次临时JSON记录又因字段大小写重名失败，已移除该诊断。145418、145553、145659三次原始失败均保留，未改营养汤实现或放宽错误判定。
+本轮仅做相关定向房间／事件／模式／联机检查，没有跑完整对局，未宣称新DLL已完成全部26项及三四人／恢复验收；dist候选仍为0.4.11，未重新导出、压缩、创建条目或上传。
+确认无游戏运行后通过launch.ps1 -PrepareOnly同步本地试玩0.4.14，DLL／清单及158份资源与本轮测试文件一致，PCK SHA256为f3694c77de5114106e7e3b8c8df0dabd243775e27e20415055c0c835e5f8e510；试玩资料目录143个文件同步前后校验一致，未启动游戏或操作存档。
+
+0.4.13／四件角色专属遗物与美术接入
+开口扳手为普通遗物，接替原自旋螺丝的每击败敌人回复1生命、获得5金币效果，并通过BaseLib的CustomID保留原PUNCHCONSTRUCT-SPINNING_SCREW存档身份；旧档原有遗物读出后即为开口扳手，原有效果保留。新自旋螺丝为普通遗物，使用独立PUNCHCONSTRUCT-SPINNING_SCREW_DRAW身份：按作者确认，在下回合开始、敌人行动后检查上一轮造成过伤害且没有受到伤害，再额外抽1张；采用原生ModifyHandDraw流程，不在结束回合提前承诺抽牌。完全格挡不算受到伤害，完全被格挡的输出不算造成伤害，自身受到的实际伤害也会使该轮不满足。伤害标记、受伤标记和待抽牌状态均用SavedSpireField保存／复制，战斗开始及结束清空。
+备用指节为罕见遗物，每击败一个敌人固定获得16格挡，不受敏捷加成。应急油壶为罕见遗物，持有者回合结束、有未使用能量时，以原生CombatTargets同步随机数选同一名存活可选敌人，依次附加1易伤、1虚弱；只取一次随机数，不消耗能量，不随能量数增加层数，无敌人或无能量时不取随机数。敌人死亡触发排除己方死亡、被阻止的死亡和已死亡的持有者。专属遗物不加入其他角色自己的遗物池。
+三张新源图及原螺丝图已接入，原图不改。按各自主体裁切透明杂点、保持比例后导出128小图、256大图与轮廓。新增主体小图尺寸：开口扳手115×115、指节118×68、油壶115×107；采用短嘴油壶，长嘴旧图和弹簧仍弃用。现33份采用源图、55份纹理记录、156份总资源，校验通过；tools/runtime/qa/workshop-icons.png保留实际128图对照。
+Release构建0警告／0错误，最终DLL SHA256为c3c02c6bbb8f04e1f532572afb360cbc5bc698845aeb48e9663b549b7311da9c。静音隔离、实际渲染的workshop27项通过（tools/runtime/qa/workshop-20261025-142637-994430900），包含实际敌人回合的受伤／完全格挡、回合重置、自己受伤、原生抽牌数、随机数精确消耗、击败回复／金币／固定格挡及旧ID／新状态序列化；additions60项回归通过（tools/runtime/qa/additions-20261025-142637-920688000）。双构装体原生ENet主／客76／62项通过（tools/runtime/qa/coop-construct-20261025-142810-784650600），九阶段快照一致，快照新增螺丝三种标记和CombatTargets随机数；实际网络出牌、原生结束回合后主端多抽而客端不多抽、击败16格挡及旧扳手在队友死亡后的归属均通过。结构化日志新增relic.screw.round_evaluated及relic.oiler.debuff，便于比对各端。
+首轮tools/runtime/qa/workshop-20261025-142349-451460000保留失败：前25项通过，末尾用直接伤害命令击败所有敌人，却未经过原生行动结束胜利检查，等待退出战斗超时。QA末尾改成真实排队打出巨大铁斩波，复测通过；没有为此修改正常游戏胜利规则或放宽错误判定。新增workshop专项纳入未来本地／候选验收，总功能专项数由25变为26，旧0.4.11候选的25项结论仍仅对应其文件。
+本轮只进行相关专项和双人原生联机测试，没有跑完整对局，没有冒称0.4.13完成全部功能／三四人／恢复验收。dist/SteamWorkshop/content仍为0.4.11，未重新导出、压缩、创建条目或上传。真实Steam双人验证仍待安排。
+确认作者试玩已退出后，通过launch.ps1 -PrepareOnly同步试玩DLL、0.4.13清单及156份资源；实际试玩DLL与上述最终DLL指纹一致，未启动游戏，未修改实际游戏安装或用户存档。当前汇总仅认本版通过的workshop／additions及双人专项，不沿用旧DLL的全量结论。
+
+0.4.12／与我一斗数值调整（较早版本记录）
+按作者确认，普通／强化均造成6点伤害2次，普通获得2点敏捷，强化仅多1点敏捷即3点；仍为2费无色蓝卡攻击，目标获得1点力量。卡面文字、实际攻击段数与主卡牌清单同步，强化不再增加单段伤害。紧追不放召唤、当头一棒返格挡、反伤触发活力的既有测试预期同步为两段，未更改这些机制的规则。之前宝箱修复等0.4.12证据属于各自文件指纹，不能当作本轮最终文件的全量验收。
+Release构建0警告／0错误，最终DLL SHA256为a96bea94f97d694815c90ae1a84957b57a9330b0ab1e0aa572f6555526946b55。静音隔离且实际渲染的update48项、adapt121项、observer71项通过，分别见tools/runtime/qa/update-20261025-135053-946723600、adapt-20261025-135053-925184500、observer-20261025-135053-954734200；其后单独运行vigor25项通过，见tools/runtime/qa/vigor-20261025-135203-166369800。核对普通／强化均12总伤害、敏捷2／3、敌人1力量、紧追不放仅召唤两次、当头一棒按两次返格挡，以及活力只消耗一次并保留两次反伤产生的活力。资料校验通过，未跑整局。正常试玩仍在运行，未热替换或关闭；退出后用启动器重开同步。未重新导出候选、压缩或上传。
+
+0.4.12／宝箱遗漏修复（本节最新结果覆盖下节较早构建）
+用户实测指出奥利哈刚仍然出现，读取作者存档确认有领取记录，未修改存档。根因是TreasureRoomRelicSynchronizer.BeginRelicPicking直接从共享RelicGrabBag抽取，不经过RelicFactory，也无法用玩家私有遗物袋识别角色。原奖励／商店测试未覆盖此路径，不能据此宣称所有获取渠道已排除。
+现将该原生调用接入按生成槽位对应玩家的作用域，并传入原生宝箱同步随机数。构装体贡献的候选使用现有排除／权重；原生队友贡献的候选走原版，共同投票挑选规则不改。退出调用以finally恢复玩家和随机数，避免污染后续商店／奖励。仅替换已核对的一处调用，不删除全局遗物模型，不主动修改已有遗物或已经生成的宝箱。
+修复前专项tools/runtime/qa/treasure-20261025-134636-310392800实际失败并保留。修复后实际渲染专项tools/runtime/qa/treasure-20261025-134748-161031900共9项通过，覆盖64组种子的原生宝箱生成、混合角色各自贡献、原生角色仍可出奥利哈刚、同种子重建结果一致及作用域恢复；该结果是本机原生调用核对，不冒充两台Steam联机测试。Release构建0警告／0错误，DLL SHA256为e211378d54ff423f784f6c22d66c5f386604ff43f2b148ef03661c860503e135。
+同一最终DLL的遗物回归49项通过：tools/runtime/qa/relics-20261025-134819-997647600，覆盖新增宝箱检查和原有普通奖励／商店排除、权重、预览及战斗遗物行为；资料校验通过。
+正常试玩仍在运行，未替换其文件或关闭进程；通过工作区启动器重开后加载修复。已领取的遗物及已生成候选不擅自移除或重抽。0.4.11发布候选保持原文件，尚不包含本次修复，没有重新导出或上传。
+
+0.4.12／较早的化学物X获取排除构建
+当前选定卡池没有X费牌，按作者确认，将化学物X加入本角色遗物获取排除规则，沿用已有的角色作用域及奖励／商店双向抽取过滤；其他角色继续保留，原始遗物模型不改。
+Release构建0警告／0错误，DLL SHA256为97dca4d991f1d760b3fa160ffb7526d2c976657ad937c731418e999dc93a72db。静音隔离、实际渲染的relics专项44项通过，证据tools/runtime/qa/relics-20261025-133643-148380900；新增检查覆盖本角色两个抽取方向各64次、候选只有化学物X时的原版兜底、铁甲战士两个方向仍可获得化学物X，以及原9件权重不变。资料校验通过。没有跑完整对局。
+首轮tools/runtime/qa/relics-20261025-133541-602136100在空候选检查失败，保留原始记录：测试误以为RelicFactory会返回null，实际原版先把空抽取转换为FallbackRelic。检查原版IL后按其真实兜底行为修正测试，再次通过；没有为此改变游戏逻辑或放宽错误判定。
+检测到作者的正常试玩正在运行，没有热替换或关闭该进程；退出后通过工作区启动器重开会同步0.4.12。dist/SteamWorkshop/content保持已验收的0.4.11，尚不含此次排除，没有重新导出、压缩或上传。本版只完成相关定向回归，不沿用0.4.11全量结论冒充0.4.12已完成全部验收。
+
+0.4.11高优先级收尾（2026-10-25）
+BUG-036 已关闭连接仍发送地图模式／ENet主机残留断开玩家：已定位原生NMapDrawings.SetDrawingModeLocal先更新本地状态，再无条件发送绘图模式；另原生ENetHost.Update消耗transport disconnect事件后不移除应用层连接，造成QoS向失效peer发送心跳且主机缺少断开通知。仅在包含拳击构装体的对局中：地图保留本地模式／光标清理，只在连接关闭后跳过这一条外观消息；ENet主机Update后检查已终止的Disconnected／Zombie peer，通过原生HandleClientDisconnection删除连接并通知原生大厅／QoS。连接中、暂时丢包、其他角色单独对局及所有游戏行动消息保持原路径。不重开原生已关闭的热加入入口。
+最终游戏DLL为9be8d7391c0ed987ff01d37b1a3979be339e37d45249989125544249783c0716，0警告／0错误，138份资源。首个修正后的强制关闭／重新读档37项通过：tools/runtime/qa/recovery-construct-abrupt-20261025-114136-126557500，准备主／客9／8项，恢复11／9项；实际联网地图模式同步及断开后的本地None模式均验证，network.map_mode.local_only与network.transport.peer_closed分别记录对应处理，未分类错误为空。
+前期失败均保留：113703及113844批次仍有主机Peer not connected；113932批次尝试只跳过失效心跳后仍缺主机断开通知并超时，未作为最终修复。现已移除该中间处理，改走原生终止peer清理／通知路径，不通过放宽日志错误检查获得通过。
+作者已明确提高完整验收、断线与发布交付优先级，并授权本地候选收尾。0.3.1旧候选完整保留于tools/runtime/qa/candidate-0.3.1；dist/SteamWorkshop/content已更新为0.4.11三个模组文件，最终25项功能专项及8项联机／恢复专项全部通过。verification.json固定保存实际文件、报告和日志指纹；tools/runtime/current-verification.json的full_local_verification与candidate.local_verification均为true。没有新建ZIP、创建工坊条目或上传。作者表示暂不能安排Steam双人实测，外部验证后续再做，不以本地验收代替。
+
+最终候选验收补充：
+- 25项功能专项均检查实际候选文件。首轮24项通过，modes的133项功能通过后退出出现Buffer泄漏，整项及原始candidate-batch-0.4.11.json保留失败。新增仅用于隔离测试的QaExitProbe，在ModeChecks完成后释放12个已离开场景树的闲置原生NCard并等待4个渲染帧；复测tools/runtime/qa/modes-20261025-115052-293023300通过，原133项及错误判定不变。QA助手DLL指纹667c9bd2fa6678574d4320b4cbc1060f1c28081ad6b98f8bde343ba8aea18061，登记在日志／验收报告，不装入候选或试玩；其他24项和最终游戏DLL均未因此重写。当前汇总取该实际候选最新成功证据，不将首轮原始失败改成成功。
+- 双构装体tools/runtime/qa/coop-construct-20261025-115102-462045900，主／客69／57项；三人混组tools/runtime/qa/coop-necrobinder-3p-20261025-115233-397189300，70／56／58项；四构装体tools/runtime/qa/coop-construct-4p-20261025-115335-924863400，77／65／65／65项。各组九阶段快照一致。
+- 四人弱网tools/runtime/qa/coop-construct-4p-network-20261025-120125-409637700，单程100±40毫秒、5%丢包、5秒断流，实际随机丢367个数据报、断流丢201个，四端77／65／65／65项及九阶段快照通过，没有被终止peer清理误判掉线。代理保留正常退出后端口关闭通知，validation_errors为空，不修改游戏错误检查。
+- 普通退出读档tools/runtime/qa/recovery-construct-20261025-115816-978559700，37项通过；强制关闭连接为上文114136批次37项通过。
+- 四人客端进程被脚本直接结束，随后倒序回组：tools/runtime/qa/recovery-construct-4p-reverse-process-loss-20261025-115859-373537900，91项通过。三人混组主机进程被直接结束、客端实际回菜单并显示原生断开提示，随后倒序读主机磁盘存档：tools/runtime/qa/recovery-construct-mixed-3p-reverse-host-loss-20261025-115651-816994600，44项通过。故意结束的QA进程标记expected_termination，其余端仍须实际收到原生断开通知／菜单状态；文件仅补齐已结束进程的QA屏障，不能满足这些原生断言，没有缩短游戏网络超时。恢复后身份、升级／附魔／费用、牌组、遗物及真实网络出牌均通过。
+- 新的全原版角色对照仍加载本模组，tools/runtime/qa/recovery-native-abrupt-20261025-120409-32669000在强制断开阶段复现原生地图消息错误，整项严格失败；随后恢复12项通过。表明本轮处理未套用到不含构装体的对局；这不是“不加载角色模组”的独立对照，旧独立对照仍单列保存。
+- 恢复QA工具前期对普通退出后已销毁的地图控件误要求模式复位，改为检查界面已移除；错误断开流程仍检查None模式。跳过原生视觉过渡时，开局／载入／JoinFlow完成后的处理器切换均须等消息分发栈返回，已补相应帧边界；不修改正常游戏NetMessageBus。115551、115631及120135等原始失败保留，不作为游戏功能失败被静默抹掉。
+- 本地启动器不再按时间戳从历史dist/PunchConstruct挑文件，直接用当前DLL／清单；资源包与138份源码资产严格一致，删除资源不会继续从旧包残留。运行中的本地试玩阻止同步。PrepareOnly后试玩和候选三个文件SHA256全部相同，作者存档校验未变。Steam端安装说明及作者发布正文只同步实际测试范围；来源及低优先级美术／平衡设定不变。
+
+0.4.10补充三／四人跨进程读档和加入顺序验证（仅修改QA工具，游戏DLL与138份资源未变）：
+- 三人混组（构装体／亡灵契约师／铁甲战士）：准备阶段主／客／客7／5／5项，恢复9／7／7项，共40项通过。证据tools/runtime/qa/recovery-construct-mixed-3p-20261025-112910-658107900。
+- 四构装体：准备10／8／8／8项，恢复15／13／13／13项，共88项通过。各槽位使用不同数量的测试牌与动量5／6／7／8附魔，所有端的保存前和恢复后快照完全一致，未发生牌组、附魔或遗物串到另一玩家。证据tools/runtime/qa/recovery-construct-4p-20261025-113008-789891400。
+- 三人混组读档时倒转客端加入顺序：铁甲战士先回组、亡灵契约师后回组，原生网络身份不变；40项通过，所有快照仍与保存前一致。证据tools/runtime/qa/recovery-construct-mixed-3p-reverse-20261025-113111-76204600。
+三组均实际从主机磁盘存档经原生LoadRunLobby恢复，核对种子、角色／本地玩家槽位、生命／金币、牌组、强化、费用／关键词、附魔及遗物；恢复后实际网络出牌和行动队列结束通过。只给构装体准备营养汤／古铜之拳等测试状态，混组原版角色保持各自牌组与遗物。一名客端正常退出时，其余客端仍保留连接与原生对局。全部实际渲染、静音、独立存档，退出码0，未分类错误为空；未自动推进整局。
+QA程序集前两组为94596e03084dd148a5698434ccae7229bbe2a1f20e7518df61cf949a2a88d97d；增加倒序加入参数后的实际产物为81a3451f5092ded0922ec9d3208dc87057b4f04b1b3965380bf6db921c745daf。汇总按人数、组合、加入顺序分别保留，不覆盖已有双人或诊断对照。原版强制关闭报错与ENet热加入限制仍见下文；本轮不声称已验证Steam邀请／Steam热重连，没有改游戏代码、更新候选或上传。
+
+0.4.10联机断开与跨进程恢复专项（游戏DLL及138份资源未变，仅新增独立QA工具）：
+正常退出／重新组队续玩通过：tools/runtime/qa/recovery-construct-20261025-111628-630412400，准备阶段主／客7／5项，两个全新进程的恢复阶段10／8项，共30项。实际使用原生StartRunLobby、SaveManager磁盘存档、JoinFlow、LoadRunLobby及原生载入流程；不以内存克隆代替读档。种子、玩家身份、生命／金币、强化牌、储君牌费用、营养汤的5张0费永恒铁斩波及其中的动量5附魔、专属遗物在各端一致。恢复后的古铜之拳从1开始实际触发，真正网络出牌与行动结束通过；action.begin／action.end结构化日志齐全。
+强制立即关闭底层连接的诊断仍失败：构装体tools/runtime/qa/recovery-construct-abrupt-20261025-111929-136773800的断开阶段出现原生MapDrawingModeChangedMessage在连接关闭后发送的错误；未放行或抹掉。随后关闭旧进程、读取已写入的存档，恢复阶段主／客10／8项通过，状态快照一致；恢复通过不把整个断开用例改成通过。
+独立原生对照tools/runtime/qa/recovery-native-independent-abrupt-20261025-111701-169239600仅加载游戏、BaseLib与QA程序，不引用／加载PunchConstruct，所有进程均检查程序集缺席。强制立即关闭连接同样复现MapDrawingModeChangedMessage报错，整项保持失败；其原生存档恢复阶段7／5项通过。因此该特定关闭顺序的发送报错不以修改其他角色的全局网络规则处理，也不据此断言真实互联网断线一定表现相同。
+本机ENet热重连边界已核对：原生StartRunLobby／LoadRunLobby开局时调用ENetHost.SetHostIsClosed(true)，构装体和独立原生对照均实际观察到该调用。原版加入界面在仍运行的本机主机上尝试重新连接会超时，先前诊断证据tools/runtime/qa/recovery-construct-20261025-110934-308989300保留。没有强行重开端口或自行替换原生热重连框架。已验证的是退出后重新组队读档，不是运行中的ENet热重连；Steam邀请／Steam热重连与订阅安装仍未验证。
+QA工具自身修正也留档：首次对客端误要求主机专用存档；对尚未完成磁盘落盘的主机增加实际文件检查；地图保存正确传null而不是把MapRoom冒作preFinishedRoom；载入监听器在消息分发完成后再替换处理器，保留原生界面过渡期间的异步边界。前期Collection was modified来自这个QA时序，未修改正常游戏NetMessageBus。恢复用例只检查实际执行的出牌日志，不误要求未执行的选牌日志。所有失败证据保留；最终正常恢复无未分类错误。
+新增RecoveryProbe仅用于隔离测试，未装入试玩或候选。普通版QA程序集指纹6f8cabaf500085edd3dc3e3289d18fce4eee73352e3731509c978b991aa39f55；独立对照另由NativeOnly条件编译，输出目录分开。当前汇总新增recovery_checks，强制关闭／热加入及独立原生对照放在diagnostic_controls，仍保留严格失败及每阶段结果。没有打包或上传。
+
+0.4.10补充弱网验证（只更新QA工具与文档，游戏DLL／138份资源未变）：
+- 双构装体：单程70±20毫秒，随机丢包2%，愈战愈勇选牌前断流3秒；主／客69／57项通过，实际随机丢42个数据报、断流丢41个。证据tools/runtime/qa/coop-construct-network-20261025-105021-109717100。
+- 三人混组：单程90±30毫秒，丢包3%，断流4秒；主／亡灵客／构装体客70／56／58项通过，随机丢138个、断流丢107个。证据tools/runtime/qa/coop-necrobinder-3p-network-20261025-105203-545199400。
+- 四构装体：单程100±40毫秒，丢包5%，断流5秒；四端77／65／65／65项通过，随机丢384个、断流丢192个。证据tools/runtime/qa/coop-construct-4p-network-20261025-105417-676566500。
+三组均使用实际渲染、静音和独立档；每组九阶段快照全部一致，覆盖活力与临时力量、独立召唤标记、神格、变牌、远端奖励选择、并发攻击与队友死亡。代理只改变原生UDP数据报的递送，不代传选择或改游戏随机数。所有端退出码0，未分类游戏错误为空。
+首轮双人测试的游戏断言／快照通过，但QA代理在原生主机正常关闭后把Windows UDP端口关闭通知计为失败，原始结果保留于tools/runtime/qa/coop-construct-network-20261025-104759-228141200。现仅在所有端已完成最终checked屏障后，才把该通知作为退出事件原样保留；提前出现仍判失败，游戏错误检查未放宽。修正后双人重跑通过，再完成三人／四人；不能把首轮直接改成通过。
+当前汇总以-network独立键保存压力结果和实际丢包统计，不覆盖普通直连记录；若当前构建任一已有压力结果失败，也纳入失败清单。临时断流后恢复不等于连接断开后的重新加入；Steam邀请、真实互联网线路、断线重连及订阅安装仍未验证。原0.4.9全量证据继续独立归档，本轮未重新导出候选或上传。
+另以本机真实UDP套接字提前关闭端口作反向对照，确认未完成checked屏障时的同类ConnectionResetError仍进入失败列表；只验证代理判定边界，不冒充游戏重连测试。证据tools/runtime/qa/network-proxy-early-close.json。
+
+0.4.10图标更新：黄铜螺帽已采用为古铜之拳的可见临时力量状态图。原1254×1254生成图移入历史/图标原图；采用文件统一64×64透明PNG，可见主体56×50像素，256大图最近邻放大，内部到期能力继续隐藏。未修改力量结算规则。
+Release构建0警告／0错误。icons实际渲染21项资源检查通过（qa/icons-20261025-104416-149951800）；focus实际渲染39项通过（qa/focus-20261025-104416-100105800），包含待生效到已生效时同一NPower实例连续保留、到期消退及永久力量保留。文档／素材校验通过，30份采用源图导出46份纹理。
+试玩DLL及138份资源已同步并逐字核对，DLL SHA256为0c561cc27a2dec4b4e6b499b536adbad170aa21bb38eef7d5d2954a062bf45a3。未启动作者游戏、未改存档、未打包或上传。本次只重跑图标与临时力量相关专项；0.4.9全量和联机证据归档在tools/runtime/qa/verification-0.4.9.json，当前汇总不冒充全量验收。
+
+当前设定见角色设计.md，完整牌序见卡牌清单.txt。本文件只保留当前修复结论、证据和未完成事项；旧数值与逐次修正过程已归入历史/记录/试玩修复过程.txt。
+本地试玩通过工作区启动器同步最新构建；运行中的游戏需退出后重开才能加载新DLL。本地最新构建另已修复架势逐段获得活力／力量的多余等待。dist/SteamWorkshop保留上次通过21项验收的候选，尚不含后续试玩修复与平衡调整；该目录verification.json与独立日志仅证明候选原文件，上传前需同步并重新核验。尚未创建工坊条目或上传。
+最新源码为0.4.10；通过TryPrototype重开加载同步后的DLL、清单和资源，不热替换运行中的游戏。TryPrototype仍为关闭Steam接口的本地试玩入口；Steam邀请流程尚未实测。
+
+此前0.4.6—0.4.9处理记录（历史版本，当前证据见文件顶部）
+
+2026-10-25／0.4.9新增调整：棱彩宝石保留原版每回合加能量，但在本角色中以“战斗卡牌奖励不再出现无色牌”替代跨颜色扩池；保留既有候选过滤与原生强制跳过标志，不影响事件、商店、战斗内生成和其他角色。与地毯先后获取均验证；图标、轮廓及大图旋转180度，保留原图集画布。愈战愈勇普通版消耗、升级去消耗，两版都生成普通拳斗，动量5、一张灼烧、1费及其他行为保持。卡面／预览、单人和联机检查同步；历史报告只证明各自构建，不将未完成的0.4.8全量批次记作通过。
+0.4.9本地收尾：最终DLL SHA256为aef0d5a98150eca7d8771006e94ba52d720e3a43374fb6a784873f9b11a52102，Release编译0警告／0错误，134份资源。同一文件的25个本角色功能专项全部通过，包括adapt121项、additions60项、relicvisual27项、events51项、vigor25项、modes133项、shadernative13项。两人主／客69／57项，三人混组70／56／58项，四人77／65／65／65项，三组各九阶段快照全部一致。最后单独测量异鸟三连击：旧处理1896.7毫秒，压缩后1449.7毫秒，仍逐段给予1、2、3活力。
+0.4.9首轮本地批次共执行26项，其中25项属于本角色功能，另1项shaderoriginal为原版角色诊断对照。该对照捕捉到原版fma错误，整批原始记录仍保留passed=false，没有删除报错或改成通过；现将其归入diagnostic_controls，不把“不修改其他角色的原版问题”列为本角色功能失败。角色范围25项及2／3／4人结果按该版DLL逐项留存，完整索引与所有日志指纹见tools/runtime/qa/verification-0.4.9.json；tools/runtime/local-batch-0.4.9.json保留此次26项原始结果。未来check_local仅执行25项角色功能，原版对照单独运行。
+本地试玩入口已同步0.4.9，实际试玩DLL与最终文件一致，134份源资源逐字核对通过；没有开启作者游戏或操作存档。文档、素材来源、连续74张牌序检查均通过。没有导出、更新旧发布候选游戏文件、创建条目或上传。Steam真实邀请、互联网延迟／丢包、断线重连和订阅安装仍属于外部验证边界。
+三人专项首轮九阶段快照一致，但调试跳房间时出现NCard重复回收，整组判失败并保留：tools/runtime/qa/coop-necrobinder-3p-20261025-101114-168111700。原生消耗动画的DelayedFree在两秒后归还卡牌，提前移除场景又由_ExitTree归还一次；测试中原先在战斗逻辑结束后立即跳事件，绕过正常奖励／地图停留。显式联机QA现等待原生消耗／飞牌节点退出，并由全部端确认后再调试跳转；不吞重复回收错误、不修改正常游戏对象池或延迟。结果以随后独立日志为准。
+
+0.4.7平衡调整：磨蚀在拳击构装体持有时为2费，普通／强化相同。保留原生效果和强化，不修改原版全局费用；原角色仍为3费。复制、降级和持有者改变通过角色局部适配处理，临时费用修正仍由游戏原生费用系统管理。卡牌主清单与角色设计同步。本轮未导出、未刷新旧发布候选、未上传。
+Release编译0警告／0错误，adapt实际渲染102项通过，包含普通2费、强化2费且保留原强化数值、复制降级仍为2费、静默与全局模型维持3费，以及原有紧追不放、生命值加伤和地毯回归。证据tools/runtime/qa/adapt-20261024-215542-168842000；DLL SHA256为beb230bda97d74c3eab355234e9285f88b122e53f257e227b7e99c5ed6109314。最新汇总标记每项是否对应当前DLL，0.4.6汇总另行留存，不沿用旧专项宣称全量通过。BUG-034／035仍未修复，Steam邀请与断线重连未验证，正式导出与发布仍待作者指示。
+
+BUG-025 巨大扭蛋异常（用户反馈）
+原先仅记录，后续作者要求继续收尾并明确额外牌改为两张小斩波。原版取得流程会分别查找本角色的基础打击／防御，两种候选都缺失，First()抛出InvalidOperationException: Sequence contains no matching element；证据保留在tools/runtime/qa/vigor-user-20261024/play-at-report.log。现只为本角色适配两个查找入口为小斩波，保留原版随机遗物和加牌命令；领取／事件预览说明同步，其他五位原角色保留各自打击／防御。不添加全局打击／防御标签，不扩大卡池。
+
+BUG-032 状态图标说明缺数值、条件和叠加信息
+根因是PowerLoc的第三项smartDescription实际用于状态图标悬浮说明，之前把多项写成不带数值的概述；只看卡面或第二项description无法发现。锻造车间、王者风范、趁热打铁及拳王形态均补全实际数值和条件，卸甲成军补已有格挡保留。趁热打铁按作者新设定改为格挡大于等于10点触发，普通锻造7、升级10，叠加显示总值。
+不倒不休改为按普通／强化／混合的实际生成数量组织说明，省去“其中0张已强化”；东尼斩波显示段数、随机目标及每段伤害／格挡；铁斩波形态补本回合剩余次数；冷眼旁观明确按攻击牌计次、每段伤害获得格挡。建立运行时完整覆盖检查，枚举本程序集全部17个具体能力模型并读取真正HoverTips，不仅检查卡面或源码字符串。
+
+BUG-033 临时力量跨回合图标先消失再出现
+作者明确指的是状态切换，并非反复闪烁。旧流程移除待生效状态，再新建临时力量状态，造成可见图标中断。现保留同一可见状态和控件，以Active动态变量区分已生效／待获得数值，内部临时力量到期能力不显示第二个图标。待生效转已生效不移除状态；两部分均归零才消失，图案已在0.4.10采用黄铜螺帽。专项直接比较跨回合前后NPower控件的实例ID和存活状态。
+
+BUG-023追加反馈 多次格挡获得活力仍拖沓
+作者当前0.4.4日志共66次活力入账，耗时中位数1毫秒、最大8毫秒；异鸟三连击的相邻入账仍相隔约0.41秒。此前专项只测PowerCmd获得能力，不能据此证明完整受击节奏已改善。新增实际Byrdonis.PeckMove对照：无遗物、旧优化、压缩后、未格挡，核对逐段格挡及1+2+3活力完全一致。新处理只压缩本角色完全格挡并触发两版架势时的原生伤害尾部展示等待，保留攻击动作、逐段逻辑和所有钩子，不改变未格挡／其他角色／混合目标的节奏；最终实测结论以本轮证据为准。
+
+0.4.6针对性回归与证据范围（2026-10-24）
+Release编译0警告／0错误，130份资源。实际渲染通过：edge122项（全部17种自定义能力与原生飞镖的HoverTips）、focus39项（包括跨回合相同NPower控件保留）、observer71项（原观者规则／表现与无Watcher依赖）、vigor25项；observerpersist两个新进程分别6／15项。原生ENet三人混组与四构装体均通过，各端九阶段快照一致，包含神格、临时力量消退、并行选牌、队友死亡与奖励归属。实测异鸟三连击：无遗物1882.8毫秒，旧处理1896.7毫秒，压缩后1449.9毫秒，未格挡1900.0毫秒；保留逐段1、2、3活力。
+各专项保留自己的DLL指纹，不把中途仅增改QA对照代码后的新DLL说成已经由所有旧日志共同验收。逐项构建、结果、日志指纹见tools/runtime/current-verification.json；这不是最终发布候选的全量验收。0.4.4汇总另存tools/runtime/qa/verification-0.4.4.json。运行中的作者试玩仍为0.4.4，未热替换；启动器重开同步新构建。未导出或上传。
+最终本地DLL SHA256为841da7e84a06fedbdc64dabda5e9c721178e07cc850dfb562c229b7f11725b15；此文件实际渲染adapt98项通过，覆盖紧追不放两类触发说明、出击／守护者的本人攻击及生命加伤、预览／活力／复制、无色地毯权重和原角色隔离。证据tools/runtime/qa/adapt-20261024-214947-999433900。其余已通过专项对应各自记录的0.4.6中途DLL，仅QA对照代码随后有改动；后续正式候选仍需按实际交付文件重新验收。
+
+BUG-034 事件渲染专项退出时的缓冲区释放诊断（已定位并修正QA退出）
+旧构装体／铁甲战士事件流程行为断言完成，但进程退出出现8个GPU Buffer报错。分离检查证明脑蛭领取、单独哲学家房间、原版哲学家特效反复创建销毁均正常；问题在显示卡牌奖励后出现。新增独立NativeProbe程序，只加载游戏、BaseLib及QA程序，不加载PunchConstruct，也复现相同大小系列的缓冲区报错。verbose显示闲置卡牌控件及其特效仍存在于原生NodePool缓存；完整事件中原生卡牌池一直复用30个控件，没有逐轮增长。
+两边均在显式QA结束后释放对象池中已闲置、无父节点且不在场景树内的卡牌，再等待渲染帧退出，报错消失。正常游玩不调用此清理，不动活动卡牌，也没有增加错误放行条目。独立对照前后证据：tools/runtime/qa/native-events-20261024-220920-399003100（保留诊断失败）、native-events-20261024-221202-953703900（释放30个缓存控件后通过）；最终0.4.8的events51项通过，证据tools/runtime/qa/events-20261024-221443-667312600。原始0.4.6失败证据继续保留，不用新通过结果覆盖旧失败。
+
+BUG-035 兼容渲染模式下蜈蚣吸入特效着色器错误（已加角色局部兼容处理）
+纠正旧归因：作者日志中的shader代码对应原版decimillipede_suck_shader.tres，不是飞牌自身；NCardFlyVfx只是当时的C#调用栈。原资源保存的code有两处fma，兼容渲染不支持。0.4.9原版角色对照已在Combat Room后台预加载时捕捉同样的47行fma错误，随后VisualShader重新生成的运行代码又变为普通乘加；支持原版缓存代码先提交、图再生成的间歇性故障。原始失败证据tools/runtime/qa/shaderoriginal-20261025-102730-229379100，严格失败状态保留，不当作本角色功能验收通过。
+为避免使用不兼容缓存代码，仅在存在拳击构装体的对局且使用gl_compatibility时，为蜈蚣前／中／后三段选择独立场景与普通Shader。只将两处标量fma改为等价乘加，保留原生贴图、节点、材质参数和动画；不接管原资源路径或修改共享缓存，其他角色单独对局和其他渲染模式保留原路径。场景差异及指纹由check_graphics_compat.py核对，来源登记在美术素材/兼容特效来源.json。
+最终0.4.8的shadernative／shaderoriginal分别验证实际三段材质、三张吸入纹理绑定、再生特效渲染、角色与渲染条件以及退出后恢复原路径，均通过；截图已查看。证据tools/runtime/qa/shadernative-20261024-221443-685639600、shaderoriginal-20261024-221443-726254100。后续仍接受作者旧日志时序的实机反馈，不改写为已证明所有驱动问题均消失。
+
+一、已修复问题
+
+BUG-031 完全格挡荆棘反伤后，活力挂住不再正常消耗（2026-10-24）
+作者试玩日志最后为SPINY_TOAD_NORMAL战斗中对棘刺蟾蜍打出小斩波，未出现对应异常堆栈。运行中为0.4.0，未包含后续结构化日志；已只读保存该日志及实际加载DLL指纹至tools/runtime/qa/vigor-user-20261024，没有操作或关闭用户游戏。
+定向房间稳定复现：格挡荆棘反伤时架势在攻击内部增加活力，原版VigorPower消耗攻击开始时的量后仍有余量，能力不被移除，但内部commandToModify仍引用旧攻击。下次BeforeAttack因此不绑定新攻击，后续攻击不再正常获得／消耗活力。第三次攻击应剩3点却剩5点，失败证据为tools/runtime/qa/vigor-20261024-200330-699675600。
+现只针对拥有架势的拳击构装体，在原版AfterAttack完整结算后清除同一攻击已结束的临时记录；不提前扣活力，不清空本次反伤中新得的活力，不修改其他角色。增加guard.gain.begin／end／failed和guard.vigor.consumed诊断事件，记录授予量、前后层数、耗时与消耗起始量。修复后定向渲染专项22项通过，覆盖连续四次攻击的实际伤害／活力、三段攻击只消耗一次起始活力、保留新增长量及最后一次清空；联机与原有成长专项另列本次验证结果。作者口述“挂住”若还包含整局无法操作，需要与此“活力持续不消耗”现象分别核对，不能据这一复现宣称队列卡死已修复。
+
+BUG-030 神格独立实现遗漏入场表现（2026-10-24）
+旧实现缺少原观者模组表现，且退出时机和大额真言扣除方式不同。作者现明确恢复原观者模组规则与表现：己方回合结束退出，每次真言变化回调只扣10点，神格中不重复获得入场能量。使用原粉色线状光束图集及向内收束动作、紫雾／光点原参数、七帧眼睛的原持续时间／帧序／颜色／偏移／淡入淡出、神格及真言音频和边缘着色器。眼睛最多4个、间隔0.35—0.6秒、初次延迟0.3秒；只在单人显示原风格的全屏边缘。退出、移除和战斗结束清理，音频遵守静音；不重新依赖Watcher。旧67项结果仍仅对应历史构建，新实现与最终构建的验证另列。
+
+BUG-027 东尼斩波延迟命中帝王蟹蟹钳不转向（2026-10-24）
+已用真实回合稳定复现：普通定向攻击转向正常，但东尼斩波原始出牌目标为自身，延迟随机目标在下回合才由原生攻击命令抽取，绕过了原版“出牌前按目标转向”的入口。现保留原生随机抽取与攻击命令，在实际单体伤害结算前调用该玩家包围能力的原生转向；不伪造重新出牌、不为转向额外抽随机数，不改变群体牌或其他角色的原版随机攻击。
+修复前专项在首个相反方向延迟命中处失败，原始证据保留在tools/runtime/qa/facing-20261024-194348-653599800。最新专项在原生伤害前置钩子观察真实目标、逻辑朝向和实际Body方向；覆盖普通、升级、两种混合叠加顺序，核对格挡7／9及随机流状态。专用诊断事件为delayed_wave.facing。
+
+BUG-028 倒扣波纹水盆主体向上偏移（2026-10-24）
+原版小图的实际盆体裁切为81×56，图集Margin为Rect2(2,16,4,29)，组合成85×85逻辑画布；旧适配只生成裁切图，丢失Margin，导致遗物栏的主体定位和缩放改变。现为变换后的裁切图恢复原版AtlasTexture画布／偏移／裁切设置，图标和轮廓分别保留各自Margin。银色飞镖、头盔及镜像地毯共用的图集适配也保留该元数据，不覆盖原图集。大小预览、反复刷新及切换到原角色均纳入实际控件检查；比较保留完整画布的截图，不能只比较裁切像素。
+
+BUG-029 东尼斩波误写为攻击牌（2026-10-24）
+作者确认后改为1费基础技能，普通／升级仍为延迟7伤害＋7格挡／9＋9。模型ID和牌序73保持，旧牌存档恢复后按技能类型显示。实际出牌不再触发“打出攻击牌”类遗物；延迟伤害仍按原有攻击命令结算。当前74张类型总计改为31攻击、27技能、16能力，普通品质25攻击／25技能／15能力不变。
+
+BUG-026 原版角色卡池挑战被普通名单过滤（2026-10-24）
+定向测试确认：原生“某角色卡牌”挑战已加入外来卡池，但本角色普通白名单再次过滤，导致未选入设计的原版牌全部被排除。作者确认勾选某角色卡池后应出现该角色原版全量卡池，现仅对明确勾选的原版角色池放宽名单和体系门槛；不扩大正常模式，不修改全局模型。海玻璃与色彩哲学家先按专用范围过滤，不借挑战扩大发牌。选定挑战及其角色参数随原生存档保存，开局日志同步记录。
+验证结果见本轮0.4.1验收补充；测试过程中发现的可变模型复制错误属于QA用例错误，已纠正，没有为通过用例改变游戏行为。原先一轮种子／挑战检查因作者反馈后台音效而中止，只保留已完成证据，不记整组通过。
+
+日志与测试约定（2026-10-24）
+单人／联机共用逐行JSON诊断。正常试玩目录tools/runtime/play-userdata/PunchConstructTest/PunchConstruct/logs；原生日志tools/runtime/play.log。字段含构建指纹、UTC／会话／局次、种子／挑战、角色／玩家槽位、房间、行动编号／耗时、选择编号／收发、异常堆栈和状态分歧摘要。最多12份、每份约2MiB；重复消息合并，写入失败不阻断游戏。原生警告和错误单独标记，不直接归因为本模组；本机保存、不自动上传。
+测试的原生日志、结构化日志、快照和结果按时间独立留在tools/runtime/qa，失败／中止也保留。只读汇总工具tools/diagnose.py。轮转、并发、中文／换行以及不可写路径已进行故障测试，发现并纠正Windows斜杠表示不一致导致当前日志未从清理候选中排除的问题。
+作者要求后续所有自动测试静音：隔离测试档四项音量为0，显式QA入口再关闭主音量；正常试玩音量不改。曾因测试反复进入玩偶屋产生声音，已停止当时测试进程并按此约定修正工具；不结束作者正常游戏。
+
+0.4.4平衡修改与针对性回归（2026-10-24）
+古铜之拳改为完全格挡每段伤害后，将1、2、3……点累积至下回合临时力量；下回合开始生效，该回合结束失去等量力量，其他来源的永久力量保留。触发次数继续跨回合递增，下场从1重置。期间的新格挡另行积累下回合的量，不把旧临时力量延长。原生能力／BaseLib临时能力管理层数、消退和联机状态，新增guard.strength.activated日志；0.4.10可见状态已采用黄铜螺帽，内部隐藏到期能力仍用全透明纹理，保留层数和悬浮说明。
+出击／守护者改由角色本人攻击，保留原版奥斯提现有／最大生命加伤公式、强化和模型ID；不再触发奥斯提攻击效果，伤害与预览使用角色的力量、活力等修正，奥斯提缺席时仍造成基础伤害。移除本角色卡牌上的奥斯提攻击标签和缺席警告，其他角色仍走原版实现。卡牌清单、角色设计、根目录和工具说明已同步。
+最终DLL SHA256：6e84e7e79a235bf710af28ce12527207250ec29c7744505b42ffb1a9a0abc260，Release编译0警告／0错误，129份资源。相同构建实际渲染通过adapt98项、focus37项，以及双构装体原生ENet主／客机64／53项，八阶段快照全部一致；无未分类错误。覆盖临时力量累计、生效、到期、已有永久力量保留、跨战斗重置、两张攻击普通／强化、有／无奥斯提、不同现有／最大生命值、角色与宠物力量隔离、预览对应实效、活力消耗和战斗复制；联机另回归格挡反伤活力消耗、选牌与队友死亡结算。
+汇总与日志指纹见tools/runtime/current-verification.json，三组独立证据为tools/runtime/qa/adapt-20261024-204037-595525800、focus-20261024-204037-621569000、coop-construct-20261024-204037-693238000。此前失败记录保留：QA曾在未放入战斗牌堆的复制牌上计算战斗加伤，并直接格式化未注入Amount的原生能力Description；已改用原生战斗复制入手流程和实际HoverTips，不为通过测试修改游戏规则。
+全部测试静音、隔离临时档、直接定向房间；未运行完整对局。当前只重测本次相关专项，旧三／四人及其他专项仍以各自构建为准。用户运行中的0.4.0进程和存档未操作，启动器重开加载新版；未导出、未更新旧候选游戏文件、未上传。巨大扭蛋仍仅记录；神格退出时机／大额真言规则差异仍待作者选择。
+
+0.4.3活力修复与神格表现验证（历史构建，2026-10-24）
+最终DLL SHA256：bd75c6612445eae799ec8a8fd13329c8b3d0a9fa15e693a66b1f279d367736c0，Release编译0警告／0错误。相同构建通过vigor22项、focus34项、observer67项，以及双构装体原生ENet主／客机57／48项；七个阶段快照一致，日志无未分类错误。所有测试静音、使用隔离临时档与定向房间。资源共128份，新增神格资源有独立来源记录；卡牌清单／素材／文档检查通过。
+本次四组最终证据、各日志指纹与明确限制归档至tools/runtime/qa/verification-0.4.3.json；旧coop-verification.json仍对应0.4.1，不能视为0.4.3全量验收。当时用户0.4.0进程保持运行，未强制替换DLL、操作用户游戏或修改用户存档。退出后使用工作区启动器重开才会加载修复；不新增安装包，不刷新旧候选游戏文件，不上传。
+
+本轮0.4.1最终验证（2026-10-24）
+最终DLL SHA256：a67b977502bd940afaeb3062a8833ff55bf2495718478e32f3d2dbd648566d57。Release编译0警告、0错误。下列最终专项均使用这份构建，实际渲染、静音、隔离临时档，不自动推进整局：
+- 四名构装体：主／三位客机57／52／52／52项；三人构装体与亡灵契约师混组：50／43／45项；两人构装体与铁甲战士混组：45／37项。三组各比较七个阶段、所有进程快照一致；保留原生状态校验。
+- modes133项：实际自定义界面种子输入和挑战勾选，21个勾选项分别初始化、无挑战种子基线及一个组合；包括选牌、现开套牌等原生选牌流程、五种原版角色全卡池准入、商店、磁盘保存和模型重建。不是所有挑战战斗效果、在线每日挑战排行榜或全部组合的验证。
+- adapt63项、focus34项通过，另通过无QA参数的普通启动检查。数字包含每个显式专项的4项静音／日志基础检查，未把它们当作额外玩法覆盖。
+- 日志结构、轮转、并发写入、中文／换行与不可写路径均通过；正常启动也实际产生诊断日志。未分类原生错误与诊断观察器异常均进入失败判定。诊断写入失败只停诊断，不改游戏结算。
+完整证据按场景和时间保存在tools/runtime/qa，各结果附构建和日志指纹；tools/runtime/coop-verification.json为本轮最新汇总，列出116份资源和最终七个专项的独立文件SHA256。旧0.4.0汇总已替换，旧版测试数字仅作为历史说明。
+本轮没有导出安装包、更新旧候选内容或上传。用户游戏持续运行，期间正常存档／回放文件发生变化，不能据此宣称试玩目录哈希不变；同步脚本在DLL复制失败处已退出，尚未运行到试玩存档／设置操作。Steam邀请、互联网延迟／丢包、断线重连和其他版本／模组组合仍未验证。巨大扭蛋只按作者要求记录为待定位问题。
+
+BUG-024 联机时紧追不放混用队友标记、遗物状态重建丢失（2026-10-24）
+原版紧追不放的敌人能力只有共享层数和单一施加者；直接沿用会使多个构装体的召唤叠在一起，且可能与原版亡灵契约师冲突。现将本角色的标记独立出来，按施加者分别叠加，仅由本人或本人的奥斯提触发；原卡ID、普通／升级数值、伤害先于附加标记及回合末过期保持不变。
+架势／古铜之拳的递增计数和头盔的整场一次标记原先仅存在普通字段／弱引用表中；现使用BaseLib保存字段，并保留原生复制时的值，避免远端重建遗物后恢复默认。只保存持久状态，镜像属性过程中的递归保护仍为临时状态；正常战斗结束／开始重置规则不变。
+联机专项以两个独立游戏进程通过原生ENet连接，使用真实网络出牌、结束回合与远端选择消息，原生状态校验保持开启。覆盖双构装体、与亡灵契约师混组、与铁甲战士混组；每组比较战斗开始、标记、下一回合、变牌、海玻璃奖励五阶段快照。检查包括两位玩家能力归属、普通／升级生成牌、延迟随机伤害、动量5变牌、遗物复制／序列化和正常胜利后重置。
+详细日志和五阶段双方快照见tools/runtime/coop-construct-*、coop-necrobinder-*、coop-ironclad-*。测试直接进入指定房间，不自动跑整局，不改用户存档或Steam文件。Steam邀请、互联网延迟、断线重连和三／四人仍未实测；旧发布候选不含本轮联机修改。
+当时0.4.0构建三组均通过：双构装体主／客机37／33项，亡灵契约师混组34／28项，铁甲战士混组33／26项；共15对阶段快照一致。另对同一DLL完成adapt59项、focus30项、boundary21项实际渲染回归，未分类错误检查均通过。该段为历史结果；最新汇总与独立证据见上面的0.4.1最终验证，不能将旧数字作为新构建验收。
+
+BUG-023 架势获得活力／力量时每段额外停顿（2026-10-24）
+原因：原版PowerCmd初次获得和叠加能力都会额外等待普通速度0.25秒、快速模式0.1秒；多段完全格挡逐段触发，停顿随段数累加。
+修复：仅在两版架势给予对应角色对应能力期间，跳过这一次展示等待；继续使用原版能力命令，保留图标／数字提示、历史记录、能力联动及逐段递增，其他来源正常等待。不并发后台结算，不将多段合并。
+证据：tools/runtime/focus-current-check.log，30项通过。实际渲染下连续四次原版活力／力量获得分别约1066.2／1066.5毫秒，架势对应四次约1.9／1.9毫秒；包括首次施加、叠加、触发后普通获得仍正常等待，以及实际受击、部分格挡、跨回合／战斗重置。
+此次只更新本地构建，不导出安装包或上传；旧发布候选暂未更新。
+另通过tools/runtime/boundary-current-check.log的21项边界检查，包括头盔、临时敏捷、铁斩波形态与卸甲成军联动。
+
+BUG-001 放弃／死亡后游戏错误继续
+补齐角色场景FormVfx节点。放弃和致死都能进入结算、删除续玩存档、返回菜单，随后新开8张初始牌组并正常操作。
+证据：tools/runtime/end-current-check.log。
+
+BUG-002 左上角头像与选人海报异常
+游戏内头像独立32×32，修正布局与父容器适配；海报纹理资源类型已纠正。
+证据：tools/runtime/selection-icon-check.log，qa-character-select.png。
+
+BUG-003／BUG-006 搬运牌卡位错误
+冷眼旁观、以手拒之、旋身现分别由ObserverColdObservation、ObserverTalkToTheHand、ObserverSwivel独立实现；化智为空、停顿、疾风连击不在当前池中。
+当前74张牌与主清单逐张比对。旧存档已生成的错误牌不强制替换。
+证据：tools/runtime/pool-current-check.log。
+
+BUG-004 机器人专属药水混入
+使用本角色独立空专属池＋原版公共池，不含集中药水，不改变其他角色药水池。
+证据：tools/runtime/pool-current-check.log。
+
+BUG-005 卡牌边框／归属错误
+搬运牌保留原归属；六张体系原创牌分别归储君、亡灵契约师；四张无色原创牌归无色。巨大铁斩波归拳击构装体，普通铁斩波归铁甲战士。设计归属和可获取池分开，不扩充其他角色原池。
+证据：tools/runtime/pool-current-check.log。
+
+BUG-007 状态图标主体偏小
+九张64×64状态图标去掉多余透明留白，最长边62像素，256大图最近邻同步。
+证据：tools/runtime/icons-current-check.log；对比图icon-scale-before-after.png。
+
+BUG-008 选人下方按钮误用圆头像
+采用指定旧稿独立压为132×195竖图；顶部32×32头像不共用该纹理。
+证据：tools/runtime/selection-icon-check.log。
+
+BUG-009 随机来源产生池外牌
+普通奖励、无色商店、补货、战斗随机生成、变化等入口统一校验本角色选入池及门槛。无色来源当前7张（5蓝、2金）。固定事件专属牌、诅咒／状态／任务牌、固定衍生牌保留原机制。
+证据：tools/runtime/update-current-check.log、edge-current-check.log。
+
+BUG-010 树叶药膏扣生命却不变牌
+改为变化至多两张可变化的小斩波，跳过永恒，保留原版12最大生命代价；替换结果遵守角色池。效果及事件预览一致。
+证据：tools/runtime/update-current-check.log、edge-current-check.log。
+
+BUG-011 营养汤遇到永恒小斩波报错
+仅在营养汤指定替换期间允许正在处理的小斩波变化，结束或异常后清除许可，不开放其他牌的常规移除／变化。替换结果保留强化与已有附魔，现为0费且永恒。旧营养汤标记牌自动补0费，普通铁斩波仍1费。
+证据：tools/runtime/persist-seed-check.log、persist-current-check.log。
+
+BUG-012 初始遗物外围留白导致偏小
+清理alpha≤8的外围杂点后按主体裁切，初始／先古／螺丝分别校正。128画布的主体约120×115／107×113／107×115，轮廓图、大图同步，源图保留。
+证据：tools/runtime/relic-subject-fit.png、screw-scale-preview.png；美术素材/素材清单.json。
+
+BUG-013 波纹水盆只在描述大图倒扣，遗物栏未改变
+在原版NRelic控件刷新后，从原始资源直接设置本角色的小图和轮廓，避免原版小图读取被内联后绕过图片属性补丁。每次都由原图派生，重复刷新不会再次翻回；预览大图保留倒扣，其他角色保持原图。同一显示链路中的飞镖、头盔银色小图也已验证。
+证据：tools/runtime/relicvisual-current-check.log，共11项；basin-inventory-fixed.png与basin-inventory-native.png为实际遗物栏控件纹理。
+
+BUG-014 建筑师进场无对白，直接进入结算
+建筑师直接继承EventModel，不属于其他先古使用的AncientEventModel，原先只接入后者导致其专属对白没有注册；缺少对白后被兼容兜底直接结算。用户日志记录为通关，并非战败。现在两个对白入口均接入，仅注册本角色的三组对白；按第1／2／3次会面顺序，后续使用原版重复规则。入场先说话，三句后才执行原版双方出手及通关结尾。
+证据：tools/runtime/architect-current-check.log，实际渲染32项；architect-headless-check.log另保留无窗口专项32项。直接跳转三次事件逐句操作，另检查第4—6次对白候选及其他角色隔离；qa-architect-first-line.png为首句现场。本地试玩已同步，用户试玩存档未修改。
+
+二、当前已实现的近期设定
+
+- 愈战愈勇：1费无色金色技能，先将一张灼烧加入手牌，再选择一张手牌变为附魔5动量的普通拳斗；普通版消耗，升级仅去消耗，两版均不生成拳斗+。可选择刚加入的灼烧，不改永久牌组。
+- 不倒不休：1费无色蓝色能力，升级后仍1费；回合开始将一张拳斗加入手牌、一张灼烧加入弃牌堆，升级后生成拳斗+。混合叠加时分别生成对应版本。
+- 紧追不放：1费，角色造成5／升级6点伤害；随后在本回合内，角色或自己的奥斯提击中目标时，每段召唤3／升级4。取消奥斯提伤害要求、缺少奥斯提的警告与攻击标签、护卫发牌门槛；保留召唤组及原版叠加、触发顺序和过期结算。
+- 肮脏地毯（无色地毯）：卡牌奖励中无色牌出现概率大幅提高，当前在原品质抽取后将已选无色牌权重×5；不新增全局池、不改变品质概率，不影响其他角色。图标、轮廓与大图左右镜像。
+- 与我一斗：2费无色蓝色攻击；铁斩波形态：无色金卡，普通第一次／升级前两次伤害触发。
+- 架势依次给予1、2、3……活力，先古版古铜之拳同样递增，但改为下回合临时力量，无抽牌；按完全格挡段触发，部分格挡不推进，跨回合维持，每场从1重置。模型ID与旧档读取不变；当前先古效果见0.4.4验证段。
+- 自旋螺丝：专属普通遗物，击败每个敌人回复1生命并获得5金币，最后一只和群体击败均结算，不因玩家死亡触发。
+- 营养汤的铁斩波：0基础费用、永恒、保留强化和已有附魔；永恒牌在永久牌组不可移除／变化，原版临时费用修正照常适用。
+- 海玻璃仍从指定原版搬运子集中三系各5张；色彩哲学家三次3选1，包含六张对应体系原创，合计9张候选全部不重复。
+- 74张审阅编号连续；新增愈战愈勇70，巨大铁斩波71，三种初始牌72—74。模型ID保持稳定。
+
+三、历史专项验证索引
+
+本节是此前阶段的摘要，数字限对应旧构建；其中通用*-current-check.log会被新专项覆盖，精确旧证据以qa独立目录及各版本汇总为准。0.4.9完整结果归档于tools/runtime/qa/verification-0.4.9.json；当前图标更新的实际证据见本文件顶部及tools/runtime/current-verification.json。
+
+以下均为隔离测试存档、直接调试跳转／命令及实际选牌操作，没有完整对局或用户存档写入。数量包含抽样与操作断言；结果属于日志对应构建，没有宣称每次改动后全部重跑。
+所有下列日志位于tools/runtime：
+
+persist-seed-check.log：24项。营养汤五种附魔与强化、0费、原生复制、旧标记补0费，普通铁斩波不减费，实际领取拳王形态+，储君费用复制及升降级。
+persist-current-check.log：24项。关闭前一进程后全新启动并从主菜单继续；永恒／附魔／0费保留，进入战斗实际打牌不耗能量，储君费用不重复叠加。
+focus-current-check.log：30项。震荡多目标及升级；两版架势递增、跨回合维持、下一场重置；欧若博斯之触实际替换，先古版无活力／额外抽牌；两版能力初次获得与叠加耗时，以及其他来源仍使用原版等待。
+additions-current-check.log：53项（最新渲染专项，含变牌音效、灼烧展示飞入、旧版计数异常复现及正常／叠加／满手溢出后的真实UI计数核对）。愈战愈勇先加一张灼烧再选牌、普通／升级、5动量实效、空手牌时选择新灼烧、满手溢出与永久牌组；不倒不休普通／升级均1费，分别单独生效及混合叠加连续两回合生成对应版本拳斗，灼烧入弃牌堆；自旋螺丝首只／末只／群体击败与满血限制。
+startup-current-check.log：干净隔离环境的实际渲染普通启动；只加载BaseLib与本模组，不带QA参数，正常进入主菜单，未开局。
+soup-current-check.log：110项。18种小斩波可合法附加的原版附魔，各测普通与升级，共36例；升级来源另预置永恒。核对营养汤强制替换、附魔类型与等级、附魔伤害／格挡加成、关键词、强化状态、0费永恒、永久牌组中的移除／变化限制，以及原版复制与序列化还原。此专项不等于逐个附魔的战斗钩子均已测试；跨进程继续另见persist日志。
+pool-current-check.log：58项。实际74张名单、品质、归属、边框、能量图标、角色池隔离、公共药水来源。
+update-current-check.log：44项。7张无色来源、普通随机生成及变化、商店、镇纸、海玻璃、树叶药膏及近期卡牌效果。
+edge-current-check.log：82项。永恒与树叶药膏、商店和补货、小组门槛及权重、先古商店、对白资源、锻造／灾厄／召唤。
+boundary-current-check.log：21项。跨组与重复牌权重、移除后重新锁定、头盔负值／敏捷先触发／跨战斗重置、飞镖与永久敏捷、形态联动。
+relics-current-check.log：34项。遗物权重和角色隔离、木偶／种子／水盆／飞镖实效、延迟结算、奥斯提及非机器人充能球栏。
+events-current-check.log：30项。脑蛭实际5选1，三色色彩哲学家分别核对9张候选跨轮不重复、对应体系原创准入、三次各选1张并实际入组，重拳出击顺走分支实际领取和结尾。
+end-current-check.log：11项（最新渲染专项）。放弃／致死各采样91帧确认死亡朝向、正常结算与续玩档移除、返回菜单及新开局，另检查原版拳击构装体敌人动画不受影响。
+icons-current-check.log：19项。九张状态图标和大图资源。
+relicvisual-current-check.log：15项。实际渲染的遗物栏控件、波纹水盆倒扣小图与轮廓、大小预览、反复刷新、角色切换隔离及飞镖／头盔银色小图；另核对地毯小图／轮廓／大图左右镜像与原角色隔离。只在菜单创建控件，不开局。
+adapt-current-check.log：59项。紧追不放无奥斯提出伤、解除护卫门槛、召唤从零启动、多段／升级叠加、实际手牌力量与活力预览及消耗、格挡命中、过期与致死；地毯原版奖励管线抽样、池内去重、限定标志、非奖励来源与其他角色隔离、移除恢复。两张同品质候选各1200次，未持地毯时无色牌630次，持有后1017次；这是受控抽样，不代表所有品质混合后的最终出现率。
+architect-current-check.log：32项。实际渲染三次直接跳转建筑师，首句气泡、逐句操作、结尾动画和正常胜利结算；另核对多次重逢及原版角色对白隔离。
+regentvisual-current-check.log：36项。七张取消星费牌的实际控件、升级／降级／费用刷新、原角色隔离及真正0星牌角标。
+facing-current-check.log：25项。帝王蟹左右目标实际攻击、画面与原版朝向一致、背击倍率、重复攻击、群体技能和死亡朝向。
+selection-icon-check.log：5项。独立选人竖图、头像和海报资源及布局。
+doll-current-check.log：3项。玩偶事件三条路线固定风的女儿第一。
+
+BUG-015 观者外部前置移除
+八张已选观者牌和真言／神格、回防、能量下降均独立实现；旋身调用原版FreeAttackPower。编译引用、模组清单和专项环境不再加载Watcher。紫色归属仍保留，卡池总数与品质不变。冷眼旁观不继承外部观者模组的仅联机标记，单人正常出现。旧ID只在原观者模型不存在时读取迁移，强化和附魔保留。13份既有卡面／能力纹理单独登记在美术素材/观者搬运素材.json，不复制整个观者资源包。
+证据：tools/runtime/observer-current-check.log；最终检查结论见本文件末尾。
+
+四、未完成与已知覆盖边界
+
+发布交付状态另见发布前清单.txt；素材直接来源核对已完成，0.4.11候选的25项功能及8项联机／恢复验收通过。后续试玩修复与平衡调整尚未同步至候选；下次导出须更新并核验，再交作者最终审查，以及获准上传后的Steam订阅安装验证。
+
+- 用户实测仍反馈后期输出成长不足、终端偏少，通关强度未定稿；不能用牌数或专项通过代替通关能力评价。
+- 小组×2、先古商店5%与1.5倍金卡基价、护卫白卡属于当前试玩参数，后续按反馈调整。
+- 多人联机、高进阶、所有其他模组、所有事件与附魔战斗组合尚未穷尽；营养汤已有18种可合法附加原版附魔的36例替换／复制／序列化专项，附魔的全部战斗触发组合仍未穷尽。
+- 图标资源和指定界面已检查，不代表所有界面的视觉效果均完成审美确认。
+- 长篇背景与专属死亡记录尚未接入；具体对白内容和状态见角色对白.txt。
+- 最新源码包含变牌音效、生成牌动画与计数、死亡与帝王蟹转向、星费角标、色彩哲学家候选修复，以及愈战愈勇1张灼烧的新设定和架势结算提速。通过TryPrototype.cmd启动时同步最新本地构建；已打开的游戏须退出重开。dist/SteamWorkshop保留上次验收候选；创建条目和上传仍须作者明确同意。
+
+五、资料一致性核对
+
+当前主清单01—75连续，无重复或缺失；名称、逐张品质、源码成员与实际游戏菜单审计一致。素材清单覆盖34份采用源图、56份纹理，卡面／状态图标编号从主卡牌清单读取；另有13份观者搬运纹理及神格特效资源的独立来源记录，共158份游戏资源。check_documents.py只读检查牌序、统计、源码成员、素材校验值、导出覆盖与当前文档链接，均通过。架势提速见BUG-023；BUG-013、BUG-014及愈战愈勇／不倒不休的新灼烧效果已有对应专项。dist/SteamWorkshop/verification.json只证明0.4.11候选的三个实际文件及其25项功能、8项联机／恢复检查；最新源码覆盖以tools/runtime/current-verification.json为准。
+
+六、此前修复与验证过程（下列“本次”“旧候选”等状态属于当时阶段，当前交付以首部及最终验收报告为准）
+
+移除观者前置的验证：
+- observer专项：54项通过，覆盖完整战斗机制与实际单人奖励候选，明确确认冷眼旁观单人出现；证据tools/runtime/observer-current-check.log。
+- observerpersist专项：独立临时档先写入8张强化／附魔牌，退出后替换成旧Watcher卡ID，再启动新进程点原版继续；seed 2项、resume 11项通过，所有牌恢复。已直接使用当前发布候选再次验证，seed 2项、resume 11项通过。
+- pool专项：74张完整清单、品质、归属和药水池通过；最新构建已再次运行。
+- 建筑师32项、放弃／致死／重开7项：在移除观者的环境通过；已直接使用当前发布候选再次验证通过。
+- 实际渲染：八张卡面、独立牌框与能力图标已检查，截图tools/runtime/qa-independent-observer.png。完整渲染专项允许90秒；首次60秒上限不足时中止，不记为通过。
+- 试玩入口只加载BaseLib与PunchConstruct；当前发布候选只含本模组三个文件，唯一前置为BaseLib，尚未上传Steam。
+
+BUG-016 愈战愈勇手牌变化无音效
+原版CardCmd.Transform对手牌使用NCardTransformShineVfx，这个分支不播放音效；牌组变化使用NCardTransformVfx，自带card_transform音效。愈战愈勇选定本地玩家的手牌后补播同一个原版音效，仍使用原版手牌变化动画，不给其他角色或牌组变化追加音效。
+Release构建0警告、0错误；additions实际渲染专项36项通过，使用临时音频观察补丁确认NAudioManager收到原版card_transform事件：普通／升级、新灼烧、满手各一次，空选择零次。变牌、动量5、升级、手牌溢出与不修改永久牌组均通过。FMOD初始化正常，没有变牌音效事件错误；这是音频调用验证，未做扬声器录音试听。
+证据：tools/runtime/additions-current-check.log。用户游戏仍在运行并锁定本地DLL，没有关闭该进程或修改存档；下次通过TryPrototype.cmd重开时同步最新构建。发布候选尚未纳入本次修复，上传前必须刷新与重新核验。
+
+BUG-017 不倒不休生成灼烧进入弃牌堆没有动画
+原先仅调用AddGeneratedCardToCombat加入弃牌堆，漏调PreviewCardPileAdd；现将实际加入结果交给原版预览流程，先展示灼烧，再飞入弃牌堆。拳斗+入手、灼烧实际所在牌堆和生成张数不变。
+Release构建0警告、0错误。additions实际渲染专项42项通过：真实回合开始单张能力、普通与升级叠加后连续两回合、满手牌时逐张检查灼烧。临时观察原版NCardFlyVfx，确认可见预览、目标弃牌堆、动画进入场景且完成，每张仅一次；实际牌数与拳斗溢出保持原规则。截图tools/runtime/qa-never-burn-preview.png已查看，日志tools/runtime/additions-current-check.log。此前变牌音效专项也在本次构建通过。
+首次扩大满手牌用例后，后续螺丝测试未清理满手牌而失败，已在测试用例间清理手牌，完整专项重跑通过；没有修改螺丝实现来迎合测试。
+本次只修复源码并编译本地试玩构建，不打包、不刷新发布候选、不上传Steam。运行中的游戏需要经TryPrototype.cmd重开后加载新DLL。
+
+BUG-018 已取消星费的储君搬运牌仍显示0星角标
+费用适配仍保持原实现；只在拳击构装体持有七张已改用能量的搬运牌时，隐藏NCard完整星费角标及其子标签。覆盖整体刷新、星费刷新和费用数字刷新，防止升级预览或费用动画恢复0星显示；重新绑定为储君原牌时由原版刷新恢复角标，不改变储君真正的0星牌。
+Release构建0警告、0错误；regentvisual菜单实际渲染专项36项通过：七张牌分别检查正常显示、原角色对照、升级预览、升级与费用数字刷新、降级；另检查储君临时降到0星的牌仍保留角标。截图tools/runtime/qa-regent-costs.png已查看，日志tools/runtime/regentvisual-current-check.log。只在菜单创建卡牌控件，没有战斗或存档写入。运行中的本地试玩需经启动器重开加载。
+
+BUG-019 色彩哲学家三轮候选重复，漏掉六张体系原创
+原实现创建三个独立CardReward，只做每轮内部去重，漏掉跨轮候选排除；并用IsSelectedImport错误排除了用户设计的六张储君／亡灵体系原创。用户已明确纠正，应包含这些体系原创，而不是为了凑数改动守护者渠道。
+已增加色彩哲学家专用候选判定，包含对应三系选入牌与六张体系原创，共36种，储君15／亡灵11／机器人10。保持先古渠道及海玻璃原版搬运子集不变；不扩展三个角色的完整卡池。三组奖励顺序预先生成，每组排除前面所有候选（含未选牌），合计9张全部不同，仍为三次3选1、不分品质，豁免小组前提与加权。
+Release构建0警告、0错误；events实际渲染专项30项通过，直接跳转事件并实际打开三个奖励行、每行选1张。储君／亡灵／机器人各自9张候选全部不同，候选源计数15／11／10且对应体系原创全部可选；每色实际只获得3张。日志tools/runtime/events-current-check.log。星费角标另由regentvisual菜单渲染36项验证，截图qa-regent-costs.png已查看。本次未打包或上传。
+
+BUG-020 被击败时先转身再倒下
+逐帧复现发现原版拳击构装体die动画把root骨骼scale_x从1设为-1。角色场景已镜像至玩家朝向，该根骨骼翻转导致死亡前突然转身。仅在本角色的动画控制器注册before_world_transforms_change回调，在die动画应用后、世界变换前保留root横向缩放的正向幅度；不修改原版骨骼资源、死亡动作或敌人控制器。
+Release构建0警告、0错误；end实际渲染专项11项通过。放弃与受击致死分别采样91帧，根骨骼与场景朝向始终保持；正常死亡结算、续玩档移除、回菜单和新开局通过；原版拳击构装体敌人的die仍按原动作翻转，验证角色隔离。日志tools/runtime/end-current-check.log，前后姿态截图qa-deathvisual-False-before.png、qa-deathvisual-False-10.png已查看。本次没有打包或上传。
+
+BUG-021 弃牌堆有灼烧，右下角计数仍为0
+原版NCombatCardPile使用独立显示计数，监听CardAddFinished；NCardFlyVfx飞入牌堆时发送该完成通知。旧版不倒不休将灼烧直接加入模型、未展示飞入动画，导致没有完成通知，牌堆数据存在但角标仍为0。BUG-017的原版生成展示流程可恢复该通知。
+一并修复同类路径：不倒不休的拳斗+、愈战愈勇的灼烧在满手溢入弃牌堆时也补原版生成展示；正常入手牌仍使用原版入手动画，不重复展示。没有强行改写UI计数或额外生成卡牌。
+Release构建0警告、0错误；additions实际渲染专项49项通过。使用旧版无展示路径稳定复现实际2张灼烧、界面计数0，给同两张牌补原版生成展示后，界面计数恢复2；另验证愈战愈勇灼烧溢出、不倒不休普通／叠加连续回合／满手时的角标文字与实际弃牌数一致，且生成数量与动画次数正确。日志tools/runtime/additions-current-check.log。未将专项通过当作全部问题已解决，仍由用户继续试玩旧版／新版反馈；本次未打包、未上传，用户运行中的旧进程未修改。
+
+BUG-022 帝王蟹战斗中攻击左右蟹钳时转向相反
+原版SurroundedPower通过角色Body的横向缩放正负控制左右；本角色直接在Body上使用负缩放来镜像原怪物素材，导致原版朝向与实际画面正好相反。现将素材镜像移到独立父节点，Body采用正向基础缩放，保留原尺寸与位置，由原版逻辑正常控制左右。未修改背击倍率或其他角色。
+Release构建0警告、0错误；facing实际渲染专项25项通过。直接跳转帝王蟹并实际依次攻击左、右、左、左、右蟹钳，画面朝向与原版朝向状态、背后1.5倍／正面1倍伤害判定一致；重复攻击不反复翻转，群体技能不任意转向，角色位置与尺寸稳定，朝左死亡45帧保持方向。截图qa-crab-facing-0.png与qa-crab-facing-1.png已查看。随后重跑end实际渲染专项11项通过，放弃／致死伤害、死亡朝向、结算／菜单／重开及原版敌人隔离正常。日志tools/runtime/facing-current-check.log、end-current-check.log。本次未打包、未上传；运行中的旧试玩需退出后通过TryPrototype.cmd重开加载新构建与场景。
+
+
+本轮设定同步与补测（2026-10-24）
+愈战愈勇普通／升级均改为先加入1张灼烧，再选择一张手牌变化为5动量拳斗／拳斗+；仍为1费无色金色技能。卡面描述、卡牌清单、角色设计、问题记录与根目录说明同步。原始设定、历史记录及旧发布候选保留其对应版本，不覆盖成新设定。
+Release构建0警告、0错误；additions渲染专项49项通过，覆盖普通／升级、仅有新灼烧时自动变化、满手自动打出时单张灼烧溢出、音效、动量5及真实弃牌计数；不倒不休与自旋螺丝同组回归通过。另新增soup专项110项通过，覆盖18种原版附魔的36例；未因此修改营养汤原有效果。
+本轮仅更新源码、本地试玩与当前文档，没有刷新发布候选、导出安装包、创建条目或上传Steam。
+
+
+发布准备核对（2026-10-24）
+workshop.py新增只读--status，已确认旧候选DLL与资源均不匹配最新源码；旧报告覆盖10项，最终校验现补为14项，新增转向、星费显示、营养汤附魔、跨进程恢复。旧报告部分日志已被后续专项更新，保留报告对应旧版本的说明。
+发布说明里用户编辑的“全尖塔攻防一体的艺术品”已同步上传配置。新增发布前清单.txt，明确最终候选验收、素材来源、分发验证和作者审查尚未完成；本次未打包、未刷新候选游戏文件、未创建条目、未上传。
+
+发布本地准备补充（2026-10-24）
+13张采用观者纹理已对原包导入记录和真实资源路径逐项核对，字节完全匹配；记录已补入美术素材/观者搬运素材.json，直接来源已核实，上游逐张归属仍不明确。
+新增startup渲染检查通过，验证无QA参数、仅BaseLib与本模组的普通启动。发布验收现要求15个专项；最终verify会保留通过日志的独立副本，防止被后续本地测试覆盖。本轮没有打包、更新候选游戏文件、创建工坊条目或上传Steam。
+
+普通启动对照补充（2026-10-24）
+startup与仅BaseLib的startupbase均使用真实渲染，等待主菜单及公共资源预加载完成后退出，没有开局。两组均出现根证书读取提示、3条Invalid Task ID和退出阶段资源诊断，确认这些诊断可在不加载本角色时复现；未发现本角色独有的未知启动错误。日志tools/runtime/startup-current-check.log与startupbase-current-check.log。
+启动检查已增加未知Godot ERROR拦截；使用两组实际日志核对已知诊断分类，并注入未知资源错误验证会被拒绝，未重复启动游戏。普通启动旧入口已统一使用隔离环境，结束清理临时档。
+
+
+最终候选验收完成（2026-10-24）
+按作者要求完成必要的本地发布收尾，dist/SteamWorkshop/content已同步当前0.3.1构建与116份资源；仅含DLL、PCK、模组清单三个文件，没有新增ZIP、创建工坊条目或上传。
+直接使用这三个文件，21个专项全部通过：startup、smoke、pool、icons、observer、observerpersist、architect、end、relicvisual、relics、additions、events、facing、regentvisual、soup、persist、focus、update、edge、boundary、doll。均为隔离临时档与定向房间／操作，没有完整对局；本地用户试玩文件校验值未变。
+复核发现旧菜单专项在公共资源加载中提前退出，PASS之后仍有原版资源解析错误；原生LoadDeferredStartupAssetsAsync只启动加载会话，返回并不代表资源加载完成。显式QA现观察既有Common AssetLoadingSession并等待WaitForCompletion，不重新发起加载，不改普通游戏调度；最终构建重新完成全部21项。check_current与workshop同时拒绝PASS之后的未知资源／脚本错误；调试房间无自动存档时原版清理缺失的两个临时文件、以及BaseLib单独启动复现的精确底层诊断另行分类。
+最终verification.json与三个文件SHA256对应，21份主日志及2份跨进程种档日志已独立保存在dist/SteamWorkshop/验收日志，后续专项不覆盖它们；另已确认74张牌序、实际归属、素材和关键规则文档一致。
+本地必要收尾完成。下一步为作者查看发布审查.txt、封面和发布说明；明确允许后再上传与进行真实工坊订阅安装验证。高进阶／联机等兼容覆盖及长背景草稿属于后续可选完善，不继续列为本地发布阻塞。
+
+不倒不休平衡调整（2026-10-24）：普通／升级均1费，普通每回合生成拳斗，升级生成拳斗+，各保留一张灼烧入弃牌堆。卡面、预览和能力说明同步；同场普通与升级版本混合叠加时分别生成对应版本。Release编译0警告、0错误，additions实际渲染专项53项通过，包含两版单独生效、混合叠加连续两回合、满手溢出及灼烧动画／真实弃牌计数。仅更新本地构建，不导出或上传，运行中的游戏需通过启动器重开。
+
+
+===== 资料/发布前清单.txt =====
+
+2026-10-26 当前开发0.4.20：草稿第二段已实现并接入工作区试玩，Steam发布继续暂停，候选保持0.4.15。新增八张无色牌及卡面；格斗流程按最新修订当回合立即生成三张普通拳法，强化固有，消耗保留。害虫杀手改为快速拳／连环拳／格挡三选一，仅本角色生效，沿用原版准入条件与加牌预览。旧选人头像归档，新灰底暗港胸像正式采用。完整发布验收要求现为30项功能及既有联机／恢复检查，当前只按实际最终文件记录本轮相关专项；不把历史结果当作本版全量验收。详细结果见tools/runtime/current-verification.json及followup-0.4.20.json。
+
+本轮最终构建定向验证：boxing82项、edge123项、update48项、draft87项、animation63项、poster27项、focus39项、modes133项，以及pool、smoke，共10项功能专项通过。双构装体、构装体＋亡灵契约师双人、四构装体共三组原生ENet检查通过，各组11阶段快照一致、未分类错误为空。测试均直接跳转房间、静音并使用隔离存档，没有运行整局。工作区试玩三文件已同步，181份资源与源码一致；本次同步前后的153份试玩档文件、3份Steam候选文件逐一哈希不变。未创建好友包、未修改Steam目录或候选、未上传。
+
+开发中失败证据保留：旧不倒不休测试错误期待拳斗+、无色候选仍写七张，以及手牌上限／抽回已有牌的夹具预期已纠正，没有为通过断言改变原生规则。联机夹具由直接替换进行中的战斗改为走原生胜利清理，并等待抽牌／预览动画收尾；加入响应可能在原生消息分发内同步完成，测试大厅监听器切换延到后续帧，避免在回调枚举期间改监听器。没有修改正常游戏的对象池或全局消息总线。headless模式出现原生dummy纹理空参数，严格判失败；实际渲染器重测通过，错误检查未放宽。发布前全量30项及断线恢复／弱网组合未在0.4.20全部重跑，完整验收仍为false，Steam继续暂停。
+
+以下为历次构建的阶段记录；旧版本的“当前”“未实现”等表述保留其当时语境，不代表0.4.20的状态。
+
+2026-10-26 当前开发状态：0.4.19已按作者最新指示同步工作区试玩，Steam发布仍暂停。草稿第一段与原版构装体战斗动作／音效进行专项核对；完整验收要求现为29项功能及原有8项联机／恢复。下列0.4.15等结论均属历史候选，不能用作当前开发构建已完整验收的证明。营养汤最新规则：只替换未附魔的小斩波，跳过已有附魔牌。
+
+当前补美术阶段：源码和本地试玩为0.4.16，选人海报／动态／粒子已做27项选人检查及启动、smoke专项，预览在资料/美术素材/选人动态预览.html。0.4.16未做全量验收、未同步发布候选。候选0.4.15已成功私密上传至3826907330，未公开；回下载／Steam启动验证因作者补美术暂停。下方0.4.15“未上传”等说明为上传前历史记录，恢复发布工作时须更新候选审查与Steam验证，不能把当前美术版本当作已上架。
+
+拳击构装体：发布前状态（2026-10-25）
+
+当前候选0.4.15，与源码及试玩三个文件一致，本地验收完成，尚未创建工坊条目或上传。
+最新源码及本地试玩0.4.15还包含此前化学物X／宝箱过滤和与我一斗两版6伤害2次／敏捷2或3，并接入四件遗物设定、三份美术及旧遗物存档兼容，并加入灼热铁斩波、多次升级与斩波遗物兼容。0.4.15另补齐神格隐藏状态、即时入场光束及SFX音效通路，当前实际三个文件的26项功能及8项联机／恢复验收已全部通过，158份资源。最新证据见tools/runtime/current-verification.json及qa-completion-0.4.15.json；0.4.14历史证据另保留在tools/runtime/qa/verification-0.4.14.json。发布候选已按作者本次要求同步，verification.json及验收日志记录相同实际文件的全部证据；旧0.4.11完整保留在tools/runtime/qa/candidate-0.4.11。
+作者本次已授权优先完成验收、断线与本地交付；实际上传仍须最终审查并明确同意。
+
+0.4.15完整本机验收：26项功能、8项联机／恢复通过，未分类错误为空。包含observer 82项、edge 123项、营养汤116项、种子／挑战，以及2—4人直连、四人弱网和四种重新组队读档恢复；网络各端九阶段快照一致。实际音频采样通过但扬声器保持静音。逐项核对实际包校验值及归档内容，158份资源与源码一致，作者试玩存档和旧候选文件未变。验收工具补齐包／助手校验值与存档两阶段日志。当前完整本机验收=true，发布候选同步及完整性核对已完成；不代表已完成Steam外部实测或上传。
+
+0.4.14历史文件的完整本机验收
+
+26项功能全部通过；同一DLL／PCK／清单的双人、三人混组、四人直连及四人弱网通过，九阶段快照一致。普通退出／强制断开各45项、四人客端进程丢失后倒序回组123项、三人混组主机进程丢失后倒序回组50项通过。恢复时逐玩家核对灼热铁斩波的不同强化次数、动态数值及四件工坊遗物，防止只检查“已强化”漏掉重复强化或归属错误。
+汇总已将四人弱网及四项恢复列为必需条件，缺项不会显示本地完整验收通过。测试默认静音、隔离档、定向房间，不跑完整对局。实际Steam邀请／互联网线路／工坊订阅安装仍属外部待办。本次没有重新导出、打包或上传。
+
+0.4.11已导出候选的历史记录
+
+1. 当时0.4.11实际候选的25个功能专项通过，覆盖卡池／药水、体系获取、遗物、营养汤附魔与旧档、事件／先古对白、死亡／转向、卡牌动画、状态说明、种子／挑战、神格和兼容渲染。使用静音隔离档与定向房间，没有跑完整对局。
+2. 同一DLL、PCK、清单的2／3／4人原生ENet专项通过，各端九阶段状态一致；四人另测单程100±40毫秒、5%丢包及5秒断流，未误断开。
+3. 普通退出读档37项、强制关闭连接37项、四人客端进程被结束后恢复91项、三人混组主机进程被结束后恢复44项通过。后两组倒转回组顺序，玩家身份、牌组、强化、附魔、费用与遗物一致。故意结束的QA进程明确标记expected_termination，不冒充执行过退出后检查。
+4. 修正本角色对局断开后的地图外观消息，以及ENet主机终止peer未通知原生框架的问题。普通角色单独对局不套用；不改原生热加入限制。
+5. content仅三个模组文件，138份资源，唯一前置BaseLib 3.4.7，无Watcher运行依赖；封面仍为已选小斩波，署名／作者正文保留，只同步版本验证范围。增加安装说明；0.4.11验收时试玩入口与该候选指纹一致；该历史候选现保留在tools/runtime/qa/candidate-0.4.11。
+6. verification.json固定记录实际文件、25项及8项联机／恢复证据和日志指纹；验收日志不随content上传。作者试玩存档校验未变。旧0.3.1候选保留在tools/runtime/qa/candidate-0.3.1，没有新建ZIP。
+
+失败记录与复测
+
+首轮挑战133项功能通过但QA退出缓存报错，整项判失败；仅在隔离测试中释放12个离开场景树的闲置卡牌控件后复测通过，QaExitProbe的指纹已登记，不装入游戏候选。恢复工具的控件断言和原生消息回调时序错误也已纠正，原始失败不改写。日志错误检查没有放宽。详见问题记录及各qa原始目录。
+
+尚待作者及外部环境
+
+1. 审查dist/SteamWorkshop内的发布审查.txt、发布说明.txt、image.png和安装说明.txt；目前未获最终上传许可。
+2. Steam邀请／Steam热重连的真实双人验证，需要已登录Steam和另一位测试者。作者表示暂不能安排，后续再做；本机ENet无法代替这部分。
+3. 作者明确允许创建／上传后，才检查账号权限、协议状态并操作工坊；实际订阅安装需有已上传条目，随后核对BaseLib依赖及首次启动。当前private配置不代表已经上传。
+
+本机ENet按原版开局关闭新连接，热加入尝试会超时；本轮验证的是断开后的原生处理及重新组队读档，不承诺Steam热重连。高进阶、其他系统／版本／模组组合未穷尽。
+
+暂缓项
+
+角色仍借用机器人的部分手势、地图标记、能量球、转场、拖尾和音效；实战强度及权重参数继续按试玩反馈调整。作者已明确这两项优先级较低。长背景、专属死亡记录仍为可选草稿。
+
+当前可交付范围以dist/SteamWorkshop/verification.json和tools/runtime/current-verification.json为准，不再沿用0.3.1旧候选结论。
+
+
+===== dist/SteamWorkshop/安装说明.txt =====
+
+拳击构装体 0.4.15 安装说明（Windows电脑版）
+
+你需要已经在Steam安装好《杀戮尖塔2》。安装前先退出游戏，Steam保持打开。
+
+发给朋友哪些东西？
+
+把本说明旁边的content文件夹和这份安装说明一起发给朋友。
+朋友把收到的文件保存到桌面；如果收到的是压缩包，先右键选择“全部解压缩”。
+打开content文件夹，里面应有这三个文件：
+
+PunchConstruct.dll
+PunchConstruct.pck
+PunchConstruct.json
+
+后面要用的是这三个文件，先记住它们的位置。
+
+第一步：订阅BaseLib
+
+BaseLib是本角色必需的基础组件，安装一次即可。
+
+1. 复制下面的网址，到浏览器地址栏粘贴并按回车：
+   https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127
+2. 确认页面名称是BaseLib，作者是Alchyr。
+3. 点击绿色的“订阅”按钮；如果网页要求登录，先登录自己的Steam账号。
+4. 回到Steam，等下载任务完成。
+
+已经订阅过BaseLib的人，等Steam下载完成后继续第二步。
+
+第二步：让Steam帮你找到游戏文件夹
+
+1. 打开Steam，点击上方的“库”。
+2. 在左边的游戏列表里找到《杀戮尖塔2》。
+3. 鼠标右键点击游戏名，选择“管理”→“浏览本地文件”。
+4. Steam会自动打开你的游戏安装文件夹。这里能看到SlayTheSpire2游戏程序。
+
+这个文件夹可能在C盘，也可能在D盘，以Steam刚打开的位置为准。
+
+第三步：建好两个文件夹
+
+在刚打开的游戏文件夹里操作：
+
+1. 找到名叫mods的文件夹并打开。
+   如果没有：在空白处点鼠标右键→“新建”→“文件夹”，把名字改成mods，再双击打开。
+2. 在mods里面，再新建一个文件夹，名字改成PunchConstruct。
+3. 双击打开PunchConstruct文件夹，先让这个窗口保持打开。
+
+第四步：复制三个文件
+
+1. 打开之前收到的content文件夹。
+2. 按键盘Ctrl+A，选中里面的三个文件。
+3. 按Ctrl+C复制。
+4. 回到刚建好的PunchConstruct文件夹，按Ctrl+V粘贴。
+
+完成后，摆放位置应该是这样：
+
+游戏文件夹（能看到SlayTheSpire2游戏程序）
+└─ mods
+   └─ PunchConstruct
+      ├─ PunchConstruct.dll
+      ├─ PunchConstruct.pck
+      └─ PunchConstruct.json
+
+检查一下：打开PunchConstruct文件夹，直接就能看到这三个文件。
+这些文件只需要复制，不需要双击运行。
+
+第五步：启动并启用模组
+
+1. 回到Steam游戏库，点击《杀戮尖塔2》的“开始游戏”。
+2. 如果首次弹出“是否要加载模组？”，选择“加载模组”。
+3. 按提示退出游戏，再从Steam启动一次。
+4. 在游戏设置里的“模组”页面，确认BaseLib和拳击构装体已启用；如果修改了开关，按提示重启游戏。
+5. 进入新游戏的角色选择界面，能看到“拳击构装体”，就说明安装成功了。到这里即可，不用马上开局。
+
+准备和朋友联机时
+
+两个人都按上面的方法安装，都从Steam启动游戏，并互加Steam好友。
+本次核对组合是：游戏0.111.0、BaseLib 3.4.7、拳击构装体0.4.15；双方版本和启用的其他模组也要一致。
+工作区里的TryPrototype.cmd用于离线试玩，Steam邀请测试要使用Steam的“开始游戏”。
+
+遇到问题时
+
+找不到mods：按第三步自己新建。
+列表里没有拳击构装体：先按上面的摆放示意检查三个文件的位置，再完全退出游戏并重新启动。
+提示缺少BaseLib：回到第一步检查订阅和下载，在游戏里确认它已启用。
+提示版本或模组不匹配、启动报错：把提示原文和双方游戏／模组版本告诉作者，再一起处理。
+
+本候选尚未上架创意工坊；Steam邀请和热重连仍待实际双人测试。
+
+===== dist/SteamWorkshop/发布审查.txt =====
+
+拳击构装体：0.4.15发布审查（2026-10-25）
+
+本地发布候选已与0.4.15源码及试玩同步，实际文件核验通过；尚未创建工坊条目、上传或公开发布。
+
+交付内容
+
+content中仅PunchConstruct.dll、PunchConstruct.pck、PunchConstruct.json三个模组文件，158份资源；不含游戏、存档、QA模组或日志。安装见安装说明.txt。核对环境为Windows、游戏0.111.0、中文，唯一前置BaseLib 3.4.7，无需Watcher。所有联机玩家须使用相同构建。
+
+候选包含75种卡牌，已接入灼热铁斩波的多次升级、四件工坊遗物及近期卡牌／获取规则调整，并包含神格即时入场、隐藏状态和音效修复。初始卡组与营养汤的普通铁斩波替换规则保持当前设计。
+
+发布说明.txt与workshop.json正文一致：保留作者标题、署名及正文，只将卡牌总数同步为75；小斩波封面保留。变更说明更新为本次候选内容。private可见性不代表已经上传；BaseLib依赖和素材来源说明保留。
+
+本地验收
+
+- 26项功能专项通过，覆盖75张卡池、药水、体系获取、遗物／附魔、营养汤、事件／对白、旧档、死亡／转向、动画、状态说明、种子／挑战、神格及兼容渲染。
+- 2／3／4人原生ENet专项通过，各端九阶段状态一致。
+- 四人单程100±40毫秒、5%丢包、5秒断流通过。
+- 普通退出和强制关闭连接后的恢复各45项通过。
+- 四人客端进程丢失后倒序回组123项、三人混组主机进程丢失后倒序回组50项通过；身份、精确强化次数／数值、附魔及遗物一致。
+
+候选三个文件与刚完成验收的本地文件SHA256完全相同，直接复用并归档这些实际文件的证据，没有重复自动跑完整对局。原测试均为静音、隔离档和定向房间；未知游戏／脚本／加载错误仍判失败。QaExitProbe及RecoveryProbe仅存在于隔离测试环境，不装入content。
+
+verification.json和验收日志保存独立副本及校验值，不随content上传。候选包内158份资源逐字节对照源码通过，作者试玩存档校验未变。
+
+文件指纹（SHA256）
+
+DLL：1c2b1da25aca7c0d6f14884e95986ba99e293a53d4dc33e97da5a7b3b20356e6
+PCK：f3694c77de5114106e7e3b8c8df0dabd243775e27e20415055c0c835e5f8e510
+清单：1c2a72bdc4a8c0f5fbc2e91d7add1b390005ec839184332afc8e07d26849041c
+
+仍需外部验证与最终审查
+
+Steam邀请、Steam热重连、真实互联网线路及工坊订阅安装未验证。本机ENet开局关闭新连接，已验证的是断开处理和重新组队读档，不承诺热重连。作者暂不能安排Steam双人实测，后续再做。
+
+作者最终确认后，才检查Steam账号上传权限／协议并创建或上传条目；实际订阅安装在有条目后验证。不需要提供Steam密码。
+
+旧0.4.11完整候选保留于tools/runtime/qa/candidate-0.4.11；旧0.3.1另留于tools/runtime/qa/candidate-0.3.1。没有新增ZIP，现有历史ZIP未改动。
+
+
+===== dist/SteamWorkshop/发布说明.txt =====
+
+拳击构装体：本质铁斩波
+
+[h1]拳击构装体[/h1]
+尖塔的本质，是一个巨大的铁斩波。
+解锁可用角色：拳击构装体，带着全尖塔攻防一体的艺术品，打倒一切
+
+[h2]模组内容[/h2]
+来自暗港「重拳出击」的拳击构装体，成为可用角色。
+
+75种卡牌，包含围绕“有攻有防”选入的各角色卡牌、11张原创设计，以及特殊渠道获取的先古卡牌。锻造、召唤、灾厄等体系有了新的搭配，同体系卡牌也更容易凑齐。
+
+加入角色专属遗物，并为部分原版遗物调整效果、外观与获取机会，让它们更贴合拳击构装体。相关调整仅对本角色生效。
+
+包含9位先古的27组专属对白，以及「重拳出击」中与同类相遇的特殊文本。
+
+[h2]安装与版本[/h2]
+需要 BaseLib（已验证3.4.7）。订阅后在游戏模组管理中启用。
+当前为试玩版本，已验证Windows、游戏0.111.0、中文。本地2—4人联机已做定向验证；Steam邀请、Steam热重连及其他版本和系统尚未验证。
+
+[h2]制作与素材来源[/h2]
+设计与制作：铁斩波。部分原创美术采用AI辅助生成。
+《杀戮尖塔》系列的原版角色、卡牌与素材归Mega Crit所有。选入的观者卡面及状态图标取用自Boninall的“观者 Watcher”模组（0.10.3）：[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3747526116]原模组页面[/url]。
+本模组为免费、非官方社区作品，与Mega Crit无隶属关系。
+
+
+===== dist/SteamWorkshop/workshop.json =====
+
+{
+  "title": "拳击构装体：本质铁斩波",
+  "description": "[h1]拳击构装体[/h1]\n尖塔的本质，是一个巨大的铁斩波。\n解锁可用角色：拳击构装体，带着全尖塔攻防一体的艺术品，打倒一切\n\n[h2]模组内容[/h2]\n来自暗港「重拳出击」的拳击构装体，成为可用角色。\n\n75种卡牌，包含围绕“有攻有防”选入的各角色卡牌、11张原创设计，以及特殊渠道获取的先古卡牌。锻造、召唤、灾厄等体系有了新的搭配，同体系卡牌也更容易凑齐。\n\n加入角色专属遗物，并为部分原版遗物调整效果、外观与获取机会，让它们更贴合拳击构装体。相关调整仅对本角色生效。\n\n包含9位先古的27组专属对白，以及「重拳出击」中与同类相遇的特殊文本。\n\n[h2]安装与版本[/h2]\n需要 BaseLib（已验证3.4.7）。订阅后在游戏模组管理中启用。\n当前为试玩版本，已验证Windows、游戏0.111.0、中文。本地2—4人联机已做定向验证；Steam邀请、Steam热重连及其他版本和系统尚未验证。\n\n[h2]制作与素材来源[/h2]\n设计与制作：铁斩波。部分原创美术采用AI辅助生成。\n《杀戮尖塔》系列的原版角色、卡牌与素材归Mega Crit所有。选入的观者卡面及状态图标取用自Boninall的“观者 Watcher”模组（0.10.3）：[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3747526116]原模组页面[/url]。\n本模组为免费、非官方社区作品，与Mega Crit无隶属关系。",
+  "visibility": "private",
+  "changeNote": "0.4.15测试候选：加入灼热铁斩波及新遗物，同步近期卡牌、获取规则和神格表现修复；26项功能及8项本地联机／恢复验收通过。",
+  "tags": [
+    "Characters"
+  ],
+  "dependencies": [
+    3737335127
+  ],
+  "contentDescriptors": []
+}
+
+
+===== 0.4.21阶段问题记录（升级0.4.22前） =====
+
+拳击构装体：当前问题与验证（2026-10-26，0.4.21）
+
+当前文件
+
+源码、工作区试玩、dist/SteamWorkshop/content均为0.4.21，三个文件SHA256一致；181份资源、82种卡牌。供作者与朋友手动覆盖mods/PunchConstruct。当前同步记录：tools/runtime/content-current.json。没有修改游戏安装目录、上传Steam或新建ZIP。
+
+本轮已完成
+
+1. 全难度：选中拳击构装体即开放0—10层，保留玩家偏好，不伪造胜负。新档、原版角色切换及种子／挑战界面均检查。多人全构装体直接开放全部难度；混组保留原版队友的多人上限。全局多人进度不变。
+2. 选人音效：作者0.4.20实玩日志复现“cannot find sfx path: punchconstruct:character_select”。原生选人调用内联绕过了原有拦截；现直接修正真实选人调用点。实际按钮已捕获非零混音信号，零总音量／零音效音量仍静音，重复点击不叠播。
+3. 音效节奏：按选人语境先收短至0.32秒，缩短两次接触间隔并去掉长前奏与尾音。旧0.78秒源音效归档，战斗原版声音未改。
+4. 文档整理：当前规则、安装与发布状态分开维护，旧进度与提示词移至历史/记录/文档整理前记录.txt；无色牌统计统一15种／普通随机11种。安装说明、content版本、发布文案、校验记录均同步。
+5. 上一版八张无色新卡、卡面、害虫杀手、当回合格斗流程、选人图标，以及此前规则／修复继续保留。实际效果见卡牌清单、角色设计、角色对白，不在此重复维护数值。
+
+0.4.21最终构建验证
+
+功能：draft、selection、startup，三项通过，其中真实选人31项、草稿87项；启动专项使用无QA参数的正常主菜单。
+联机：coop-construct-2p、coop-necrobinder-2p，两组实际ENet双人检查通过，各11阶段快照一致。全构装体组额外验证最高难度同步、切换原版角色后降至其上限、切回后重新开放；混组验证原版队友上限保留。
+均为静音、隔离档、定向房间；作者试玩存档及原始设定指纹不变。证据见tools/runtime/followup-0.4.21.json、current-verification.json及对应qa目录。
+
+失败过程保留
+
+首次新增实际按钮测试复现旧音频入口问题；修正后已验证实际混音。测试在尚未开局时误调用ReturnToMainMenu触发BaseLib清理空对象，改为原生子菜单返回流程后通过；未修改正常游戏清理或放宽错误检查。旧失败日志保留。0.4.20及更早构建证据只代表各自文件。
+
+必须补齐的发布验收
+
+完整本地验收仍为false。31项功能中尚缺28项：
+adapt、additions、animation、architect、boundary、boxing、doll、edge、end、events、facing、focus、icons、modes、observer、observerpersist、persist、pool、poster、regentvisual、relics、relicvisual、shadernative、smoke、soup、update、vigor、workshop
+联机尚缺：coop-construct-4p、coop-construct-4p-network、coop-necrobinder-3p
+恢复尚缺：recovery-construct-abrupt、recovery-construct-host-loss-mixed-3p-reverse、recovery-construct-menu、recovery-construct-process-loss-construct-4p-reverse
+本轮为新增规则相关验证，不把旧版本全量结果套用到本版。
+
+玩家反馈与发布
+
+作者与朋友此前已反馈联机整体正常；队友宝箱偏移已做过指向纹理修正及定向验证。当前0.4.21的跨电脑实玩反馈、热重连及其他网络边界仍需分别记录。
+Steam私密条目3826907330仍0.4.15、未公开，发布和订阅验证暂停。本地content更新不等于远端更新。dist/SteamWorkshop/verification.json及验收日志是0.4.15历史证据，不对应当前content。具体待办见发布前清单.txt。
+
+
+===== 0.4.22声音回归前的阶段记录（音频结论已被0.4.23纠正） =====
+
+拳击构装体：当前问题与验证（2026-10-26，0.4.22）
+
+当前文件与加载
+
+源码及dist/SteamWorkshop/content为0.4.22，三个文件与本轮专项实际文件一致，181份资源、82种卡牌。当前本地试玩窗口仍运行0.4.21，未热替换，也没有关闭该窗口；退出后双击TryPrototype即可自动同步0.4.22。Steam游戏mods仍由作者手动覆盖；与朋友联机请双方使用相同content。未上传Steam、未新建ZIP。
+
+本轮修复
+
+1. 变牌音效：愈战愈勇原先在确认选牌后、变牌动画开始前播放。现在由原生闪光动画实际更新卡面时触发一次；不依赖固定延迟，取消／中断而未出现卡面替换时不额外播放。本地与远端分开处理。
+2. 潘多拉魔盒：原版只识别打击／防御，遗漏小斩波。现在仅在本角色中额外识别可变化且可移除的小斩波，沿用原生批量变化、随机数、结果预览及原有打击／防御规则。初始通常变化5张；永恒小斩波保留；铁斩波、东尼斩波、震荡不误变；结果仍受本角色卡池与固定渠道限制。其他角色保持原版。已在旧版本领取过的魔盒不自动重放拾取效果。
+3. 出拳拖沓：此前误按选人声处理，现按作者纠正处理战斗出拳。保留原版录音及音高，单拳0.38秒、双拳0.65秒主体后淡出0.06秒；每个角色独立控制，再出拳停止自己的上一拳余音，离开场景释放。动画循环、伤害段数、原有命中等待、防御声音不改。原生受控声音失效时记录日志并退回原生播放，不阻塞卡牌。
+4. 选人声质感：旧简易合成稿已归档，重做为低沉拳套接触、碰击与干燥机械卡扣，仍0.32秒。是否合乎作者听感仍由试玩反馈判断；不把程序验证等同于听感认可。
+5. 全难度、八张新卡、害虫杀手、当回合格斗流程等既有规则保留。当前设定见角色设计、卡牌清单和角色对白。
+
+本轮实际验证
+
+同一最终DLL／PCK／清单：additions 78项、animation 66项、facing 66项、selection 31项，四项专项通过。
+additions实际领取魔盒，覆盖初始5张、永恒保护、原版角色隔离及原生结果预览；观察变牌前后的真实卡面模型和音效帧，包含普通／升级、灼烧、满手牌和取消。
+animation验证原版动作／声音、受控原声实例、旧声停止、静音、尾音释放及原版角色隔离；facing直接测试螃蟹及死亡朝向；selection捕获实际选人按钮混音并核对全难度。
+原生ENet双构装体通过，12阶段快照一致，包含魔盒实际变化后的牌组和结果预览归属；未分类错误为空。
+全部为静音、隔离档、直接房间，不跑完整对局。证据见tools/runtime/followup-0.4.22.json与current-verification.json。
+
+过程与数据保护
+
+一轮同构建additions在最后收尾前超过90秒，按失败保留；随后拆开定向复测通过，没有扩大超时或放宽错误检查。独立FMOD银行加载探查未完成，不作为通过证据；实际游戏内受控实例已通过验证。历史原始日志不改写。
+作者仍在正常本地试玩，存档／日志有正常写入，因此不声称整个试玩目录哈希未变。本任务未修改、恢复或覆盖这些文件，也未结束作者进程；原始设定及0.4.15历史验收报告校验未变。
+
+剩余发布验收
+
+完整本地验收仍为false。31项功能中尚缺27项：
+adapt、architect、boundary、boxing、doll、draft、edge、end、events、focus、icons、modes、observer、observerpersist、persist、pool、poster、regentvisual、relics、relicvisual、shadernative、smoke、soup、startup、update、vigor、workshop
+尚缺三人混组、四人直连／弱网及四种断线恢复；不能用旧构建全量结果替代。本次只处理并验证相关问题。
+Steam私密条目仍0.4.15、未公开，发布与订阅验证暂停；旧verification.json和验收日志仅对应该历史版本。待办见发布前清单.txt。

@@ -1,0 +1,96 @@
+[
+  {
+    "name": "铁斩波形态",
+    "status": "已采用",
+    "original": "资料/历史/图标原图/铁斩波形态.png",
+    "size64": "资料/美术素材/状态图标/铁斩波形态.png",
+    "game_linked": true,
+    "game_icon": "PunchConstruct/assets/art/power_iron_wave_form.ctex",
+    "game_big": "PunchConstruct/assets/art/power_iron_wave_form_big.ctex"
+  },
+  {
+    "name": "王者风范",
+    "status": "已采用",
+    "original": "资料/历史/图标原图/王者风范.png",
+    "size64": "资料/美术素材/状态图标/王者风范.png",
+    "game_linked": true,
+    "game_icon": "PunchConstruct/assets/art/power_royal_bearing.ctex",
+    "game_big": "PunchConstruct/assets/art/power_royal_bearing_big.ctex"
+  },
+  {
+    "name": "不倒不休",
+    "status": "已采用",
+    "original": "资料/历史/图标原图/不倒不休.png",
+    "size64": "资料/美术素材/状态图标/不倒不休.png",
+    "game_linked": true,
+    "game_icon": "PunchConstruct/assets/art/power_never_back_down.ctex",
+    "game_big": "PunchConstruct/assets/art/power_never_back_down_big.ctex"
+  },
+  {
+    "name": "趁热打铁",
+    "status": "已采用",
+    "original": "资料/历史/图标原图/趁热打铁.png",
+    "size64": "资料/美术素材/状态图标/趁热打铁.png",
+    "game_linked": true,
+    "game_icon": "PunchConstruct/assets/art/power_strike_while_hot.ctex",
+    "game_big": "PunchConstruct/assets/art/power_strike_while_hot_big.ctex"
+  },
+  {
+    "name": "锻造车间",
+    "status": "已采用",
+    "original": "资料/历史/图标原图/锻造车间.png",
+    "size64": "资料/美术素材/状态图标/锻造车间.png",
+    "game_linked": true,
+    "game_icon": "PunchConstruct/assets/art/power_forge_workshop.ctex",
+    "game_big": "PunchConstruct/assets/art/power_forge_workshop_big.ctex"
+  },
+  {
+    "name": "拳王形态",
+    "status": "已采用",
+    "original": "资料/历史/图标原图/拳王形态.png",
+    "size64": "资料/美术素材/状态图标/拳王形态.png",
+    "game_linked": true,
+    "game_icon": "PunchConstruct/assets/art/power_boxing_champion_form.ctex",
+    "game_big": "PunchConstruct/assets/art/power_boxing_champion_form_big.ctex"
+  },
+  {
+    "name": "东尼斩波",
+    "status": "已采用",
+    "original": "资料/历史/图标原图/东尼斩波.png",
+    "size64": "资料/美术素材/状态图标/东尼斩波.png",
+    "game_linked": true,
+    "game_icon": "PunchConstruct/assets/art/power_delayed_wave.ctex",
+    "game_big": "PunchConstruct/assets/art/power_delayed_wave_big.ctex"
+  },
+  {
+    "name": "卸甲成军",
+    "status": "已采用",
+    "original": "资料/历史/图标原图/卸甲成军.png",
+    "size64": "资料/美术素材/状态图标/卸甲成军.png",
+    "game_linked": true,
+    "game_icon": "PunchConstruct/assets/art/power_unarm_to_arms.ctex",
+    "game_big": "PunchConstruct/assets/art/power_unarm_to_arms_big.ctex"
+  },
+  {
+    "name": "终局裁定",
+    "status": "已采用",
+    "original": "资料/历史/图标原图/终局裁定.png",
+    "size64": "资料/美术素材/状态图标/终局裁定.png",
+    "game_linked": true,
+    "game_icon": "PunchConstruct/assets/art/power_final_judgment.ctex",
+    "game_big": "PunchConstruct/assets/art/power_final_judgment_big.ctex"
+  },
+  {
+    "name": "黄铜螺帽",
+    "status": "已采用",
+    "original": "资料/历史/图标原图/黄铜螺帽.png",
+    "game_linked": true,
+    "intended_use": "古铜之拳的临时力量状态图标",
+    "generator": "built-in image_gen",
+    "prompt": "Use case: stylized-concept\nAsset type: tiny pixel-art status icon for the Slay the Spire 2 character mod PunchConstruct, for an ancient relic's temporary Strength buff.\nPrimary request: ONE brass hexagonal nut, thick, squat, slightly rounded bevels, seen in a simple shallow three-quarter top view. Clearly recognizable dark hollow circular threaded hole at its center, a small dark lower front face to indicate thickness. Only the nut, no bolt, no screw, no other objects.\nStyle/medium: authentic coarse 32 by 32 pixel sprite design shown enlarged with hard nearest-neighbor square pixels. Match the simplicity of the small provided workshop status icon: hand-placed chunky pixel clusters, dark charcoal outline 1 logical pixel wide, 6 to 8 opaque colors total, very simple shading. It must remain readable at 32px and 24px in-game. Do not draw hundreds of tiny details.\nComposition/framing: centered isolated single nut occupying about 82 percent of the square canvas, balanced small transparent margins on every side. Broad hexagonal silhouette, broad clear hole about one third the object's width, 3 or 4 large flat shaded facets. Slightly softened corners through pixel steps, sturdy and attractive.\nColor palette: muted warm yellow brass with ochre midtones, dark brown shadows and one restrained pale cream highlight on the upper left bevel. Brass yellow, not orange copper. Clearly separated light top and darker front faces.\nScene/backdrop: genuinely transparent alpha, including the empty hole through the nut. No background, no ground or cast shadow outside the silhouette.\nAvoid: photorealism, 3D render, smooth glossy gradients, glow, sparkles, rays, spark particles, motion swooshes, embellishment, scratch clutter, excessive weathering, pedestal, circular badge, frame, letters, numbers, watermark. Output just this one sprite, not a sprite sheet, mockup, grid or comparison.",
+    "size64": "资料/美术素材/状态图标/黄铜螺帽.png",
+    "game_icon": "PunchConstruct/assets/art/power_brass_nut.ctex",
+    "game_big": "PunchConstruct/assets/art/power_brass_nut_big.ctex",
+    "conversion": "alpha>16 crop, fit 28px in 32px, nearest 2x, 56px visible extent"
+  }
+]

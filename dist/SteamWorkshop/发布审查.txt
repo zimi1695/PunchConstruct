@@ -1,0 +1,25 @@
+拳击构装体：本地交付与发布审查（2026-10-26，2026-10-27更新）
+
+content现为0.4.24，三个模组文件与当前Release构建一致；清单与PCK沿用0.4.23。活动试玩窗口不热替换，关闭后启动器同步最新源码构建，181份资源、82种卡牌。本次已上传私密条目3826907330。
+安装见安装说明.txt；只需BaseLib 3.4.7，无需Watcher。核对游戏0.111.0。所有玩家使用同一份文件。
+
+0.4.24（2026-11-01）
+
+本轮变更：构装体不再出现或获得巨大卷轴，其他角色保持原规则；架势与古铜之拳描述补充「本场战斗」；删除旧版巨大卷轴联机探针；重写工坊说明。
+
+已通过：31项专项全部通过（含真实渲染的 poster、selection、relicvisual、regentvisual、modes、shadernative）；4项断线恢复全部通过；联机4/4全部通过（2p构装体、3p死灵、4p构装体、4p弱网）。full_local_verification为true，专项、联机与恢复证据都钉在DLL 30dfc531… 上。
+根因处理：4人弱网的原版收尾问题是击杀队友手牌未清空，Pandora 阶段把运行拖过延迟返池窗口，客户端卸载场景时同一批5张NCard再次进池；QA改为击杀前用原生丢弃清空四人手牌并等卡牌特效退场，修复后首跑即干净。3p死灵一次checksum分叉，单独重跑12阶段全一致、零错误，未再复现。
+上传：2026-11-01已更新私密条目3826907330为0.4.24，未新建、未公开；2026-11-02按作者最终文案再次更新说明（22张原创设计、与建筑师特殊对白3组，「原模组页面」补[url]标记改为可点击链接），content三文件、标题、变更说明、依赖、封面与6张预览均未变；2026-11-04按作者新图更新封面与预览：封面改用模组封面图（1024×640），预览按作者重排的6张更新（新增害虫杀手事件）。上传日志：../../资料/历史/记录/上传日志-0.4.24.log、上传日志-0.4.24-文案修正.log、上传日志-0.4.24-宣传图.log、上传日志-0.4.24-宣传图2.log。
+记录：../../tools/runtime/content-current.json、../../tools/runtime/current-verification.json、../../tools/runtime/candidate-network-0.4.24.json。
+
+verification.json已对content这三个文件逐文件复核通过：`static_package`为PASS，`targeted_package_checks`为PASS（31项专项全部以`--package-dir`直接跑发布包，退出码0，无失败），`network_multiplayer`为PASS_LOCAL_ENET（8个联机／恢复场景全部通过），`package_files`记录的三个SHA256与content实际文件一致，对应日志已复制进验收日志目录。`tools/runtime/current-verification.json`的`candidate.local_verification`现为true、`matches_current_files`为true。`full_release_verification`仍为false，但这不是缺验证：该字段在`report_local.py`里恒为false、没有代码路径会把它置true；它所描述的Steam线上验证本次已实际完成，见下条。0.4.15的旧报告归档在../../tools/runtime/qa/verification-0.4.15.json，该版26项功能和8项联机／恢复曾全部通过，不能用来替代当前证据。
+
+Steam私密条目3826907330已于2026-10-27上传0.4.23，private、未公开：远端标题与文案与本地逐字一致，依赖BaseLib 3737335127，工坊下载三个文件哈希与候选逐字节一致；从Steam启动加载PunchConstruct 0.4.23＋BaseLib 3.4.7，日志零错误。公开与否待作者决定。
+发布文案保留作者行文，只更新卡牌／原创数量、实际验证范围及变更说明；封面与预览已按作者 2026-11-04 提供的新图更新。作者审查并明确允许后才继续操作工坊。
+
+害虫杀手后续正文已获作者确认并同步；相对上述声音专项，只有两份事件文本资源变化，DLL与清单未变，本次静态核对而未重复游戏测试。
+
+当前content SHA256
+PunchConstruct.dll  30dfc531d11deee1e71efc3c73fd72e6b4d9734b89236674fb08bc52f6cf154c
+PunchConstruct.pck  5d2201f063af0c9590fa583c3a7147734c530be1c86c1378ef497c9d7882a20e
+PunchConstruct.json  4978e3d507fb758da2f6f2a2a5c6c0791da93e3d4d97e0629a8f2e839e921d71

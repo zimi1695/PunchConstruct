@@ -1,0 +1,25 @@
+观者搬运素材核对（2026-10-24）
+
+已逐项核对13张采用纹理：本地Watcher 0.10.3清单 → 原PNG导入记录 → 实际ctex资源 → 当前模组采用纹理。每项SHA256完全相同；具体导入与纹理路径已补入观者搬运素材.json。没有修改任何图片。
+
+与本机尖塔2资源包内ctex进行同长度／MD5精确比对，13张均未找到字节相同纹理。此结果只说明本机没有相同编码文件，不用于判定原作者或上游归属。
+
+Watcher本机清单作者为Boninall，版本0.10.3，说明写有部分美术来自初代杀戮尖塔，但没有逐张来源表。本机未安装初代原始资源，因此本轮只能核实直接来源，不能逐项确定这些图最早来自原版还是模组作者。现有来源署名保留，没有联系作者。
+
+可重复核对：python tools/check_observer_art.py
+记录来源路径：python tools/check_observer_art.py --record
+
+核对通过：
+ObserverJustLucky
+ObserverSashWhip
+ObserverProstrate
+ObserverTalkToTheHand
+ObserverWallop
+ObserverColdObservation
+ObserverSwivel
+ObserverFasting
+ObserverMantra
+ObserverDivinity
+ObserverEnergyDown
+ObserverBlockReturn
+ObserverColdObservationPower

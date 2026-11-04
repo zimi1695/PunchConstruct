@@ -1,0 +1,8 @@
+{
+  "PUNCHCONSTRUCT_ADAPTED_UNLEASH.description": "造成{CalculatedDamage:diff()}点伤害。\n这张牌额外造成等量于[gold]奥斯提[/gold]当前生命值的伤害。",
+  "PUNCHCONSTRUCT_ADAPTED_PROTECTOR.description": "造成{CalculatedDamage:diff()}点伤害。\n额外造成等量于[gold]奥斯提[/gold][gold]最大生命值[/gold]的伤害。",
+  "PUNCHCONSTRUCT_ADAPTED_SIC_EM.description": "造成{OstyDamage:diff()}点伤害。\n本回合，你或奥斯提每次对这名敌人造成伤害时，[gold]召唤[/gold]{SicEmPower:diff()}。",
+  "PUNCHCONSTRUCT_OBSERVER_SCRY.title": "预见",
+  "PUNCHCONSTRUCT_OBSERVER_SCRY.description": "查看抽牌堆顶指定数量的牌，选择任意张弃掉，其余顺序不变。",
+  "PUNCHCONSTRUCT_OBSERVER_SCRY.prompt": "选择要弃掉的牌。未选择的牌按原顺序留在抽牌堆顶。"
+}
