@@ -165,10 +165,12 @@ def check_item(item_id, subscribe_download=False):
                 if steam.function('SteamAPI_ISteamUGC_GetQueryUGCPreviewURL', C.c_bool,
                     C.c_void_p, C.c_uint64, C.c_uint32, C.c_void_p, C.c_uint32)(steam.ugc, query, 0, preview, len(preview)):
                     report['preview_url'] = preview.value.decode('utf-8')
+                visibility_map = {'public': 0, 'friends_only': 1, 'private': 2, 'unlisted': 3}
+                expected_visibility = visibility_map.get(config.get('visibility', 'private'), 2)
                 if not (details.item_id == item_id and details.result == 1 and details.consumer_app == APP_ID
-                        and details.visibility == 2 and not details.banned and report['title_matches']
+                        and details.visibility == expected_visibility and not details.banned and report['title_matches']
                         and report['description_matches'] and report['dependencies'] == config['dependencies']):
-                    raise RuntimeError('Remote metadata does not match the private candidate')
+                    raise RuntimeError('Remote metadata does not match the local candidate')
                 report['remote_metadata'] = 'PASS'
             finally:
                 steam.function('SteamAPI_ISteamUGC_ReleaseQueryUGCRequest', C.c_bool,

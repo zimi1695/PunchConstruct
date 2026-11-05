@@ -1,6 +1,6 @@
 # 开发工具
 
-`python tools/check_current.py boxing --rendered`检查八张无色新牌、获取限制、所有单位荆棘、左右勾拳顺序、格斗流程当回合生成、过载与满手牌计数。联机从0.4.20起增加boxing-generated／boxing-resolved两阶段快照。当前0.4.24完整功能验收要求31项；本轮content同步后更新Steam私密条目3826907330。
+`python tools/check_current.py boxing --rendered`检查八张无色新牌、获取限制、所有单位荆棘、左右勾拳顺序、格斗流程当回合生成、过载与满手牌计数。联机从0.4.20起增加boxing-generated／boxing-resolved两阶段快照。当前0.4.24完整功能验收要求31项；本轮content同步后更新Steam条目3826907330（已公开）。
 
 ## 本地使用
 
@@ -169,11 +169,11 @@ content已同步0.4.23（含2026-10-27先古对白修复与联机QA就绪条件�
 
 `python tools/check_current.py poster --rendered`仅进入真实选人界面，检查分层、实际动作／粒子、循环、标题可见性、切换清理、独立实例和屏幕比例。录制128帧供预览；隔离档关闭后台限帧，不改作者设置。当前完整验收项由checks_for_version动态决定，0.4.23为31项。
 
-Steam私密条目3826907330已于2026-10-27上传0.4.23，private、未公开：工坊订阅回下载三文件哈希与候选一致，从Steam启动加载0.4.23＋BaseLib 3.4.7且零错误。不能重复称从未上传或再次创建条目。0.4.15历史状态见runtime/history/steam-release-0.4.15.json。
+Steam条目3826907330已于2026-10-27上传0.4.23，当时private、未公开，2026-11-05转为公开：工坊订阅回下载三文件哈希与候选一致，从Steam启动加载0.4.23＋BaseLib 3.4.7且零错误。不能重复称从未上传或再次创建条目。0.4.15历史状态见runtime/history/steam-release-0.4.15.json。
 
 ## 多人宝箱手势专项
 
-`python tools/check_coop.py --treasure-only --players 2 --guest construct`直接进入共享宝箱，使用真实ENet鼠标状态同步和真实视口移动／按下／释放事件检查选择；`--players 4 --guest ironclad`覆盖混合角色及四个手势方向。检查三种窗口比例和不同端尺寸、指向与猜拳纹理、旧错误映射对照、悬停命中及领取结果。scenario为coop-treasure，与完整战斗套件分开，不把单独宝箱通过计入完整联机验收。全部静音隔离。该宝箱修复已包含于当前源码与content；活动试玩文件保留至作者退出，随后由启动器同步；私密条目不变。
+`python tools/check_coop.py --treasure-only --players 2 --guest construct`直接进入共享宝箱，使用真实ENet鼠标状态同步和真实视口移动／按下／释放事件检查选择；`--players 4 --guest ironclad`覆盖混合角色及四个手势方向。检查三种窗口比例和不同端尺寸、指向与猜拳纹理、旧错误映射对照、悬停命中及领取结果。scenario为coop-treasure，与完整战斗套件分开，不把单独宝箱通过计入完整联机验收。全部静音隔离。该宝箱修复已包含于当前源码与content；活动试玩文件保留至作者退出，随后由启动器同步；条目已公开。
 
 ## 草稿第一段专项
 
