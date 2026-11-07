@@ -1,10 +1,12 @@
 # 开发工具
 
-`python tools/check_current.py boxing --rendered`检查八张无色新牌、获取限制、所有单位荆棘、左右勾拳顺序、格斗流程当回合生成、过载与满手牌计数。联机从0.4.20起增加boxing-generated／boxing-resolved两阶段快照。当前0.4.24完整功能验收要求31项；本轮content同步后更新Steam条目3826907330（已公开）。
+`python tools/check_current.py boxing --rendered`检查八张无色新牌、获取限制、所有单位荆棘、左右勾拳顺序、格斗流程当回合生成、过载与满手牌计数。联机从0.4.20起增加boxing-generated／boxing-resolved两阶段快照。当前0.4.26候选完整功能验收要求35项；本轮content已同步为0.4.26（含死亡／建筑师击倒的朝向瞬变修复），Steam条目3826907330仍为线上0.4.24（已公开，尚未上传新版）。
 
 ## 本地使用
 
-`launch.ps1`启动工作区离线试玩，`-PrepareOnly`仅同步最新DLL、清单与资源；运行中的本地试玩会阻止同步。用户存档在runtime/play-userdata，不被QA覆盖。`sync_runtime_art.py`校对资源，不写dist。手动分发content为0.4.24，已同步含巨大卷轴按角色排除的当前Release构建。已有试玩窗口须退出后由启动器同步；只依赖BaseLib。
+`run_all_checks.ps1` 一次串行执行本地 35 项（含 `compat`、`english`、`locale`、`localezh`）、联机 4 项、断线恢复 4 项，最后调用 `report_local.py` 汇总；`check_local.py` 对长批跑后偶发失败的 `shadernative` 会隔离重跑一次。
+
+`launch.ps1`启动工作区离线试玩，`-PrepareOnly`仅同步最新DLL、清单与资源；运行中的本地试玩会阻止同步。用户存档在runtime/play-userdata，不被QA覆盖。`sync_runtime_art.py`校对资源，不写dist。手动分发content为0.4.26，已同步含 Native Bridge + 五域适配器重构与英文本地化的当前Release构建。已有试玩窗口须退出后由启动器同步；只依赖BaseLib。
 
 仅编译：
 
@@ -60,9 +62,13 @@ dotnet build PunchConstruct/PunchConstruct.csproj -c Release --no-restore
 | shadernative／shaderoriginal | 直接进入蜈蚣战斗并显示再生特效，检查本角色兼容路径／原角色原生路径、三段实际材质、纹理绑定及退出恢复 |
 | eventscene／eventroom／eventbrain／eventphilosopher | 分离原版特效、原版房间、脑蛭领取与哲学家领取，用于定位退出诊断；不代替完整events |
 | doll | 玩偶三条路线 |
-| end | 放弃／死亡、结算、回菜单及重开；--rendered另逐帧核对死亡朝向及原版敌人隔离 |
+| end | 放弃／死亡、结算、回菜单及重开；--rendered另逐帧核对死亡朝向、0.133秒姿态硬切的固定过渡及原版敌人隔离 |
 | facing | 直接跳转帝王蟹战斗，实际攻击左右蟹钳，核对画面朝向、背击倍率、重复攻击与死亡朝向；使用--rendered检查画面 |
 | smoke | 基础模型、先古对白选择与资源冒烟检查 |
+| compat | 真实安装第三方 Postfix／Prefix、注入不匹配 IL，验证 NativeBridge 边界、CharacterScope 覆盖与 Required 策略 |
+| english | 运行时切换英文，逐条扫描卡牌／能力／遗物／角色与四张 JSON 表的中文残留；同时校验 14 个语言镜像表 |
+| locale | 以德语启动真实游戏，验证非中文语言使用英文镜像表、本地化标题与四张表可解析 |
+| localezh | 以繁体中文启动真实游戏，验证 Chinese 分支保留中文表与本地化标题 |
 
 有明确问题时使用对应模式、控制台命令或直接调试房间，不运行整局自动游玩。旧`playtest.ps1`仍可用于指定视觉专项，不把综合游玩模式作为默认测试。历史日志对应当时构建，不等于每次改动都全部重跑。ordinary_launch_check.ps1现在调用startup --rendered，使用同一临时环境与清理流程。启动检查只识别对照中已有的精确底层诊断形式，其他Godot ERROR、脚本异常和加载异常均判失败。
 
@@ -75,6 +81,8 @@ dotnet build PunchConstruct/PunchConstruct.csproj -c Release --no-restore
 `python tools/check_local.py`针对当前本地DLL按版本要求执行角色功能专项（0.4.23共31项），最多并行3个；活力节奏对照在其余专项全部结束后单独运行。`--package-dir dist/SteamWorkshop/content`则对现有候选的实际三个文件执行同一验收，写入`runtime/candidate-batch-版本.json`，不重新导出。每完成一项便记录进度，中断不冒充全部通过。modes需先编译`tools/QaExitProbe/QaExitProbe.csproj`。`shaderoriginal`另为原版角色诊断对照，仍严格记录其原生fma错误，不算本角色功能验收，也不改动原版角色来消除此对照的报错。`python tools/report_local.py`按实际DLL指纹汇总单人及2／3／4人日志，原版对照列入`diagnostic_controls`，列出缺失、失败与覆盖边界，更新`runtime/current-verification.json`；同时逐字核对当前候选资源和本地验收状态，不生成候选、不沿用另一份DLL的结论。
 
 需要检查实际画面时使用`python tools/check_current.py 模式 --rendered`，仍然只执行所选专项。
+
+验收报告分三层：`runtime/current-verification.json`保留`checks`等逐模式原始结果；`families`把共用同一套件入口的mode归并（relics／workshop、events／shadernative、smoke／pool／icons、persist／observerpersist）；`invariants`按16条玩家可见保证汇总，`invariant_summary`列出PASS／FAIL／MISSING、未映射与未分类项。`tools/invariants.json`是唯一台账，新增mode必须登记，否则`full_invariant_verification`为false。`coverage.unverified`显式列出未验证轴：真实第三方mod、Steam传输、热重连、其他平台、完整长局、工坊订阅、旧档升级、输入与显示、本地化深度、完整音频混音；`full_local_verification=true`不代表这些轴已覆盖。`english`在分类中单列为`data_audit`，不再与行为断言混算。
 
 ## 日志与自动测试约定
 
@@ -150,7 +158,7 @@ python tools/check_recovery.py --independent --abrupt
 
 ## 创意工坊发布准备
 
-content已同步0.4.23（含2026-10-27先古对白修复与联机QA就绪条件修正的DLL），供手动复制mods及发给朋友。按该DLL真实渲染复核的结果：31项专项全部通过（poster、selection、relicvisual、regentvisual、modes、shadernative；modes 133项逻辑检查、退出码0）；恢复4/4通过，联机4/4通过（2p构装体、3p死灵、4p构装体、4p弱网），`full_local_verification`为true。此前两项4人失败是`CoopChecks`就绪条件写窄（只等0、1号玩家角色到位却按全队判定分支），修正检查后通过，玩法与网络同步代码未改。远端私密条目已上传0.4.23（private、未公开）。`dist/SteamWorkshop/verification.json`已对content三个文件逐文件复核通过：31项专项全部以`--package-dir dist/SteamWorkshop/content`直接跑发布包，退出码0、无失败；`workshop.py --verify`核对完整资源181份、BaseLib唯一依赖、存档未变全部PASS，8个联机／恢复场景全部PASS，`targeted_package_checks`为PASS、`network_multiplayer`为PASS_LOCAL_ENET；对应日志已复制进`验收日志`。`current-verification.json`的`candidate.local_verification`因此为true。`full_release_verification`仍为false，但该字段在`report_local.py`里恒为false、没有代码路径会置true；上列Steam线上验证本次已实际完成。0.4.15旧报告归档在`runtime/qa/verification-0.4.15.json`。
+content已同步0.4.26（Native Bridge + 五域适配器、英文本地化与 14 个语言镜像的 DLL），供手动复制mods及发给朋友。按该DLL真实渲染复核：35项专项全部通过；恢复4/4、联机4/4通过（2p构装体、3p死灵、4p构装体、4p弱网），`full_local_verification`与`full_invariant_verification`均为true。`dist/SteamWorkshop/verification.json`已按0.4.26候选三个文件复核通过：`targeted_package_checks`为PASS、`network_multiplayer`为PASS_LOCAL_ENET、`upload_status`为NOT_UPLOADED；核对完整资源237份、BaseLib唯一依赖与8个联机／恢复场景。远端公开条目3826907330线上仍为0.4.24（未动）；另建私密测试条目3835179658「拳击构装体(测试)」，内容与0.4.26候选一致，证据见`runtime/test-workshop-0.4.26.json`。正式上传后须重跑`workshop.py --verify`更新线上状态。`full_release_verification`仍为false，但该字段在`report_local.py`里恒为false、没有代码路径会置true。
 
 `python tools/workshop.py --status`只读核对文件、资源、旧报告覆盖与发布文案；报告不匹配会如实显示，不能把content更新视为完整验收。状态见[发布前清单](../资料/发布前清单.txt)。
 

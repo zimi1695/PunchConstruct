@@ -22,21 +22,13 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace PunchConstruct;
 
-internal static class CharacterScope
-{
-    private static readonly AccessTools.FieldRef<RelicModel, Player?> RelicOwner = AccessTools.FieldRefAccess<RelicModel, Player?>("_owner");
-    internal static bool IsConstruct(RelicModel relic) => (RelicOwner(relic) ?? RelicPreviewContext.Owner(relic))?.Character is ConstructCharacter;
-    internal static bool IsWave(CardModel? card) => card is SmallWave or TonyWave or IronWave or ScorchingIronWave;
-}
-
-[HarmonyPatch]
 internal static class WaveDummyPatch
 {
-    private static IEnumerable<MethodBase> TargetMethods() => [
+    internal static IEnumerable<MethodBase> Targets() => [
         AccessTools.Method(typeof(StrikeDummy), nameof(StrikeDummy.ModifyDamageAdditive)),
         AccessTools.Method(typeof(FakeStrikeDummy), nameof(FakeStrikeDummy.ModifyDamageAdditive))
     ];
-    private static bool Prefix(RelicModel __instance, Creature? dealer, ValueProp props, CardModel? cardSource, ref decimal __result)
+    internal static bool Apply(RelicModel __instance, Creature? dealer, ValueProp props, CardModel? cardSource, ref decimal __result)
     {
         if (!CharacterScope.IsConstruct(__instance)) return true;
         __result = dealer == __instance.Owner.Creature && cardSource?.Owner == __instance.Owner && props.IsPoweredAttack() && CharacterScope.IsWave(cardSource)
@@ -45,19 +37,17 @@ internal static class WaveDummyPatch
     }
 }
 
-[HarmonyPatch(typeof(GhostSeed), "CanAffect")]
 internal static class GhostSeedWavePatch
 {
-    private static void Postfix(CardModel card, ref bool __result)
+    internal static void Apply(CardModel card, ref bool __result)
     {
-        if (card.Owner?.Character is ConstructCharacter) __result = card is SmallWave;
+        if (CharacterScope.IsConstruct(card)) __result = card is SmallWave;
     }
 }
 
-[HarmonyPatch(typeof(RippleBasin), nameof(RippleBasin.BeforeSideTurnEnd))]
 internal static class AttackingBasinPatch
 {
-    private static bool Prefix(RippleBasin __instance, IEnumerable<Creature> participants, ref Task __result)
+    internal static bool Apply(RippleBasin __instance, IEnumerable<Creature> participants, ref Task __result)
     {
         if (!CharacterScope.IsConstruct(__instance)) return true;
         __result = Grant(__instance, participants);
@@ -72,21 +62,19 @@ internal static class AttackingBasinPatch
     }
 }
 
-[HarmonyPatch(typeof(RippleBasin), nameof(RippleBasin.AfterCardPlayed))]
 internal static class BasinStatusPatch
 {
-    private static void Postfix(RippleBasin __instance, CardPlay cardPlay)
+    internal static void Apply(RippleBasin __instance, CardPlay cardPlay)
     {
         if (CharacterScope.IsConstruct(__instance) && cardPlay.Player == __instance.Owner && cardPlay.Card.Type == CardType.Attack)
             __instance.Status = RelicStatus.Active;
     }
 }
 
-[HarmonyPatch(typeof(NutritiousSoup), nameof(NutritiousSoup.AfterObtained))]
 internal static class SoupWavePatch
 {
     internal static readonly HashSet<CardModel> Transforming = [];
-    private static bool Prefix(NutritiousSoup __instance, ref Task __result)
+    internal static bool Apply(NutritiousSoup __instance, ref Task __result)
     {
         if (!CharacterScope.IsConstruct(__instance)) return true;
         __result = Transform(__instance.Owner);
@@ -110,30 +98,27 @@ internal static class SoupWavePatch
     }
 }
 
-[HarmonyPatch(typeof(NutritiousSoup), "ExtraHoverTips", MethodType.Getter)]
 internal static class SoupWaveHoverTips
 {
-    private static void Postfix(NutritiousSoup __instance, ref IEnumerable<IHoverTip> __result)
+    internal static void Apply(NutritiousSoup __instance, ref IEnumerable<IHoverTip> __result)
     {
         if (CharacterScope.IsConstruct(__instance))
             __result = [HoverTipFactory.FromKeyword(CardKeyword.Eternal), HoverTipFactory.FromCard<IronWave>()];
     }
 }
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.IsTransformable), MethodType.Getter)]
 internal static class SoupExplicitReplacement
 {
-    private static void Postfix(CardModel __instance, ref bool __result)
+    internal static void Apply(CardModel __instance, ref bool __result)
     {
-        if (SoupWavePatch.Transforming.Contains(__instance) && __instance is SmallWave && __instance.Owner?.Character is ConstructCharacter)
+        if (SoupWavePatch.Transforming.Contains(__instance) && __instance is SmallWave && CharacterScope.IsConstruct(__instance))
             __result = true;
     }
 }
 
-[HarmonyPatch(typeof(LeafyPoultice), nameof(LeafyPoultice.AfterObtained))]
 internal static class LeafyPoulticeWaves
 {
-    private static bool Prefix(LeafyPoultice __instance, ref Task __result)
+    internal static bool Apply(LeafyPoultice __instance, ref Task __result)
     {
         if (!CharacterScope.IsConstruct(__instance)) return true;
         __result = Transform(__instance);
@@ -191,7 +176,7 @@ public sealed class ConstructHelmet : CustomRelicModel
     public override RelicRarity Rarity => ModelDb.Relic<RuinedHelmet>().Rarity;
     public override string PackedIconPath => ModelDb.Relic<RuinedHelmet>().PackedIconPath;
     protected override string PackedIconOutlinePath => "res://images/atlases/relic_outline_atlas.sprites/ruined_helmet.tres";
-    public override List<(string, string)> Localization => new RelicLoc("损毁头盔", "每场战斗首次获得[gold]力量[/gold]或[gold]敏捷[/gold]时，获得等量的另一项属性。整场共触发一次。", "在攻守之间找回平衡。");
+    public override List<(string, string)> Localization => Loc.Relic("损毁头盔", "每场战斗首次获得[gold]力量[/gold]或[gold]敏捷[/gold]时，获得等量的另一项属性。整场共触发一次。", "买到盗版了");
     public override Task BeforeCombatStart() { HelmetMirror.Reset(this); return Task.CompletedTask; }
     public override Task AfterPowerAmountChanged(PlayerChoiceContext context, PowerModel power, decimal amount, Creature? applier, CardModel? card) => HelmetMirror.Apply(this, context, power, amount);
 }
@@ -203,7 +188,7 @@ public sealed class ConstructDart : CustomRelicModel
     public override RelicRarity Rarity => ModelDb.Relic<HelicalDart>().Rarity;
     public override string PackedIconPath => ModelDb.Relic<HelicalDart>().PackedIconPath;
     protected override string PackedIconOutlinePath => "res://images/atlases/relic_outline_atlas.sprites/helical_dart.tres";
-    public override List<(string, string)> Localization => new RelicLoc("螺线飞镖", "每打出一张攻击牌，本回合获得1点[gold]敏捷[/gold]。", "让出拳成为下一次防御。");
+    public override List<(string, string)> Localization => Loc.Relic("螺线飞镖", "每打出一张攻击牌，本回合获得1点[gold]敏捷[/gold]。", "怎么灰不拉几的颜色");
     public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay play)
     {
         if (play.Player == Owner && play.Card.Type == CardType.Attack)
@@ -211,36 +196,32 @@ public sealed class ConstructDart : CustomRelicModel
     }
 }
 
-[HarmonyPatch(typeof(RuinedHelmet), nameof(RuinedHelmet.TryModifyPowerAmountReceived))]
 internal static class NativeHelmetDisableDouble
 {
-    private static bool Prefix(RuinedHelmet __instance, ref bool __result)
+    internal static bool Apply(RuinedHelmet __instance, ref bool __result)
     {
         if (!CharacterScope.IsConstruct(__instance)) return true;
         __result = false; return false;
     }
 }
 
-[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.AfterPowerAmountChanged))]
 internal static class NativeHelmetMirrorHook
 {
-    private static void Postfix(AbstractModel __instance, PlayerChoiceContext choiceContext, PowerModel power, decimal amount, ref Task __result)
+    internal static void Apply(AbstractModel __instance, PlayerChoiceContext choiceContext, PowerModel power, decimal amount, ref Task __result)
     {
         if (__instance is RuinedHelmet relic && CharacterScope.IsConstruct(relic))
             __result = HelmetMirror.Apply(relic, choiceContext, power, amount);
     }
 }
 
-[HarmonyPatch(typeof(RuinedHelmet), nameof(RuinedHelmet.AfterCombatEnd))]
 internal static class NativeHelmetReset
 {
-    private static void Postfix(RuinedHelmet __instance) { if (CharacterScope.IsConstruct(__instance)) HelmetMirror.Reset(__instance); }
+    internal static void Apply(RuinedHelmet __instance) { if (CharacterScope.IsConstruct(__instance)) HelmetMirror.Reset(__instance); }
 }
 
-[HarmonyPatch(typeof(HelicalDart), nameof(HelicalDart.AfterCardPlayed))]
 internal static class NativeDartAdaptation
 {
-    private static bool Prefix(HelicalDart __instance, PlayerChoiceContext choiceContext, CardPlay cardPlay, ref Task __result)
+    internal static bool Apply(HelicalDart __instance, PlayerChoiceContext choiceContext, CardPlay cardPlay, ref Task __result)
     {
         if (!CharacterScope.IsConstruct(__instance)) return true;
         __result = cardPlay.Player == __instance.Owner && cardPlay.Card.Type == CardType.Attack
@@ -250,14 +231,13 @@ internal static class NativeDartAdaptation
     private static async Task Apply(PlayerChoiceContext context, Player owner) => await PowerCmd.Apply<HelicalDartPower>(context, owner.Creature, 1, owner.Creature, null);
 }
 
-[HarmonyPatch]
 internal static class AdaptedRelicDescriptions
 {
-    private static IEnumerable<MethodBase> TargetMethods() => [
+    internal static IEnumerable<MethodBase> Targets() => [
         AccessTools.PropertyGetter(typeof(RelicModel), "Description"),
         AccessTools.PropertyGetter(typeof(RelicModel), "EventDescription")
     ];
-    private static void Postfix(RelicModel __instance, ref LocString __result)
+    internal static void Apply(RelicModel __instance, ref LocString __result)
     {
         if (!CharacterScope.IsConstruct(__instance)) return;
         string? key = __instance switch {

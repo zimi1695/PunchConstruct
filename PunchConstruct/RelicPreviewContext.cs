@@ -22,15 +22,3 @@ internal static class RelicPreviewContext
     }
 }
 
-[HarmonyPatch(typeof(MerchantRelicEntry), "SetModel")]
-internal static class MerchantRelicPreview
-{
-    private static readonly AccessTools.FieldRef<MerchantEntry, Player> EntryPlayer = AccessTools.FieldRefAccess<MerchantEntry, Player>("_player");
-    private static void Postfix(MerchantRelicEntry __instance) => RelicPreviewContext.Register(__instance.Model, EntryPlayer(__instance));
-}
-
-[HarmonyPatch(typeof(RelicReward), nameof(RelicReward.Populate))]
-internal static class RewardRelicPreview
-{
-    private static void Postfix(RelicReward __instance) => RelicPreviewContext.Register(__instance.Relic, __instance.Player);
-}

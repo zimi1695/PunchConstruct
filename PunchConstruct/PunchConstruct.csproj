@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>PunchConstruct</AssemblyName>
-    <Version>0.4.24</Version>
+    <Version>0.4.26</Version>
     <GameDir Condition="'$(GameDir)' == ''">D:\game\steam\steamapps\common\Slay the Spire 2</GameDir>
     <BaseLibDir Condition="'$(BaseLibDir)' == ''">D:\game\steam\steamapps\workshop\content\2868840\3737335127\BaseLib</BaseLibDir>
   </PropertyGroup>

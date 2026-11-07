@@ -12,10 +12,10 @@ using MegaCrit.Sts2.Core.Runs;
 
 namespace PunchConstruct;
 
-[HarmonyPatch(typeof(SeaGlass), nameof(SeaGlass.AfterObtained))]
+// Relic-domain adapter: see NativeBridge/RelicBridge.cs.
 internal static class ConstructSeaGlass
 {
-    private static bool Prefix(SeaGlass __instance, ref Task __result)
+    internal static bool Apply(SeaGlass __instance, ref Task __result)
     {
         if (!CharacterScope.IsConstruct(__instance)) return true;
         __result = Offer(__instance);
@@ -47,10 +47,9 @@ internal static class ConstructSeaGlass
     }
 }
 
-[HarmonyPatch(typeof(SeaGlass), nameof(SeaGlass.Title), MethodType.Getter)]
 internal static class ConstructSeaGlassTitle
 {
-    private static void Postfix(SeaGlass __instance, ref LocString __result)
+    internal static void Apply(SeaGlass __instance, ref LocString __result)
     {
         if (CharacterScope.IsConstruct(__instance)) __result = new LocString("relics", "SEA_GLASS.title");
     }

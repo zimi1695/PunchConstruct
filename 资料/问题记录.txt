@@ -1,4 +1,21 @@
-拳击构装体：当前问题与验证（2026-11-01，0.4.24）
+拳击构装体：当前问题与验证（2026-11-07，0.4.26）
+
+0.4.26 本轮变更（2026-11-07）
+
+1. 兼容性结构重构：运行时业务 Harmony 补丁全部迁入 NativeBridge/，按 Reward、Relic、Event、Combat、Presentation 五个域转发；CharacterScope 成为唯一角色判断入口；IlBridge 统一 Transpiler 并在目标调用缺失或重复时退回原版 IL；AdaptationRegistry 按 Required／Optional 隔离适配器，失败只禁用自身并记录诊断。
+2. 兼容性仿真：COMPAT 扩展到 59 项检查，真实安装第三方 Postfix／Prefix、注入不匹配 IL／重写异常、验证适配器隔离、补丁注册健康、旧存档 ID 迁移、Required 策略与业务补丁边界。
+3. 英文本地化：新增 236 条编译期英文文本（卡牌、能力、遗物、角色），以及 135 条先古对白、22 条事件、15 条遗物、6 条卡牌表；原版术语、卡名、关键词、角色名直接复用游戏官方本地化，仅模组原创文案另译。ENGLISH 扩展到 2849 项检查，运行时切换语言并逐条扫描中文残留；14 个非中文语言镜像表由 prepare_text.py 生成，locale／localezh 以德语、繁体中文真实启动验证。
+4. 版本升至 0.4.26；归档 0.4.24、0.4.25、0.4.26 三版三文件，GitHub Release 从 0.4.24 起每版都提供；Steam 工坊跳过 0.4.25，只发 0.4.26。
+5. 验收：本地 35/35 通过（COMPAT 59 项、ENGLISH 2849 项、locale／localezh 均 PASS；shadernative PASS）；联机 4/4 通过（2p、3p 死灵、4p、4p 弱网）；恢复 4/4 通过（menu、abrupt、process-loss-4p、host-loss-mixed-3p）；full_local_verification=true、full_invariant_verification=true，证据钉在 DLL 934e75d1…。
+6. 2026-11-07 另建私密测试工坊条目 3835179658「拳击构装体(测试)」，visibility=2（private），依赖 BaseLib；原公开条目 3826907330 保持 0.4.24 未动。上传日志见资料/历史/记录/上传日志-0.4.26-测试条目.log，证据见 tools/runtime/test-workshop-0.4.26.json；正式上传仍待作者确认。
+7. 死亡朝向：复现「被建筑师击倒／死亡时朝向突然变化一瞬间」。原版拳击构装体 `die` 动画的 root 缩放与全身骨骼在 0.133 秒处同时硬切为镜像姿态；此前只把 root 缩放压回正向，姿态硬切仍在。现按真实时间驱动整段死亡动画：0.110 秒前正常播放，0.110–0.230 秒把 4 毫秒的硬切摊成 0.120 秒插值，之后恢复正常速度；`end` 增加固定过渡计数与逐帧 root/场景朝向检查，`facing` 同步通过。证据 DLL 934e75d1…。
+
+0.4.25 本轮变更（2026-11-06）
+
+1. 文案：建筑师乙组改为「暗港的报废品，怎么上来的？」「怎么还站在这。」；瓦库丙组删去「下一场，下一场，再下一场」；8 件专属遗物底部小字全部改写：架势「尖塔本质」、古铜之拳「这拳头有力气」、开口扳手「我说胧光怪刷钱特别多」、备用指节「东尼严父」、应急油壶「我说配佩尔之泪等于震荡波特别强」、自旋螺丝「补强不补弱，但是基米」、损毁头盔「买到盗版了」、螺线飞镖「怎么灰不拉几的颜色」。
+2. 兼容性结构重构：新增 CharacterScope 统一归属判定；新增 PatchRegistry 按类装载补丁，单个类失败不再阻断其余补丁，并以 Required／Optional 策略记录必需功能缺失；害虫杀手、融合者、色彩哲学家的事件选项由 Prefix 抢占改为 Priority.Last Postfix，原版与其他模组先生成的结果保留；新增 TranspilerTools，找不到原生调用点时退回原版 IL 并写诊断，移除共享宝箱、融合奖励、卡牌动作、地图绘制、伤害等待、能力等待等 6 处硬断言；巨大扭蛋、无色商店、色彩哲学家奖励、卸甲成军 GainBlock、遗物抽取保留必要拦截并标注 Required。
+3. 版本升至 0.4.25；构建通过，0 警告，181 份资源；候选三文件为 DLL cbf491cd…、PCK da249b64…、清单 84972fcb…，已同步 dist/SteamWorkshop/content。
+4. 本地验收：31 项完整功能与真实渲染检查全部通过（shadernative 在长批跑后出现一次原版与场景资源解析抖动，隔离重跑后 12 项 PASS）；联机 4/4 通过（2p 构装体、3p 死灵、4p 构装体、4p 弱网），断线恢复 4/4 通过；full_local_verification=true，证据钉在 DLL cbf491cd…。上传工坊与 GitHub 推送按作者要求暂缓。
 
 0.4.24 本轮变更（2026-11-01）
 
@@ -60,3 +77,7 @@ dist/SteamWorkshop/content三个文件已同步为当前Release构建（13d52d6e
 
 真实渲染复核已完成，专项31/31、恢复4/4、联机8/8，全量本地验收（full_local_verification）已为true。2026-10-27已把0.4.23上传到私密条目3826907330：远端标题、文案、依赖与本地一致，工坊订阅回下载三文件哈希与候选逐字节一致，从Steam启动加载PunchConstruct 0.4.23＋BaseLib 3.4.7且日志零错误。条目仍private、未公开，公开待作者决定。`full_release_verification`仍为false，但该字段在report_local.py里恒为false、没有代码路径会置true，其所描述的Steam线上验证本次已完成。0.4.15旧报告归档在tools/runtime/qa/verification-0.4.15.json。
 本次上传顺带改动了本机游戏目录：mods/PunchConstruct 由0.4.20替换为0.4.23，旧0.4.20三文件副本已在工作区清理，不再保留。Steam启动验证由游戏自身重写了工作区隔离试玩存档（settings、prefs、progress、BaseLib.cfg），因此刷新了dist/SteamWorkshop/play-profile-before.json基线，旧基线留在tools/runtime/play-profile-before-20261027-1959.json。
+
+待办（2026-11-06 记录）
+
+1. 英文语言下仍显示中文：assets/localization/eng 下的 ancients.json、cards.json、events.json、relics.json 与 zhs 同名文件内容完全相同（ancients 两文件 SHA256 一致），全部为中文。游戏语言设为英语时，角色、卡牌、遗物、事件与先古对白仍按中文显示。后续需要单独制作英文文本并放入 eng 目录，本次只记录，不改动。

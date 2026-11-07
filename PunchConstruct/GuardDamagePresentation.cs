@@ -10,36 +10,31 @@ namespace PunchConstruct;
 // The native damage command waits again after every hit, after all reactions
 // have already completed. Shorten only that presentation tail on a single
 // fully-blocked hit that triggers this character's growing starter relic.
-[HarmonyPatch]
 internal static class GuardDamagePresentation
 {
     internal static bool NativeTimingForQa;
-    private static MethodBase TargetMethod()
+    internal static MethodBase Target()
     {
         var method = typeof(CreatureCmd).GetMethods(BindingFlags.Public | BindingFlags.Static)
             .Single(m => m.Name == nameof(CreatureCmd.Damage) && m.GetParameters().Length == 7 &&
                 m.GetParameters()[1].ParameterType == typeof(IEnumerable<Creature>) && m.GetParameters()[2].ParameterType == typeof(decimal));
         return AccessTools.Method(method.GetCustomAttribute<AsyncStateMachineAttribute>()!.StateMachineType, "MoveNext");
     }
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase __originalMethod)
+    internal static List<CodeInstruction> Transpile(List<CodeInstruction> original, MethodBase __originalMethod)
     {
         var wait = AccessTools.Method(typeof(Cmd), nameof(Cmd.CustomScaledWait));
         var targets = AccessTools.Field(__originalMethod.DeclaringType, "<targetList>5__3");
         var results = AccessTools.Field(__originalMethod.DeclaringType, "<results>5__2");
-        int replaced = 0;
-        foreach (var instruction in instructions)
-        {
-            if (!instruction.Calls(wait)) { yield return instruction; continue; }
-            var load = new CodeInstruction(OpCodes.Ldarg_0);
-            load.labels.AddRange(instruction.labels); load.blocks.AddRange(instruction.blocks);
-            yield return load;
-            yield return new CodeInstruction(OpCodes.Ldfld, targets);
-            yield return new CodeInstruction(OpCodes.Ldarg_0);
-            yield return new CodeInstruction(OpCodes.Ldfld, results);
-            yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GuardDamagePresentation), nameof(Wait)));
-            replaced++;
-        }
-        if (replaced != 1) throw new InvalidOperationException("Unexpected native damage tail wait count: " + replaced);
+        return IlBridge.ReplaceCall(original, wait, call =>
+            new CodeInstruction[]
+            {
+                IlBridge.Inherit(call, new CodeInstruction(OpCodes.Ldarg_0)),
+                new CodeInstruction(OpCodes.Ldfld, targets),
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, results),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GuardDamagePresentation), nameof(Wait)))
+            },
+            "guard damage presentation");
     }
     private static Task Wait(float fast, float standard, bool ignoreCombatEnd, CancellationToken cancellation,
         List<Creature> targets, List<DamageResult> results)

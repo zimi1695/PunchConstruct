@@ -13,8 +13,6 @@ namespace PunchConstruct;
 // The native Surrounded hook only turns for a card's original selected target.
 // Tony's target is chosen later by AttackCommand. Let that command choose with
 // its usual RNG and hit-count hooks, then turn before the actual damage command.
-[HarmonyPatch(typeof(CreatureCmd), nameof(CreatureCmd.Damage), [typeof(PlayerChoiceContext), typeof(IEnumerable<Creature>),
-    typeof(decimal), typeof(ValueProp), typeof(Creature), typeof(CardModel), typeof(CardPlay)])]
 internal static class DelayedWaveFacing
 {
     private static readonly AsyncLocal<CardModel?> Active = new();
@@ -27,7 +25,7 @@ internal static class DelayedWaveFacing
         try { await DamageCmd.Attack(damage).FromCard(card, play).TargetingRandomOpponents(combat).Execute(context); }
         finally { Active.Value = previous; }
     }
-    private static bool Prefix(PlayerChoiceContext choiceContext, IEnumerable<Creature> targets, decimal amount, ValueProp props,
+    internal static bool Redirect(PlayerChoiceContext choiceContext, IEnumerable<Creature> targets, decimal amount, ValueProp props,
         Creature? dealer, CardModel? cardSource, CardPlay? cardPlay, ref Task<IEnumerable<DamageResult>> __result)
     {
         if (cardSource is not TonyWave || Active.Value != cardSource || dealer != cardSource.Owner.Creature ||

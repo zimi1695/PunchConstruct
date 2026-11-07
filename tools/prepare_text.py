@@ -1,6 +1,7 @@
-"""Prepare the previously written character dialogue draft as scoped localization."""
+"""Prepare scoped localization for both languages and the compiled text table."""
 import json
 import re
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -50,16 +51,96 @@ events.update({
     'PUNCHCONSTRUCT_BUGSLAYER.pages.GUARD.description': '你架起双臂。\n\n虫群撞上拳套，噼里啪啦落了一地。',
 })
 
+relic_descriptions = {
+    'PUNCHCONSTRUCT_ADAPTED_RUINED_HELMET.description': '每场战斗首次获得[gold]力量[/gold]或[gold]敏捷[/gold]时，获得等量的另一项属性。整场共触发一次。',
+    'PUNCHCONSTRUCT_ADAPTED_ARCHAIC_TOOTH.description': '将一张[gold]铁斩波[/gold][gold]变化[/gold]为[gold]灼热铁斩波[/gold]并[gold]强化[/gold]3次。',
+    'PUNCHCONSTRUCT_ADAPTED_NEOWS_TALISMAN.description': '[gold]强化[/gold]两张[gold]小斩波[/gold]。',
+    'PUNCHCONSTRUCT_ADAPTED_NUTRITIOUS_SOUP.description': '拾起时，将你[gold]牌组[/gold]中的所有[gold]小斩波[/gold][gold]变化[/gold]为[gold]铁斩波[/gold]，并赋予[gold]永恒[/gold]。',
+    'PUNCHCONSTRUCT_ADAPTED_PANDORAS_BOX.description': '拾起时，将所有可变化的[gold]小斩波[/gold]、[gold]打击[/gold]和[gold]防御[/gold][gold]变化[/gold]为其他牌。',
+}
+
+translations_path = ROOT / 'tools/english_text.json'
+if not translations_path.exists():
+    raise SystemExit('Missing tools/english_text.json; English text has not been prepared.')
+translations = json.loads(translations_path.read_text(encoding='utf-8-sig'))
+official = json.loads((ROOT / 'tools/official_terms.json').read_text(encoding='utf-8-sig'))
+cjk = re.compile(r'[\u4e00-\u9fff]')
+highlight = re.compile(r'\[(gold|purple|blue|red)\]([^\[]+)\[/\1\]')
+
+
+def normalized(term):
+    term = term.lower().replace("'s", "")
+    return term[:-1] if term.endswith('s') else term
+
+
+def check_official(chinese, text):
+    if chinese in official and normalized(text) != normalized(official[chinese]):
+        raise ValueError(f'Inconsistent official term: {chinese} -> {official[chinese]} (got {text})')
+    zh_tags = [content for _, content in highlight.findall(chinese)]
+    en_tags = {normalized(content) for _, content in highlight.findall(text)}
+    for zh_tag in zh_tags:
+        if zh_tag not in official:
+            continue
+        expected = normalized(official[zh_tag])
+        if expected not in en_tags:
+            raise ValueError(f'Inconsistent highlighted term: {zh_tag} -> {official[zh_tag]} (missing from {text})')
+
+
+def english(value):
+    if not cjk.search(value):
+        return value
+    if value not in translations:
+        raise ValueError('Missing English text: ' + value)
+    result = translations[value]
+    check_official(value, result)
+    return result
+
+
 for locale in ('zhs', 'eng'):
     folder = ROOT / 'PunchConstruct/assets/localization' / locale
     for table, values in [('ancients', ancients), ('events', events)]:
-        (folder / (table + '.json')).write_text(json.dumps(values, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    relics_path = folder / 'relics.json'
-    relics = json.loads(relics_path.read_text(encoding='utf-8-sig'))
-    relics['PUNCHCONSTRUCT_ADAPTED_RUINED_HELMET.description'] = '每场战斗首次获得[gold]力量[/gold]或[gold]敏捷[/gold]时，获得等量的另一项属性。整场共触发一次。'
-    relics['PUNCHCONSTRUCT_ADAPTED_ARCHAIC_TOOTH.description'] = '将一张[gold]铁斩波[/gold][gold]变化[/gold]为[gold]灼热铁斩波[/gold]并[gold]强化[/gold]3次。'
-    relics['PUNCHCONSTRUCT_ADAPTED_NEOWS_TALISMAN.description'] = '[gold]强化[/gold]两张[gold]小斩波[/gold]。'
-    relics['PUNCHCONSTRUCT_ADAPTED_NUTRITIOUS_SOUP.description'] = '拾起时，将你[gold]牌组[/gold]中的所有[gold]小斩波[/gold][gold]变化[/gold]为[gold]铁斩波[/gold]，并赋予[gold]永恒[/gold]。'
-    relics['PUNCHCONSTRUCT_ADAPTED_PANDORAS_BOX.description'] = '拾起时，将所有可变化的[gold]小斩波[/gold]、[gold]打击[/gold]和[gold]防御[/gold][gold]变化[/gold]为其他牌。'
-    relics_path.write_text(json.dumps(relics, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-print('Prepared scoped ancient dialogues, Punch Off, Whirlpool, Amalgamator and adapted relic descriptions.')
+        output = {key: (value if locale == 'zhs' else english(value)) for key, value in values.items()}
+        (folder / (table + '.json')).write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    source = ROOT / 'PunchConstruct/assets/localization/zhs'
+    relics = json.loads((source / 'relics.json').read_text(encoding='utf-8-sig'))
+    cards = json.loads((source / 'cards.json').read_text(encoding='utf-8-sig'))
+    for key, value in relic_descriptions.items():
+        relics[key] = value
+    for key, value in relics.items():
+        relics[key] = value if locale == 'zhs' else english(value)
+    for key, value in cards.items():
+        cards[key] = value if locale == 'zhs' else english(value)
+    (folder / 'relics.json').write_text(json.dumps(relics, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    (folder / 'cards.json').write_text(json.dumps(cards, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+# BaseLib resolves a table per game language; a locale without its own folder
+# shows raw keys. Mirror the authored tables so every shipped locale has text:
+# traditional Chinese reuses zhs, every other language reuses English.
+mirrors = {'zht': 'zhs', 'deu': 'eng', 'esp': 'eng', 'fra': 'eng', 'ind': 'eng',
+           'ita': 'eng', 'jpn': 'eng', 'kor': 'eng', 'pol': 'eng', 'ptb': 'eng',
+           'rus': 'eng', 'spa': 'eng', 'tha': 'eng', 'tur': 'eng'}
+for locale, source in mirrors.items():
+    folder = ROOT / 'PunchConstruct/assets/localization' / locale
+    folder.mkdir(parents=True, exist_ok=True)
+    for table in ('ancients', 'events', 'relics', 'cards'):
+        shutil.copyfile(ROOT / 'PunchConstruct/assets/localization' / source / (table + '.json'),
+                        folder / (table + '.json'))
+
+for table in ('ancients', 'events', 'relics', 'cards'):
+    zhs = json.loads((ROOT / 'PunchConstruct/assets/localization/zhs' / (table + '.json')).read_text(encoding='utf-8-sig'))
+    eng = json.loads((ROOT / 'PunchConstruct/assets/localization/eng' / (table + '.json')).read_text(encoding='utf-8-sig'))
+    if set(zhs) != set(eng):
+        raise ValueError('Key mismatch in ' + table)
+    if any(isinstance(value, str) and cjk.search(value) for value in eng.values()):
+        raise ValueError('Chinese text remains in English table: ' + table)
+
+lines = ['namespace PunchConstruct;', '', '// Generated by tools/prepare_text.py from tools/english_text.json. Do not edit.',
+         'internal static class EnglishText', '{',
+         '    internal static readonly Dictionary<string, string> Translations = new()', '    {']
+for chinese, text in sorted(translations.items()):
+    if cjk.search(text) or not text:
+        raise ValueError('Invalid English text for: ' + chinese)
+    lines.append('        [' + json.dumps(chinese, ensure_ascii=False) + '] = ' + json.dumps(text, ensure_ascii=False) + ',')
+lines += ['    };', '}', '']
+(ROOT / 'PunchConstruct/EnglishText.Generated.cs').write_text('\n'.join(lines), encoding='utf-8')
+print(f'Prepared {len(ancients)} ancient lines, {len(events)} event lines and {len(translations)} compiled English strings.')

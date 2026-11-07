@@ -10,13 +10,12 @@ using MegaCrit.Sts2.Core.Models.Cards;
 
 namespace PunchConstruct;
 
-[HarmonyPatch]
 internal static class ConstructOstyHealthAttack
 {
     internal static bool Applies(CardModel card) => card is Unleash or Protector && RegentAdaptations.Owns(card);
-    private static IEnumerable<System.Reflection.MethodBase> TargetMethods() =>
+    internal static IEnumerable<System.Reflection.MethodBase> Targets() =>
         new[] { typeof(Unleash), typeof(Protector) }.Select(t => AccessTools.Method(t, "OnPlay"));
-    private static bool Prefix(CardModel __instance, PlayerChoiceContext choiceContext, CardPlay cardPlay, ref Task __result)
+    internal static bool Apply(CardModel __instance, PlayerChoiceContext choiceContext, CardPlay cardPlay, ref Task __result)
     {
         if (!Applies(__instance)) return true;
         __result = Play(__instance, choiceContext, cardPlay);
@@ -32,10 +31,9 @@ internal static class ConstructOstyHealthAttack
     }
 }
 
-[HarmonyPatch(typeof(CalculatedDamageVar), nameof(CalculatedDamageVar.UpdateCardPreview))]
 internal static class ConstructOstyHealthPreview
 {
-    private static bool Prefix(CalculatedDamageVar __instance, CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
+    internal static bool Apply(CalculatedDamageVar __instance, CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
     {
         if (!ConstructOstyHealthAttack.Applies(card)) return true;
         var damage = new DamageVar(__instance.Name, __instance.Calculate(target), __instance.Props);
@@ -47,12 +45,11 @@ internal static class ConstructOstyHealthPreview
     }
 }
 
-[HarmonyPatch]
 internal static class ConstructOstyHealthWarning
 {
-    private static IEnumerable<System.Reflection.MethodBase> TargetMethods() =>
+    internal static IEnumerable<System.Reflection.MethodBase> Targets() =>
         new[] { typeof(Unleash), typeof(Protector) }.Select(t => AccessTools.PropertyGetter(t, "ShouldGlowRedInternal"));
-    private static bool Prefix(CardModel __instance, ref bool __result)
+    internal static bool Apply(CardModel __instance, ref bool __result)
     {
         if (!ConstructOstyHealthAttack.Applies(__instance)) return true;
         __result = false;
@@ -60,20 +57,18 @@ internal static class ConstructOstyHealthWarning
     }
 }
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.Tags), MethodType.Getter)]
 internal static class ConstructOstyHealthTags
 {
-    private static void Postfix(CardModel __instance, ref IEnumerable<CardTag> __result)
+    internal static void Apply(CardModel __instance, ref IEnumerable<CardTag> __result)
     {
         if (ConstructOstyHealthAttack.Applies(__instance))
             __result = __result.Where(t => t != CardTag.OstyAttack).ToArray();
     }
 }
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.Description), MethodType.Getter)]
 internal static class ConstructOstyHealthDescription
 {
-    private static void Postfix(CardModel __instance, ref LocString __result)
+    internal static void Apply(CardModel __instance, ref LocString __result)
     {
         if (!ConstructOstyHealthAttack.Applies(__instance)) return;
         var text = new LocString("cards", __instance is Unleash

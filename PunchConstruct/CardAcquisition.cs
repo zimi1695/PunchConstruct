@@ -58,7 +58,7 @@ internal static class CardAcquisition
     }
     // Explicit native character-pool challenges override the normal whitelist
     // for that selected native pool only. No global pool mutation or new RNG draw.
-    internal static bool ChallengeAllows(Player player, CardModel card) => player.Character is ConstructCharacter &&
+    internal static bool ChallengeAllows(Player player, CardModel card) => CharacterScope.IsConstruct(player) &&
         player.RunState.Modifiers.OfType<CharacterCards>().Any(modifier => {
             var character = ModelDb.GetById<CharacterModel>(modifier.CharacterModel);
             return character.GetType().Assembly == typeof(MegaCrit.Sts2.Core.Models.Characters.Ironclad).Assembly &&
@@ -91,7 +91,7 @@ internal static class CardAcquisition
         Groups.Any(g => g.Contains(card.GetType()) && player.Deck.Cards.Any(c => g.Contains(c.GetType()))) ? GroupMultiplier : 1;
     internal static CardModel Pick(Rng rng, IEnumerable<CardModel> cards, Player player)
     {
-        if (player.Character is not ConstructCharacter) return rng.NextItem(cards)!;
+        if (!CharacterScope.IsConstruct(player)) return rng.NextItem(cards)!;
         // Weight at the final draw, after the native Except/Distinct and rarity roll.
         var weighted = cards.SelectMany(c => Enumerable.Repeat(c, Weight(player, c) *
             (CardFactoryScope.RugReward && c.Pool is ColorlessCardPool && player.Relics.Any(r => r is DingyRug)
@@ -103,15 +103,14 @@ internal static class CardAcquisition
 // Random combat generation bypasses CardCreationOptions (potions, Toolbox,
 // Orange Dough and similar relics). Fixed event/token/status cards are not a
 // general reward pool and keep their native generation behavior.
-[HarmonyPatch]
 internal static class ConstructCombatCardSources
 {
-    private static IEnumerable<MethodBase> TargetMethods() => typeof(CardFactory).GetMethods()
+    internal static IEnumerable<MethodBase> Targets() => typeof(CardFactory).GetMethods()
         .Where(m => m.Name is nameof(CardFactory.GetDistinctForCombat) or nameof(CardFactory.GetForCombat));
-    private static void Prefix(Player player, ref IEnumerable<CardModel> __1, ref int __2, MethodBase __originalMethod, out Player? __state)
+    internal static void Apply(Player player, ref IEnumerable<CardModel> __1, ref int __2, MethodBase __originalMethod, out Player? __state)
     {
         __state = CardFactoryScope.Player;
-        if (player.Character is not ConstructCharacter) return;
+        if (!CharacterScope.IsConstruct(player)) return;
         CardFactoryScope.Player = player;
         var options = CardAcquisition.IncludeDesignedColorless(player, __1).Where(c => c.Rarity is CardRarity.Event or CardRarity.Token or CardRarity.Status or CardRarity.Curse or CardRarity.Quest ||
             CardAcquisition.Eligible(player, c)).DistinctBy(c => c.Id).ToArray();
@@ -120,27 +119,34 @@ internal static class ConstructCombatCardSources
         else if (__originalMethod.Name == nameof(CardFactory.GetDistinctForCombat))
             __2 = Math.Min(__2, options.Select(c => c.Id).Distinct().Count());
     }
-    private static void Postfix(Player player, ref IEnumerable<CardModel> __result)
+    internal static void Resolve(Player player, ref IEnumerable<CardModel> __result)
     {
         // Resolve native lazy enumeration before restoring the character scope.
-        if (player.Character is ConstructCharacter) __result = __result.ToArray();
+        if (CharacterScope.IsConstruct(player)) __result = __result.ToArray();
     }
-    private static void Finalizer(Player? __state) => CardFactoryScope.Player = __state;
+    internal static void Restore(Player? __state) => CardFactoryScope.Player = __state;
 }
 
-[HarmonyPatch(typeof(CardCreationOptions), nameof(CardCreationOptions.GetPossibleCards))]
+// Reward-domain adapter: see NativeBridge/RewardBridge.cs.
 internal static class GroupCardGates
 {
-    private static void Postfix(CardCreationOptions __instance, Player player, ref IEnumerable<CardModel> __result)
+    internal static void Apply(CardCreationOptions __instance, Player player, ref IEnumerable<CardModel> __result)
     {
-        if (player.Character is not ConstructCharacter) return;
+        if (!CharacterScope.IsConstruct(player)) return;
         if (CardAcquisition.SeaGlassSelection || CardAcquisition.IsPhilosopher(player))
         {
             // These selected imports are already available in the character's own pool.
             // Native foreign-character epoch locks can otherwise leave fewer than 3 options.
-            __result = __instance.CardPools.SelectMany(p => p.AllCards)
+            var rebuilt = __instance.CardPools.SelectMany(p => p.AllCards)
                 .Concat(CardAcquisition.SeaGlassSelection ? [] : ModelDb.CardPool<ConstructCardPool>().AllCards)
                 .DistinctBy(c => c.Id)
+                .Where(c => __instance.CardPools.Contains(c.Pool))
+                .Where(c => CardAcquisition.SeaGlassSelection ? CardAcquisition.IsSelectedImport(c) : CardAcquisition.IsPhilosopherCard(c))
+                .Where(c => __instance.CardPoolFilter?.Invoke(c) ?? true)
+                .ToArray();
+            // Keep candidates appended by other mods when they still satisfy the
+            // selected import or philosopher rules.
+            __result = rebuilt.Concat(__result).DistinctBy(c => c.Id)
                 .Where(c => __instance.CardPools.Contains(c.Pool))
                 .Where(c => CardAcquisition.SeaGlassSelection ? CardAcquisition.IsSelectedImport(c) : CardAcquisition.IsPhilosopherCard(c))
                 .Where(c => __instance.CardPoolFilter?.Invoke(c) ?? true);
@@ -158,12 +164,12 @@ internal static class GroupCardGates
 }
 
 // Three selections of three candidates, no rarity bands or repeated candidates.
-[HarmonyPatch(typeof(ColorfulPhilosophers), "OfferRewards")]
+// Reward-domain adapter: see NativeBridge/RewardBridge.cs.
 internal static class PhilosopherRandomRewards
 {
-    private static bool Prefix(ColorfulPhilosophers __instance, CardPoolModel pool, ref Task __result)
+    internal static bool Apply(ColorfulPhilosophers __instance, CardPoolModel pool, ref Task __result)
     {
-        if (__instance.Owner?.Character is not ConstructCharacter) return true;
+        if (!CharacterScope.IsConstruct(__instance.Owner)) return true;
         __result = Offer(__instance, pool);
         return false;
     }
@@ -190,14 +196,13 @@ internal static class PhilosopherRandomRewards
     }
 }
 
-[HarmonyPatch]
 internal static class CardFactoryScope
 {
     [ThreadStatic] internal static Player? Player;
     [ThreadStatic] internal static bool RugReward;
-    private static IEnumerable<MethodBase> TargetMethods() => typeof(CardFactory).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+    internal static IEnumerable<MethodBase> Targets() => typeof(CardFactory).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
         .Where(m => m.Name is "CreateForReward" or "CreateForMerchant");
-    private static void Prefix(Player player, MethodBase __originalMethod, object[] __args, out (Player?, bool) __state)
+    internal static void Apply(Player player, MethodBase __originalMethod, object[] __args, out (Player?, bool) __state)
     {
         __state = (Player, RugReward);
         Player = player;
@@ -208,31 +213,32 @@ internal static class CardFactoryScope
             !options.Flags.HasFlag(CardCreationFlags.NoModifyHooks) &&
             !CardAcquisition.SeaGlassSelection && !CardAcquisition.IsPhilosopher(player);
     }
-    private static void Finalizer((Player?, bool) __state) { Player = __state.Item1; RugReward = __state.Item2; }
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    internal static void Restore((Player?, bool) __state) { Player = __state.Item1; RugReward = __state.Item2; }
+    internal static List<CodeInstruction> Transpile(List<CodeInstruction> original)
     {
-        foreach (var instruction in instructions)
+        var rewritten = new List<CodeInstruction>(original.Count);
+        foreach (var instruction in original)
         {
             if (instruction.operand is MethodInfo method && method.DeclaringType == typeof(Rng) && method.Name == nameof(Rng.NextItem) && method.IsGenericMethod && method.GetGenericArguments().SequenceEqual([typeof(CardModel)]))
             {
                 var load = new CodeInstruction(OpCodes.Ldarg_0);
                 load.labels.AddRange(instruction.labels);
                 load.blocks.AddRange(instruction.blocks);
-                yield return load;
-                yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CardAcquisition), nameof(CardAcquisition.Pick)));
+                rewritten.Add(load);
+                rewritten.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CardAcquisition), nameof(CardAcquisition.Pick))));
             }
-            else yield return instruction;
+            else rewritten.Add(instruction);
         }
+        return rewritten;
     }
 }
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.Rarity), MethodType.Getter)]
 internal static class ConstructCardRarity
 {
-    private static void Postfix(CardModel __instance, ref CardRarity __result)
+    internal static void Apply(CardModel __instance, ref CardRarity __result)
     {
         bool owned = RegentAdaptations.Owns(__instance);
-        bool canonicalInFactory = !__instance.IsMutable && CardFactoryScope.Player?.Character is ConstructCharacter;
+        bool canonicalInFactory = !__instance.IsMutable && CharacterScope.IsConstruct(CardFactoryScope.Player);
         if (!owned && !canonicalInFactory) return;
         if (__instance is IronWave) __result = CardRarity.Basic;
         if (__instance is Bodyguard or Neutralize or FallingStar or Unleash or Prowess) __result = CardRarity.Common;
@@ -240,13 +246,12 @@ internal static class ConstructCardRarity
     }
 }
 
-[HarmonyPatch]
 internal static class MerchantCardGates
 {
-    private static IEnumerable<MethodBase> TargetMethods() => typeof(CardFactory).GetMethods().Where(m => m.Name == nameof(CardFactory.CreateForMerchant));
-    private static void Prefix(Player player, ref IEnumerable<CardModel> __1, MethodBase __originalMethod)
+    internal static IEnumerable<MethodBase> Targets() => typeof(CardFactory).GetMethods().Where(m => m.Name == nameof(CardFactory.CreateForMerchant));
+    internal static void Apply(Player player, ref IEnumerable<CardModel> __1, MethodBase __originalMethod)
     {
-        if (player.Character is ConstructCharacter)
+        if (CharacterScope.IsConstruct(player))
         {
             bool coloredSlot = __originalMethod.GetParameters().Last().ParameterType == typeof(CardType);
             __1 = CardAcquisition.IncludeDesignedColorless(player, __1)
@@ -255,13 +260,14 @@ internal static class MerchantCardGates
     }
 }
 
-[HarmonyPatch(typeof(MerchantInventory), "PopulateColorlessCardEntries")]
+// Reward-domain adapter: see NativeBridge/RewardBridge.cs.
+
 internal static class ConstructColorlessShop
 {
-    private static bool Prefix(MerchantInventory __instance)
+    internal static bool Apply(MerchantInventory __instance)
     {
         var player = __instance.Player;
-        if (player.Character is not ConstructCharacter) return true;
+        if (!CharacterScope.IsConstruct(player)) return true;
         var options = player.Character.CardPool.AllCards.Where(c => c.Pool is ColorlessCardPool && CardAcquisition.Eligible(player, c)).ToArray();
         var entries = (List<MerchantCardEntry>)AccessTools.Field(typeof(MerchantInventory), "_colorlessCardEntries").GetValue(__instance)!;
         foreach (var rarity in new[] { CardRarity.Uncommon, CardRarity.Rare })
@@ -274,26 +280,27 @@ internal static class ConstructColorlessShop
     }
 }
 
-[HarmonyPatch(typeof(ColorfulPhilosophers), "GenerateInitialOptions")]
+// Reward-domain adapter: see NativeBridge/RewardBridge.cs.
 internal static class PhilosopherColors
 {
-    private static bool Prefix(ColorfulPhilosophers __instance, ref IReadOnlyList<EventOption> __result)
+    // Native options are generated first; only this character's three pool
+    // choices are replaced, preserving earlier option work from other mods.
+    internal static void Apply(ColorfulPhilosophers __instance, ref IReadOnlyList<EventOption> __result)
     {
-        if (__instance.Owner?.Character is not ConstructCharacter) return true;
+        if (!CharacterScope.IsConstruct(__instance.Owner)) return;
         __result = new CardPoolModel[] { ModelDb.CardPool<RegentCardPool>(), ModelDb.CardPool<NecrobinderCardPool>(), ModelDb.CardPool<DefectCardPool>() }
             .Select(pool => new EventOption(__instance,
                 () => (Task)AccessTools.Method(typeof(ColorfulPhilosophers), "OfferRewards").Invoke(__instance, [pool])!,
                 "COLORFUL_PHILOSOPHERS.pages.INITIAL.options." + pool.EnergyColorName.ToUpperInvariant(), [])).ToArray();
-        return false;
     }
 }
 
-[HarmonyPatch(typeof(DustyTome), nameof(DustyTome.SetupForPlayer))]
+// Reward-domain adapter: see NativeBridge/RewardBridge.cs.
 internal static class ConstructDustyTome
 {
-    private static bool Prefix(DustyTome __instance, Player player)
+    internal static bool Apply(DustyTome __instance, Player player)
     {
-        if (player.Character is not ConstructCharacter) return true;
+        if (!CharacterScope.IsConstruct(player)) return true;
         AccessTools.PropertySetter(typeof(DustyTome), nameof(DustyTome.AncientCard)).Invoke(__instance, [ModelDb.GetId<BoxingChampionForm>()]);
         return false;
     }

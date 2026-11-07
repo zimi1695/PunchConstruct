@@ -8,15 +8,15 @@ using MegaCrit.Sts2.Core.Models.Relics;
 
 namespace PunchConstruct;
 
-[HarmonyPatch]
+
 internal static class ConstructSoupOffer
 {
     internal static MethodBase Predicate => typeof(Tezcatara).GetNestedTypes(BindingFlags.NonPublic)
         .SelectMany(t => t.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic))
         .Single(m => m.Name.StartsWith("<GenerateInitialOptions>") && m.ReturnType == typeof(bool) &&
             m.GetParameters() is [{ ParameterType: var p }] && p == typeof(CardModel));
-    private static MethodBase TargetMethod() => Predicate;
-    private static bool Prefix(CardModel __0, ref bool __result)
+    internal static MethodBase Target() => Predicate;
+    internal static bool Apply(CardModel __0, ref bool __result)
     {
         if (!RegentAdaptations.Owns(__0)) return true;
         __result = __0 is SmallWave && __0.Enchantment == null;
@@ -24,10 +24,10 @@ internal static class ConstructSoupOffer
     }
 }
 
-[HarmonyPatch(typeof(NeowsTalisman), nameof(NeowsTalisman.AfterObtained))]
+// Relic-domain adapter: see NativeBridge/RelicBridge.cs.
 internal static class ConstructNeowsTalisman
 {
-    private static bool Prefix(NeowsTalisman __instance, ref Task __result)
+    internal static bool Apply(NeowsTalisman __instance, ref Task __result)
     {
         if (!CharacterScope.IsConstruct(__instance)) return true;
         __result = Upgrade(__instance);

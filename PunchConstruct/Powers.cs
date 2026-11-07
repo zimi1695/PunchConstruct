@@ -21,7 +21,7 @@ public sealed class DelayedWavePower : CustomPowerModel
     public override string CustomPackedIconPath => ConstructPowerIcons.Packed(GetType());
     public override string CustomBigIconPath => ConstructPowerIcons.Big(GetType());
     public override string CustomBigBetaIconPath => CustomBigIconPath;
-    public override List<(string, string)> Localization => [("title", "东尼斩波"), ("description", "下回合开始时，依次结算{Amount}段东尼斩波。每段对随机敌人造成伤害，获得格挡：\n{Waves}")];
+    public override List<(string, string)> Localization => [("title", Loc.Pick("东尼斩波")), ("description", Loc.Pick("下回合开始时，依次结算{Amount}段东尼斩波。每段对随机敌人造成伤害，获得格挡：\n{Waves}"))];
     public override LocString Description
     {
         get
@@ -62,7 +62,7 @@ public sealed class IronWaveFormPower : CustomPowerModel
     public override string CustomPackedIconPath => ConstructPowerIcons.Packed(GetType());
     public override string CustomBigIconPath => ConstructPowerIcons.Big(GetType());
     public override string CustomBigBetaIconPath => CustomBigIconPath;
-    public override List<(string, string)> Localization => [("title", "铁斩波形态"), ("description", "每回合前{Amount}次造成伤害时，获得等同于未被格挡的伤害量的[gold]格挡[/gold]。本回合还可触发{Remaining}次。")];
+    public override List<(string, string)> Localization => [("title", Loc.Pick("铁斩波形态")), ("description", Loc.Pick("每回合前{Amount}次造成伤害时，获得等同于未被格挡的伤害量的[gold]格挡[/gold]。本回合还可触发{Remaining}次。"))];
     public override LocString Description
     {
         get { var text = base.Description; text.Add("Remaining", Math.Max(0, Amount - _triggeredThisTurn)); return text; }

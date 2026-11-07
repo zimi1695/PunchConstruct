@@ -28,7 +28,7 @@ public sealed class GuardStrengthNextTurnPower : GuardStrengthPower
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Active", 0)];
     internal int ActiveAmount => DynamicVars["Active"].IntValue;
     internal int PendingAmount => Amount - ActiveAmount;
-    public override List<(string, string)> Localization => [("title", "临时力量"), ("description", "{Status}")];
+    public override List<(string, string)> Localization => [("title", Loc.Pick("临时力量")), ("description", "{Status}")];
     public override LocString Description
     {
         get
@@ -71,5 +71,5 @@ public sealed class GuardTemporaryStrengthPower : CustomTemporaryPowerModel
     public override PowerModel InternallyAppliedPower => ModelDb.Power<StrengthPower>();
     protected override Func<PlayerChoiceContext, Creature, decimal, Creature?, CardModel?, bool, Task> ApplyPowerFunc
         => async (context, target, amount, applier, card, silent) => { await PowerCmd.Apply<StrengthPower>(context, target, amount, applier, card, silent); };
-    public override List<(string, string)> Localization => new PowerLoc("临时力量", "本回合结束时失去{Amount}点[gold]力量[/gold]。", "本回合结束时失去{Amount}点[gold]力量[/gold]。");
+    public override List<(string, string)> Localization => Loc.Power("临时力量", "本回合结束时失去{Amount}点[gold]力量[/gold]。", "本回合结束时失去{Amount}点[gold]力量[/gold]。");
 }

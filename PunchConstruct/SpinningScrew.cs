@@ -22,8 +22,8 @@ public sealed class SpinningScrew : CustomRelicModel
     public override string PackedIconPath => "res://PunchConstruct/art/spinning_screw.ctex";
     protected override string PackedIconOutlinePath => "res://PunchConstruct/art/spinning_screw_outline.ctex";
     protected override string BigIconPath => "res://PunchConstruct/art/spinning_screw_big.ctex";
-    public override List<(string, string)> Localization => new RelicLoc("自旋螺丝",
-        "回合开始时，若上回合造成过伤害且未受到伤害，额外抽1张牌。", "越转越顺。");
+    public override List<(string, string)> Localization => Loc.Relic("自旋螺丝",
+        "回合开始时，若上回合造成过伤害且未受到伤害，额外抽1张牌。", "补强不补弱，但是基米");
     public override Task BeforeCombatStart() { Reset(); return Task.CompletedTask; }
     public override Task AfterCombatEnd(CombatRoom room) { Reset(); return Task.CompletedTask; }
     private void Reset()

@@ -12,7 +12,6 @@ namespace PunchConstruct;
 // A blocked hit already has its own damage animation. Keep the native power
 // command (including hooks, history and visible feedback), without adding a
 // second presentation pause for each segment of an enemy's multi-hit attack.
-[HarmonyPatch]
 internal static class GuardStancePowerGain
 {
     private sealed record Grant(Creature Target, Type PowerType);
@@ -34,7 +33,7 @@ internal static class GuardStancePowerGain
         finally { Current.Value = previous; }
     }
 
-    private static IEnumerable<MethodBase> TargetMethods()
+    internal static IEnumerable<MethodBase> Targets()
     {
         // These two native commands contain the initial-application and stacking
         // pauses respectively. Resolve their state machines via metadata.
@@ -46,26 +45,18 @@ internal static class GuardStancePowerGain
         }
     }
 
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase __originalMethod)
+    internal static List<CodeInstruction> Transpile(List<CodeInstruction> original, MethodBase __originalMethod)
     {
         var wait = AccessTools.Method(typeof(Cmd), nameof(Cmd.CustomScaledWait));
         var power = AccessTools.Field(__originalMethod.DeclaringType, "power");
-        int replaced = 0;
-        foreach (var instruction in instructions)
-        {
-            if (instruction.Calls(wait))
+        return IlBridge.ReplaceCall(original, wait, call =>
+            new CodeInstruction[]
             {
-                var load = new CodeInstruction(OpCodes.Ldarg_0);
-                load.labels.AddRange(instruction.labels);
-                load.blocks.AddRange(instruction.blocks);
-                yield return load;
-                yield return new CodeInstruction(OpCodes.Ldfld, power);
-                yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GuardStancePowerGain), nameof(Wait)));
-                replaced++;
-            }
-            else yield return instruction;
-        }
-        if (replaced != 1) throw new InvalidOperationException($"Unexpected native power wait count: {__originalMethod}: {replaced}");
+                IlBridge.Inherit(call, new CodeInstruction(OpCodes.Ldarg_0)),
+                new CodeInstruction(OpCodes.Ldfld, power),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GuardStancePowerGain), nameof(Wait)))
+            },
+            "guard stance power gain");
     }
 
     private static Task Wait(float fastSeconds, float standardSeconds, bool ignoreCombatEnd,

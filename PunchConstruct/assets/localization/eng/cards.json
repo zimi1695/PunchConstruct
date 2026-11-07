@@ -1,8 +1,8 @@
 {
-  "PUNCHCONSTRUCT_ADAPTED_UNLEASH.description": "Deal {CalculatedDamage:diff()} damage.\nDeals additional damage equal to [gold]Osty's[/gold] current HP.",
+  "PUNCHCONSTRUCT_ADAPTED_UNLEASH.description": "Deal {CalculatedDamage:diff()} damage.\nThis card deals additional damage equal to [gold]Osty's[/gold] current HP.",
   "PUNCHCONSTRUCT_ADAPTED_PROTECTOR.description": "Deal {CalculatedDamage:diff()} damage.\nDeals additional damage equal to [gold]Osty's[/gold] [gold]Max HP[/gold].",
   "PUNCHCONSTRUCT_ADAPTED_SIC_EM.description": "Deal {OstyDamage:diff()} damage.\nWhenever you or Osty deal damage to this enemy this turn, [gold]Summon[/gold] {SicEmPower:diff()}.",
-  "PUNCHCONSTRUCT_OBSERVER_SCRY.title": "预见",
-  "PUNCHCONSTRUCT_OBSERVER_SCRY.description": "查看抽牌堆顶指定数量的牌，选择任意张弃掉，其余顺序不变。",
-  "PUNCHCONSTRUCT_OBSERVER_SCRY.prompt": "选择要弃掉的牌。未选择的牌按原顺序留在抽牌堆顶。"
+  "PUNCHCONSTRUCT_OBSERVER_SCRY.title": "Scry",
+  "PUNCHCONSTRUCT_OBSERVER_SCRY.description": "Look at the top cards of your draw pile. Choose any number to discard; the rest keep their order.",
+  "PUNCHCONSTRUCT_OBSERVER_SCRY.prompt": "Choose cards to discard. Unchosen cards stay on top of your draw pile in the same order."
 }

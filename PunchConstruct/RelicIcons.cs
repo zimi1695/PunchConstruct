@@ -7,16 +7,9 @@ using MegaCrit.Sts2.Core.Nodes.Relics;
 namespace PunchConstruct;
 
 // Derived textures live only in memory. Original files and atlas resources are never overwritten.
-[HarmonyPatch]
 internal static class RelicIcons
 {
     private static readonly Dictionary<(ulong, int), Texture2D> Cache = [];
-    private static IEnumerable<System.Reflection.MethodBase> TargetMethods() => new[] { "Icon", "IconOutline", "BigIcon" }
-        .Select(name => AccessTools.PropertyGetter(typeof(RelicModel), name));
-    private static void Postfix(RelicModel __instance, System.Reflection.MethodBase __originalMethod, ref Texture2D? __result)
-    {
-        if (__result != null) __result = Adapt(__instance, __result, __originalMethod.Name == "get_IconOutline");
-    }
 
     internal static Texture2D Adapt(RelicModel relic, Texture2D source, bool outline = false)
     {
@@ -86,27 +79,3 @@ internal static class RelicIcons
     }
 }
 
-// The native small Icon getters can be inlined into NRelic.Reload before Harmony
-// patches them. Refresh the actual control from original resources as well: never
-// transform its current texture, which could already be adapted on a later reload.
-[HarmonyPatch(typeof(NRelic), "Reload")]
-internal static class RelicControlIcons
-{
-    private static readonly AccessTools.FieldRef<NRelic, NRelic.IconSize> Size =
-        AccessTools.FieldRefAccess<NRelic, NRelic.IconSize>("_iconSize");
-    private static readonly AccessTools.FieldRef<NRelic, RelicModel?> Model =
-        AccessTools.FieldRefAccess<NRelic, RelicModel?>("_model");
-    private static readonly System.Reflection.MethodInfo OutlinePath =
-        AccessTools.PropertyGetter(typeof(RelicModel), "PackedIconOutlinePath");
-
-    private static void Postfix(NRelic __instance)
-    {
-        if (!__instance.IsNodeReady() || __instance.Icon == null || Size(__instance) != NRelic.IconSize.Small) return;
-        var relic = Model(__instance);
-        if (relic is not (RippleBasin or ConstructDart or HelicalDart or ConstructHelmet or RuinedHelmet)) return;
-        var icon = ResourceLoader.Load<Texture2D>(relic.PackedIconPath);
-        __instance.Icon.Texture = RelicIcons.Adapt(relic, icon);
-        var outline = ResourceLoader.Load<Texture2D>((string)OutlinePath.Invoke(relic, null)!);
-        __instance.Outline.Texture = RelicIcons.Adapt(relic, outline, outline: true);
-    }
-}

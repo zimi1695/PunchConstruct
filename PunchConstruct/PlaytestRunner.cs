@@ -735,6 +735,7 @@ internal static partial class PlaytestRunner
         if (!OS.GetCmdlineArgs().Contains("--punchconstruct-visual")) return;
         bool sawDeath = false;
         bool keptFacing = true;
+        int cutsBefore = ConstructCharacter.DeathCutTransitions;
         float minRootScale = float.MaxValue;
         var originalScale = actor.Visuals.Body.Scale;
         for (int frame = 0; frame <= 90; frame++)
@@ -758,7 +759,8 @@ internal static partial class PlaytestRunner
             if (frame is 0 or 10 or 30 or 60) await Capture($"qa-deathvisual-{label}-{frame:D2}");
             await Frames(1);
         }
-        Check(sawDeath && minRootScale > 0 && keptFacing, "Death keeps both root and scene facing throughout 91 sampled frames: " + label);
+        Check(sawDeath && minRootScale > 0 && keptFacing && ConstructCharacter.DeathCutTransitions == cutsBefore + 1,
+            "Death keeps both root and scene facing and replays the die pose cut over a fixed transition: " + label);
     }
 
     private static async Task DollChecks()
@@ -1419,6 +1421,7 @@ internal static partial class PlaytestRunner
         await Frames(180);
         await NGame.Instance!.ReturnToMainMenu();
         await Frames(10);
+        await NeowCapsuleChecks();
         GC.Collect();
         GC.WaitForPendingFinalizers();
         await Frames(2);

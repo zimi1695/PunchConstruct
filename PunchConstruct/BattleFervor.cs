@@ -19,7 +19,7 @@ public sealed class BattleFervor() : CustomCardModel(1, CardType.Skill, CardRari
     public override string CustomPortraitPath => "res://PunchConstruct/art/battle_fervor.ctex";
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<Burn>(), HoverTipFactory.FromCard<Fisticuffs>(), .. HoverTipFactory.FromEnchantment<Momentum>(5)];
-    public override List<(string, string)> Localization => new CardLoc("愈战愈勇",
+    public override List<(string, string)> Localization => Loc.Card("愈战愈勇",
         "将一张[gold]灼烧[/gold]加入你的手牌。选择一张手牌[gold]变化[/gold]为附魔5层[gold]动量[/gold]的[gold]拳斗[/gold]。",
         [("selectionScreenPrompt", "选择一张手牌变化为拳斗。")]);
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)

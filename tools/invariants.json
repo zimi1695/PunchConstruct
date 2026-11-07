@@ -1,0 +1,277 @@
+{
+  "schema": 1,
+  "name": "PunchConstruct 验收不变量台账",
+  "updated": "2026-11-07",
+  "note": "模式是进程级执行单位；不变量是玩家可见的保证。一个模式可以服务多条不变量，一条不变量也可以由多个模式共同支撑。families 标出共用同一套件入口的模式，避免把同一份代码运行当成多条独立证据。",
+  "families": [
+    {
+      "id": "FAM-RELIC",
+      "title": "遗物套件（普通遗物与工坊遗物）",
+      "modes": ["relics", "workshop"],
+      "note": "两者都执行 --punchconstruct-reliccheck；workshop 另加 --punchconstruct-workshop-only 切换夹具。分别保留日志便于定位，但只算同一套件的两次运行。"
+    },
+    {
+      "id": "FAM-EVENT",
+      "title": "事件套件（事件与着色器控制）",
+      "modes": ["events", "shadernative"],
+      "note": "两者都执行 --punchconstruct-eventcheck；shadernative 另加 --punchconstruct-shader-control 切换渲染对照。"
+    },
+    {
+      "id": "FAM-SMOKE",
+      "title": "冒烟套件（smoke／pool／icons）",
+      "modes": ["smoke", "pool", "icons"],
+      "note": "同一 SmokeCheck 入口，用不同命令行开关进入模型、卡池或图标分支。"
+    },
+    {
+      "id": "FAM-PERSIST",
+      "title": "存档套件（persist／observerpersist）",
+      "modes": ["persist", "observerpersist"],
+      "note": "两者都是先写隔离存档、再启动全新进程走原生 Continue 的两阶段流程，只是卡牌编号与恢复入口不同。"
+    }
+  ],
+  "classification": {
+    "gate": ["startup"],
+    "content": ["smoke", "pool", "icons", "update", "locale", "localezh"],
+    "presentation": ["poster", "animation", "relicvisual", "regentvisual", "shadernative", "selection"],
+    "behavior": [
+      "focus", "vigor", "edge", "boundary", "doll", "observer", "observerpersist",
+      "architect", "end", "relics", "workshop", "additions", "adapt", "modes",
+      "events", "facing", "soup", "persist", "draft", "boxing", "compat"
+    ],
+    "data_audit": ["english"]
+  },
+  "invariants": [
+    {
+      "id": "INV-BOOT-01",
+      "title": "启动、装载与主菜单可达",
+      "severity": "critical",
+      "kind": "gate",
+      "suite": "local",
+      "modes": ["startup", "smoke"],
+      "note": "启动日志无 QA 参数、无游戏错误；冒烟同时验证角色、起始牌组、先古对白与资源可实例化。"
+    },
+    {
+      "id": "INV-CONTENT-01",
+      "title": "卡牌、遗物、能力、药水与图标注册一致",
+      "severity": "high",
+      "kind": "content",
+      "suite": "local",
+      "modes": ["pool", "icons", "smoke", "update", "locale", "localezh"],
+      "note": "82 张卡牌、卡池归属、设计来源、状态图标尺寸与可见范围、原角色池不被改写；locale 启动还验证本地化标题与镜像表。"
+    },
+    {
+      "id": "INV-CARD-01",
+      "title": "新增卡牌规则、升级与生成行为",
+      "severity": "high",
+      "kind": "behavior",
+      "suite": "local",
+      "modes": ["boxing", "draft", "additions", "modes", "edge", "focus"],
+      "note": "含无色拳法牌、生成牌、灼热铁斩波、震荡、格挡回流、以及边界命令下的卡牌结算。"
+    },
+    {
+      "id": "INV-ACQUISITION-01",
+      "title": "奖励、商店、选牌与获取隔离",
+      "severity": "high",
+      "kind": "behavior",
+      "suite": "local",
+      "modes": ["draft", "modes", "adapt", "update"],
+      "note": "构装体只从自己的卡池与允许的无色名单获取；其他角色保持原生候选。"
+    },
+    {
+      "id": "INV-COMBAT-01",
+      "title": "战斗结算、状态与回合边界",
+      "severity": "high",
+      "kind": "behavior",
+      "suite": "local",
+      "modes": ["focus", "vigor", "facing", "edge", "end", "additions", "boxing"],
+      "note": "格挡/活力时序、荆棘、蟹钳朝向与背击、死亡朝向与0.133秒姿态硬切的固定过渡、回合结束清理、弃牌与牌堆边界。"
+    },
+    {
+      "id": "INV-RELIC-01",
+      "title": "遗物触发、成长、归属与序列化",
+      "severity": "high",
+      "kind": "behavior",
+      "suite": "local",
+      "modes": ["relics", "workshop", "doll", "adapt", "focus", "additions"],
+      "note": "含开口扳手、自旋螺丝、油壶、被改造的旧遗物，以及玩偶事件授予的风之女儿。"
+    },
+    {
+      "id": "INV-EVENT-01",
+      "title": "事件、先古对白与选项分支",
+      "severity": "high",
+      "kind": "behavior",
+      "suite": "local",
+      "modes": ["events", "soup", "architect", "doll"],
+      "note": "含漩涡、融合者、营养汤、建筑师与玩偶房间；直接跳转事件，不推进整张地图。"
+    },
+    {
+      "id": "INV-OBSERVER-01",
+      "title": "观者搬运内容与先古角色资源",
+      "severity": "medium",
+      "kind": "behavior",
+      "suite": "local",
+      "modes": ["observer", "observerpersist", "additions"],
+      "note": "观者卡牌、能力、真言/神格表现、独立准备与旧编号恢复。"
+    },
+    {
+      "id": "INV-SAVE-01",
+      "title": "存档写入、全新进程读取与旧编号兼容",
+      "severity": "critical",
+      "kind": "behavior",
+      "suite": "local",
+      "modes": ["persist", "observerpersist", "end"],
+      "note": "隔离档写盘后启动新进程走原生 Continue；结束流程还验证当前局存档被移除。"
+    },
+    {
+      "id": "INV-UI-01",
+      "title": "角色选择、海报、难度与界面层级",
+      "severity": "high",
+      "kind": "presentation",
+      "suite": "local",
+      "modes": ["selection", "poster", "regentvisual"],
+      "note": "真实选人按钮、静音音频捕获、进阶上限、海报层级与原生文字可读性。"
+    },
+    {
+      "id": "INV-VISUAL-01",
+      "title": "美术、动画、着色器与截图证据",
+      "severity": "medium",
+      "kind": "presentation",
+      "suite": "local",
+      "modes": ["animation", "relicvisual", "regentvisual", "shadernative", "icons", "poster"],
+      "note": "原版动作/音效调用、遗物图标翻转、星费显示、蜈蚣着色器兼容路径。"
+    },
+    {
+      "id": "INV-SCOPE-01",
+      "title": "构装体作用域与原角色隔离",
+      "severity": "critical",
+      "kind": "behavior",
+      "suite": "local",
+      "modes": ["boundary", "modes", "adapt", "compat"],
+      "note": "所有角色判断走 CharacterScope；原生角色卡池、难度、奖励与界面不被改写。"
+    },
+    {
+      "id": "INV-BRIDGE-01",
+      "title": "第三方 Harmony 共存与失败隔离",
+      "severity": "critical",
+      "kind": "contract",
+      "suite": "local",
+      "modes": ["compat"],
+      "note": "合成第三方 Postfix/Prefix、IL 目标缺失/重复、Optional 适配器抛异常后的回退与禁用。"
+    },
+    {
+      "id": "INV-LOC-01",
+      "title": "中英文文本完整且复用官方术语",
+      "severity": "high",
+      "kind": "data",
+      "suite": "local",
+      "modes": ["english", "locale", "localezh"],
+      "note": "运行时切到 eng，扫描编译期文本、四张 JSON 表与 14 个语言镜像；locale 以德语启动、localezh 以繁体中文启动。术语一致性另由 prepare_text.py 与 check_documents.py 校验。"
+    },
+    {
+      "id": "INV-COOP-01",
+      "title": "2／3／4 人联机一致性与弱网",
+      "severity": "critical",
+      "kind": "multiplayer",
+      "suite": "multiplayer",
+      "modes": ["coop-construct-2p", "coop-necrobinder-3p", "coop-construct-4p", "coop-construct-4p-network"],
+      "note": "本机原生 ENet，多进程、真实大厅、真实行动/选牌消息、逐阶段快照；弱网经本机 UDP 代理。"
+    },
+    {
+      "id": "INV-RECOVERY-01",
+      "title": "退出、强制关闭、进程丢失与主机丢失后的恢复",
+      "severity": "critical",
+      "kind": "recovery",
+      "suite": "recovery",
+      "modes": [
+        "recovery-construct-menu",
+        "recovery-construct-abrupt",
+        "recovery-construct-process-loss-construct-4p-reverse",
+        "recovery-construct-host-loss-mixed-3p-reverse"
+      ],
+      "note": "两阶段全新进程：保存前快照、断开阶段断言、原生 LoadRunLobby 重组、恢复后快照逐玩家一致。"
+    },
+    {
+      "id": "INV-DOCS-01",
+      "title": "文档、清单、美术来源与发布文案一致",
+      "severity": "high",
+      "kind": "external",
+      "suite": "external",
+      "modes": [],
+      "evidence": "tools/check_documents.py",
+      "note": "由独立静态审计执行，不写入 current-verification.json；报告只标注为外部证据，不冒充本进程内验收。"
+    }
+  ],
+  "coverage": {
+    "verified": [
+      "Windows x64、游戏 0.111.0、BaseLib 3.4.7、本机原生 ENet",
+      "35 次定点夹具运行（归并为 30 个套件入口）：真实引擎内的模型、房间、战斗、UI、音频与存档",
+      "合成第三方 Harmony Prefix/Postfix/Transpiler 冲突与 Optional 失败回退",
+      "2／3／4 人本机直连与 4 人弱网（延迟、抖动、丢包、断流）",
+      "菜单退出、突发退出、进程丢失、主机丢失四类恢复",
+      "zhs／zht／eng 与 14 个非中文语言镜像；编译期文本与四张 JSON 表",
+      "82 张卡、4 件工坊遗物、10 个状态图标的清单、来源与哈希"
+    ],
+    "unverified": [
+      {
+        "axis": "real-third-party-mods",
+        "state": "仅合成夹具",
+        "detail": "未加载真实流行 mod；未覆盖加载顺序、多个 mod 改同一方法、外部 mod 先拆掉目标调用",
+        "risk": "真实 mod 冲突只能在合成契约层提前发现，不能证明线上组合一定可用"
+      },
+      {
+        "axis": "steam-transport",
+        "state": "未覆盖",
+        "detail": "本机 ENet 不经过 Steam 传输、NAT、中继、真实公网 RTT 与长时间丢包",
+        "risk": "线上联机问题可能漏检"
+      },
+      {
+        "axis": "hot-rejoin",
+        "state": "未实现",
+        "detail": "原生开赛后关闭入站连接；没有热重连实现",
+        "risk": "不能宣称支持中途重连，只能验证退出后重新组队"
+      },
+      {
+        "axis": "platform-gpu",
+        "state": "未覆盖",
+        "detail": "仅 Windows 与本机 GPU；未测 Linux、Steam Deck、Proton、macOS、集显与其他驱动",
+        "risk": "着色器、窗口与分辨率问题可能只在其他平台出现"
+      },
+      {
+        "axis": "full-run",
+        "state": "未覆盖",
+        "detail": "没有完整 A10 长局、帧率、内存/资源增长、长时间挂机",
+        "risk": "长局泄漏与性能退化不在本地证据内"
+      },
+      {
+        "axis": "workshop-lifecycle",
+        "state": "未覆盖",
+        "detail": "未真实执行订阅、更新、退订工坊条目",
+        "risk": "更新通道问题不在本地证据内"
+      },
+      {
+        "axis": "save-upgrade",
+        "state": "未覆盖",
+        "detail": "没有 0.4.24/0.4.25 旧档升级到 0.4.26 的迁移测试",
+        "risk": "旧档兼容不在本地证据内"
+      },
+      {
+        "axis": "input-display",
+        "state": "未覆盖",
+        "detail": "无手柄/键鼠混用、超宽/4K/缩放、Steam Deck 1280x800",
+        "risk": "UI 布局与输入问题可能漏检"
+      },
+      {
+        "axis": "localization-depth",
+        "state": "部分覆盖",
+        "detail": "已覆盖 16 个官方语言的镜像表与德语／繁体中文启动；不验证字体缺字、长度溢出、UI 截断与角色口吻",
+        "risk": "英文 UI 截断或语气偏差可能漏检"
+      },
+      {
+        "axis": "audio-mix",
+        "state": "部分覆盖",
+        "detail": "只验证角色选择音效进入 Master 与静音捕获；没有完整战斗/BGM 混音",
+        "risk": "音频路由问题可能漏检"
+      }
+    ]
+  }
+}

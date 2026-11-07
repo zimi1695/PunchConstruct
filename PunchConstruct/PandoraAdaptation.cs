@@ -7,16 +7,15 @@ namespace PunchConstruct;
 
 // Keep the native batch transform, RNG, result preview and ordinary Strike /
 // Defend rule. Extend only this relic's own predicate for this character.
-[HarmonyPatch]
 internal static class PandoraWaveEligibility
 {
-    private static MethodBase TargetMethod() => AccessTools.FirstMethod(
+    internal static MethodBase Target() => AccessTools.FirstMethod(
         typeof(PandorasBox).GetNestedType("<>c", BindingFlags.NonPublic)!,
         m => m.Name.Contains("AfterObtained") && m.ReturnType == typeof(bool));
 
-    private static void Postfix(CardModel __0, ref bool __result)
+    internal static void Apply(CardModel __0, ref bool __result)
     {
-        if (__0 is SmallWave && __0.Owner?.Character is ConstructCharacter)
+        if (__0 is SmallWave && CharacterScope.IsConstruct(__0))
             __result = __0.IsRemovable && __0.IsTransformable;
     }
 }

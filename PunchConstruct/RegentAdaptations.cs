@@ -21,7 +21,7 @@ internal static class RegentAdaptations
     private static readonly AccessTools.FieldRef<CardModel, Player?> OwnerField = AccessTools.FieldRefAccess<CardModel, Player?>("_owner");
     private static readonly AccessTools.FieldRef<CardModel, int> StarBase = AccessTools.FieldRefAccess<CardModel, int>("_baseStarCost");
     private static readonly AccessTools.FieldRef<CardModel, bool> StarSet = AccessTools.FieldRefAccess<CardModel, bool>("_starCostSet");
-    internal static bool Owns(CardModel card) => OwnerField(card)?.Character is ConstructCharacter;
+    internal static bool Owns(CardModel card) => CharacterScope.IsConstruct(OwnerField(card));
     internal static void Apply(CardModel card, bool reset = false)
     {
         if (!Changes.TryGetValue(card.GetType(), out var change)) return;
@@ -44,24 +44,21 @@ internal static class RegentAdaptations
     }
 }
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.Owner), MethodType.Setter)]
 internal static class RegentOwnerAdaptation
 {
-    private static void Postfix(CardModel __instance) => RegentAdaptations.Apply(__instance);
+    internal static void Apply(CardModel card) => RegentAdaptations.Apply(card);
 }
 
-[HarmonyPatch(typeof(CardModel), "AfterDowngraded")]
 internal static class RegentDowngradeAdaptation
 {
-    private static void Postfix(CardModel __instance) => RegentAdaptations.Apply(__instance, true);
+    internal static void Apply(CardModel card) => RegentAdaptations.Apply(card, true);
 }
 
-[HarmonyPatch]
 internal static class RegentStarCostAdaptation
 {
-    private static IEnumerable<System.Reflection.MethodBase> TargetMethods() => RegentAdaptations.Changes.Keys
+    internal static IEnumerable<System.Reflection.MethodBase> Targets() => RegentAdaptations.Changes.Keys
         .Select(t => AccessTools.PropertyGetter(t, nameof(CardModel.CanonicalStarCost))).Distinct();
-    private static void Postfix(CardModel __instance, ref int __result)
+    internal static void Apply(CardModel __instance, ref int __result)
     {
         if (RegentAdaptations.ReplaceStarCost && RegentAdaptations.Owns(__instance)) __result = 0;
     }
@@ -69,15 +66,14 @@ internal static class RegentStarCostAdaptation
 
 // Zero star cost is still a displayed resource in the native renderer. Hide its
 // whole badge (including the child label) only on cards converted to energy.
-[HarmonyPatch]
 internal static class RegentStarCostVisuals
 {
-    private static IEnumerable<System.Reflection.MethodBase> TargetMethods() => [
+    internal static IEnumerable<System.Reflection.MethodBase> Targets() => [
         AccessTools.Method(typeof(NCard), nameof(NCard.UpdateVisuals)),
         AccessTools.Method(typeof(NCard), "UpdateStarCostVisuals"),
         AccessTools.Method(typeof(NCard), "UpdateStarCostText")
     ];
-    private static void Postfix(NCard __instance, TextureRect? ____starIcon)
+    internal static void Apply(NCard __instance, TextureRect? ____starIcon)
     {
         if (__instance.Model is { } card && RegentAdaptations.ReplaceStarCost &&
             RegentAdaptations.Owns(card) && RegentAdaptations.Changes.ContainsKey(card.GetType()))

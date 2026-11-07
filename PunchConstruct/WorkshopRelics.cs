@@ -24,8 +24,8 @@ public sealed class OpenEndWrench : CustomRelicModel
     public override string PackedIconPath => "res://PunchConstruct/art/open_end_wrench.ctex";
     protected override string PackedIconOutlinePath => "res://PunchConstruct/art/open_end_wrench_outline.ctex";
     protected override string BigIconPath => "res://PunchConstruct/art/open_end_wrench_big.ctex";
-    public override List<(string, string)> Localization => new RelicLoc("开口扳手",
-        "每击败一个敌人，回复1点生命值，获得5[gold]金币[/gold]。", "拧紧，再来一回合。");
+    public override List<(string, string)> Localization => Loc.Relic("开口扳手",
+        "每击败一个敌人，回复1点生命值，获得5[gold]金币[/gold]。", "我说胧光怪刷钱特别多");
     public override async Task AfterDeath(PlayerChoiceContext context, Creature target, bool wasRemovalPrevented, float deathAnimLength)
     {
         if (!target.IsEnemy || target.CombatState != Owner.Creature.CombatState || wasRemovalPrevented || !Owner.Creature.IsAlive) return;
@@ -43,8 +43,8 @@ public sealed class SpareKnuckles : CustomRelicModel
     public override string PackedIconPath => "res://PunchConstruct/art/spare_knuckles.ctex";
     protected override string PackedIconOutlinePath => "res://PunchConstruct/art/spare_knuckles_outline.ctex";
     protected override string BigIconPath => "res://PunchConstruct/art/spare_knuckles_big.ctex";
-    public override List<(string, string)> Localization => new RelicLoc("备用指节",
-        "每击败一个敌人，获得16点[gold]格挡[/gold]。", "总要留一手。");
+    public override List<(string, string)> Localization => Loc.Relic("备用指节",
+        "每击败一个敌人，获得16点[gold]格挡[/gold]。", "东尼严父");
     public override async Task AfterDeath(PlayerChoiceContext context, Creature target, bool wasRemovalPrevented, float deathAnimLength)
     {
         if (!target.IsEnemy || target.CombatState != Owner.Creature.CombatState || wasRemovalPrevented || !Owner.Creature.IsAlive) return;
@@ -62,8 +62,8 @@ public sealed class EmergencyOilCan : CustomRelicModel
     protected override string PackedIconOutlinePath => "res://PunchConstruct/art/emergency_oil_can_outline.ctex";
     protected override string BigIconPath => "res://PunchConstruct/art/emergency_oil_can_big.ctex";
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<VulnerablePower>(), HoverTipFactory.FromPower<WeakPower>()];
-    public override List<(string, string)> Localization => new RelicLoc("应急油壶",
-        "回合结束时，若有未使用的能量，给予一名随机敌人1层[gold]易伤[/gold]和1层[gold]虚弱[/gold]。", "还有一点余量。");
+    public override List<(string, string)> Localization => Loc.Relic("应急油壶",
+        "回合结束时，若有未使用的能量，给予一名随机敌人1层[gold]易伤[/gold]和1层[gold]虚弱[/gold]。", "我说配佩尔之泪等于震荡波特别强");
     public override async Task BeforeSideTurnEnd(PlayerChoiceContext context, CombatSide side, IEnumerable<Creature> participants)
     {
         if (side != CombatSide.Player || !participants.Contains(Owner.Creature) || !Owner.Creature.IsAlive || Owner.PlayerCombatState?.Energy is not > 0) return;

@@ -6,17 +6,16 @@ using MegaCrit.Sts2.Core.Models.Events;
 
 namespace PunchConstruct;
 
-[HarmonyPatch]
 internal static class ConstructPunchOffText
 {
-    private static IEnumerable<System.Reflection.MethodBase> TargetMethods() => [
+    internal static IEnumerable<System.Reflection.MethodBase> Targets() => [
         AccessTools.Method(typeof(EventModel), "L10NLookup"),
         AccessTools.Method(typeof(EventModel), nameof(EventModel.GetOptionTitle)),
         AccessTools.Method(typeof(EventModel), nameof(EventModel.GetOptionDescription))
     ];
-    private static void Postfix(EventModel __instance, ref LocString __result)
+    internal static void Apply(EventModel __instance, ref LocString __result)
     {
-        if (__instance is not (PunchOff or SpiralingWhirlpool or Amalgamator or Bugslayer) || __instance.Owner?.Character is not ConstructCharacter) return;
+        if (__instance is not (PunchOff or SpiralingWhirlpool or Amalgamator or Bugslayer) || !CharacterScope.IsConstruct(__instance)) return;
         var key = "PUNCHCONSTRUCT_" + __result.LocEntryKey;
         if (LocString.Exists("events", key))
         {
@@ -27,16 +26,15 @@ internal static class ConstructPunchOffText
     }
 }
 
-[HarmonyPatch]
 internal static class ConstructAncientDialogues
 {
     // The Architect derives directly from EventModel, not AncientEventModel.
-    private static IEnumerable<System.Reflection.MethodBase> TargetMethods() => [
+    internal static IEnumerable<System.Reflection.MethodBase> Targets() => [
         AccessTools.PropertyGetter(typeof(AncientEventModel), nameof(AncientEventModel.DialogueSet)),
         AccessTools.PropertyGetter(typeof(TheArchitect), nameof(TheArchitect.DialogueSet))
     ];
 
-    private static void Postfix(EventModel __instance, AncientDialogueSet __result)
+    internal static void Apply(EventModel __instance, AncientDialogueSet __result)
     {
         string character = ModelDb.GetId<ConstructCharacter>().Entry;
         if (__result.CharacterDialogues.ContainsKey(character)) return;
@@ -60,7 +58,6 @@ internal static class ConstructAncientDialogues
     }
 }
 
-[HarmonyPatch(typeof(AncientDialogueSet), nameof(AncientDialogueSet.GetValidDialogues))]
 internal static class ConstructAncientDialogueSelection
 {
     // 角色对白.txt 标注的是甲:乙:丙的比例。本地化文件里的 0/1/2 并不总按甲/乙/丙排列，
@@ -78,9 +75,9 @@ internal static class ConstructAncientDialogueSelection
         ["THE_ARCHITECT"] = [1, 1, 1]
     };
 
-    private static void Postfix(AncientDialogueSet __instance, ModelId __0, ref IEnumerable<AncientDialogue> __result)
+    internal static void Apply(AncientDialogueSet __instance, ModelId __0, ref IEnumerable<AncientDialogue> __result)
     {
-        if (__0 != ModelDb.GetId<ConstructCharacter>()) return;
+        if (!CharacterScope.IsConstructId(__0)) return;
         if (!__instance.CharacterDialogues.TryGetValue(__0.Entry, out var own) || own.Count != 3) return;
         // 建筑师沿用原版三次胜利的固定顺序，1:1:1 已由每场各出现一次实现。
         if (own.Any(d => d.VisitIndex is not null)) return;

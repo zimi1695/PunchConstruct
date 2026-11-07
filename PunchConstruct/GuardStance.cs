@@ -25,7 +25,7 @@ public sealed class GuardStance : CustomRelicModel
     public override string PackedIconPath => "res://PunchConstruct/art/guard_stance.ctex";
     protected override string PackedIconOutlinePath => "res://PunchConstruct/art/guard_stance_outline.ctex";
     protected override string BigIconPath => "res://PunchConstruct/art/guard_stance_big.ctex";
-    public override List<(string, string)> Localization => new RelicLoc("架势", "每次完全格挡伤害，获得1点[gold]活力[/gold]。此效果本场战斗中每次触发后+1。", "站稳，然后出拳。");
+    public override List<(string, string)> Localization => Loc.Relic("架势", "每次完全格挡伤害，获得1点[gold]活力[/gold]。此效果本场战斗中每次触发后+1。", "尖塔本质");
     public override async Task AfterDamageReceived(PlayerChoiceContext context, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? card)
     {
         if (target != Owner.Creature || !result.WasFullyBlocked) return;

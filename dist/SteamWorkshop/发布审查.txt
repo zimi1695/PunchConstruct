@@ -1,6 +1,25 @@
 拳击构装体：本地交付与发布审查（2026-10-26，2026-10-27更新）
 
-content现为0.4.24，三个模组文件与当前Release构建一致；清单与PCK沿用0.4.23。活动试玩窗口不热替换，关闭后启动器同步最新源码构建，181份资源、82种卡牌。条目3826907330已公开。
+content现为0.4.26，三个模组文件与当前Release构建一致；237份资源（含 14 个语言镜像）、82种卡牌。0.4.26 完成 Native Bridge 与五域适配器重构、英文本地化与多语言镜像、死亡朝向瞬变修复，本地 35 项、联机 4 项、恢复 4 项验收通过后上传。Steam 条目3826907330线上仍为0.4.24，已公开；0.4.25 保留归档但跳过工坊。
+
+0.4.26（2026-11-07）
+
+[已完成] Native Bridge／AdaptationRegistry／IlBridge／CharacterScope 重构；业务补丁全部集中到 NativeBridge/。
+[已完成] COMPAT 59 项与 ENGLISH 2849 项通过；英文术语复用官方本地化，locale／localezh 以德语、繁体中文真实启动通过。
+[已完成] 死亡朝向修复：`die` 动画 0.133 秒处的单帧姿态硬切改为固定 0.120 秒实时过渡，死亡与建筑师击倒不再出现单帧朝向跳变；`end`／`facing` 通过。
+[已完成] 0.4.24／0.4.25／0.4.26 三版三文件归档；工坊只发 0.4.26。
+[已完成] 本地 35/35、联机 4/4（含 4p 弱网）、恢复 4/4；full_local_verification=true、full_invariant_verification=true。
+[已完成] 另建私密测试条目 3835179658「拳击构装体(测试)」，visibility=private；原公开条目 3826907330 保持 0.4.24 未动。
+[未完成] 上传正式 Steam 工坊 0.4.26 与 GitHub Release（0.4.24 起每版都提供，0.4.25 跳过工坊）。
+
+0.4.25（2026-11-06）
+
+[已完成] 文案与遗物小字改写；CharacterScope、PatchRegistry、TranspilerTools 结构重构，事件选项改为 Postfix，移除 6 处硬断言。
+[已完成] 构建并同步 content。
+[已完成] 31 项本地验收、4/4 联机（含 4p 弱网）、4/4 断线恢复全部通过；full_local_verification=true。上传与 GitHub 推送按作者要求暂缓。
+[未完成] GitHub Release 从 0.4.24 起每版都提供，0.4.25 旧版包不跳过。
+
+0.4.24（2026-11-01）
 安装见安装说明.txt；只需BaseLib 3.4.7，无需Watcher。核对游戏0.111.0。所有玩家使用同一份文件。
 
 0.4.24（2026-11-01）
@@ -20,6 +39,6 @@ Steam条目3826907330已于2026-10-27上传0.4.23，当时private、未公开：
 害虫杀手后续正文已获作者确认并同步；相对上述声音专项，只有两份事件文本资源变化，DLL与清单未变，本次静态核对而未重复游戏测试。
 
 当前content SHA256
-PunchConstruct.dll  30dfc531d11deee1e71efc3c73fd72e6b4d9734b89236674fb08bc52f6cf154c
-PunchConstruct.pck  5d2201f063af0c9590fa583c3a7147734c530be1c86c1378ef497c9d7882a20e
-PunchConstruct.json  4978e3d507fb758da2f6f2a2a5c6c0791da93e3d4d97e0629a8f2e839e921d71
+PunchConstruct.dll  934e75d188998f3135f86e265fbacd4d7ae75d9fdd0a322db79b039b3dc5d1fa
+PunchConstruct.pck  1c76ea442bb5e873c7d2c40f69349d61935ffcff382e8fabdcf761ea2a9f0e26
+PunchConstruct.json  f72c1ed2e9e0e4c87d70a43269fd57b559ff2710c7953e73401a5eba031e5d80

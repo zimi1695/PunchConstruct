@@ -5,10 +5,9 @@ using MegaCrit.Sts2.Core.Runs;
 
 namespace PunchConstruct;
 
-[HarmonyPatch(typeof(PrismaticGem), nameof(PrismaticGem.ModifyCardRewardCreationOptions))]
 internal static class ConstructPrismaticGem
 {
-    private static bool Prefix(PrismaticGem __instance, Player player, CardCreationOptions options, ref CardCreationOptions __result)
+    internal static bool Apply(PrismaticGem __instance, Player player, CardCreationOptions options, ref CardCreationOptions __result)
     {
         if (!CharacterScope.IsConstruct(__instance)) return true;
         __result = options;

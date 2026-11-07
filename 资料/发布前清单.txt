@@ -2,6 +2,27 @@
 
 当前交付
 
+0.4.26（2026-11-07）
+
+[已完成] 兼容性结构重构：业务 Harmony 补丁全部集中到 NativeBridge/，五域适配器转发；CharacterScope 唯一角色判断；IlBridge 统一 Transpiler 降级；AdaptationRegistry 实现 Required／Optional 隔离。
+[已完成] 兼容性仿真 COMPAT 59 项通过：第三方 Postfix 追加、Prefix 抢先返回 false、IL 缺目标／重复／重写异常、适配器隔离、补丁注册健康、旧存档 ID 迁移、业务补丁边界、Required 策略。
+[已完成] 英文本地化：236 条编译期文本、四张英文表与 14 个语言镜像完成；原版术语复用游戏官方本地化；ENGLISH 2849 项、locale／localezh 启动语言检查通过。
+[已完成] 版本升至 0.4.26，构建 0 警告、237 份资源（含 14 个语言镜像）；0.4.24／0.4.25 归档不变，0.4.26 归档与 ZIP 已更新为兼容重构后的候选。
+[已完成] 本地 35/35、联机 4/4、恢复 4/4 全量通过；content-current.json 已同步 0.4.26 哈希与 full_release_acceptance=true，证据钉在 DLL 934e75d1…。
+[已完成] 死亡朝向修复：死亡／建筑师击倒时 `die` 动画的单帧姿态硬切改为固定 0.120 秒实时过渡，root 保持正向；`end`、`facing` 与全量验收通过。
+[已完成] 另建私密测试工坊条目 3835179658「拳击构装体(测试)」，原公开条目 3826907330 保持 0.4.24 未动。
+[未完成] 上传正式 Steam 工坊 0.4.26（跳过 0.4.25）与 GitHub 推送；Release 从 0.4.24 起每版都提供。
+[未完成] 上传后重跑 workshop.py --verify，并更新 verification.json 的线上状态。
+
+0.4.25（2026-11-06）
+
+[已完成] 文案：建筑师与瓦库各一组先古对白改写，8 件专属遗物底部小字全部替换。
+[已完成] 兼容性结构重构：CharacterScope 统一归属判定、PatchRegistry 逐类装载与 Required／Optional 策略、事件选项改为 Last Postfix、TranspilerTools 降级并移除 6 处硬断言。
+[已完成] 构建通过（0 警告，181 份资源），候选 DLL cbf491cd…、PCK da249b64…、清单 84972fcb… 已同步 dist/SteamWorkshop/content。
+[已完成] 31 项本地功能与真实渲染验收全部通过；联机 4/4（含 4p 弱网）与断线恢复 4/4 通过；full_local_verification=true。shadernative 在长批跑后偶发场景解析抖动，隔离重跑 PASS。
+[未完成] 上传 Steam 工坊与 GitHub 推送：作者要求暂缓。GitHub Release 需同时保留 0.4.24 旧版与 0.4.25 新版。
+[未完成] 上传后重跑 workshop.py --verify，并更新 verification.json 与 content-current 的线上状态。
+
 0.4.24（2026-11-01）
 
 [已完成] 巨大卷轴按角色排除、架势／古铜之拳文案与工坊说明重写已编码并构建；候选三个文件为0.4.24（DLL 30dfc531…，PCK与清单未变）。

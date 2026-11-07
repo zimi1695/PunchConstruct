@@ -8,10 +8,10 @@ using MegaCrit.Sts2.Core.Random;
 
 namespace PunchConstruct;
 
-[HarmonyPatch(typeof(CardFactory), nameof(CardFactory.GetDefaultTransformationOptions))]
+// Reward-domain adapter: see NativeBridge/RewardBridge.cs.
 internal static class ConstructTransformPool
 {
-    private static bool Prefix(CardModel original, bool isInCombat, ref IEnumerable<CardModel> __result)
+    internal static bool Apply(CardModel original, bool isInCombat, ref IEnumerable<CardModel> __result)
     {
         if (!RegentAdaptations.Owns(original) || original.Type is CardType.Curse or CardType.Status || original.Rarity == CardRarity.Ancient) return true;
         var previous = CardFactoryScope.Player;
@@ -26,33 +26,33 @@ internal static class ConstructTransformPool
     }
 }
 
-[HarmonyPatch(typeof(CardFactory), "GetFilteredTransformationOptions")]
 internal static class TransformDeckGates
 {
-    private static void Postfix(CardModel original, ref CardModel[] __result)
+    internal static void Apply(CardModel original, ref CardModel[] __result)
     {
         if (RegentAdaptations.Owns(original) && original.Type is not (CardType.Curse or CardType.Status))
             __result = __result.Where(c => CardAcquisition.Eligible(original.Owner, c)).ToArray();
     }
 }
 
-[HarmonyPatch]
 internal static class TransformAffinity
 {
-    private static IEnumerable<MethodBase> TargetMethods() => typeof(CardFactory).GetMethods().Where(m => m.Name == nameof(CardFactory.CreateRandomCardForTransform));
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    internal static IEnumerable<MethodBase> Targets() => typeof(CardFactory).GetMethods().Where(m => m.Name == nameof(CardFactory.CreateRandomCardForTransform));
+    internal static List<CodeInstruction> Transpile(List<CodeInstruction> original)
     {
-        foreach (var instruction in instructions)
+        var rewritten = new List<CodeInstruction>(original.Count);
+        foreach (var instruction in original)
         {
             if (instruction.operand is MethodInfo method && method.DeclaringType == typeof(Rng) && method.Name == nameof(Rng.NextItem) && method.IsGenericMethod && method.GetGenericArguments().SequenceEqual([typeof(CardModel)]))
             {
                 var load = new CodeInstruction(OpCodes.Ldarg_0);
                 load.labels.AddRange(instruction.labels); load.blocks.AddRange(instruction.blocks);
-                yield return load;
-                yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TransformAffinity), nameof(Pick)));
+                rewritten.Add(load);
+                rewritten.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TransformAffinity), nameof(Pick))));
             }
-            else yield return instruction;
+            else rewritten.Add(instruction);
         }
+        return rewritten;
     }
-    private static CardModel Pick(Rng rng, IEnumerable<CardModel> candidates, CardModel original) => CardAcquisition.Pick(rng, candidates, original.Owner);
+    internal static CardModel Pick(Rng rng, IEnumerable<CardModel> candidates, CardModel original) => CardAcquisition.Pick(rng, candidates, original.Owner);
 }

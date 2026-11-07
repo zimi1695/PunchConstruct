@@ -16,10 +16,9 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace PunchConstruct;
 
-[HarmonyPatch(typeof(SicEm), "OnPlay")]
 internal static class ConstructSicEm
 {
-    private static bool Prefix(SicEm __instance, PlayerChoiceContext choiceContext, CardPlay cardPlay, ref Task __result)
+    internal static bool Apply(SicEm __instance, PlayerChoiceContext choiceContext, CardPlay cardPlay, ref Task __result)
     {
         if (!RegentAdaptations.Owns(__instance)) return true;
         __result = Play(__instance, choiceContext, cardPlay);
@@ -37,10 +36,9 @@ internal static class ConstructSicEm
 
 // Preserve the native card ID, upgrade values and save format. Its existing
 // OstyDamage variable needs the player's ordinary damage forecast in this role.
-[HarmonyPatch(typeof(OstyDamageVar), nameof(OstyDamageVar.UpdateCardPreview))]
 internal static class ConstructSicEmPreview
 {
-    private static bool Prefix(OstyDamageVar __instance, CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
+    internal static bool Apply(OstyDamageVar __instance, CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
     {
         if (card is not SicEm || !RegentAdaptations.Owns(card)) return true;
         var damage = new DamageVar(__instance.Name, __instance.BaseValue, __instance.Props);
@@ -52,10 +50,9 @@ internal static class ConstructSicEmPreview
     }
 }
 
-[HarmonyPatch(typeof(SicEm), "ShouldGlowRedInternal", MethodType.Getter)]
 internal static class ConstructSicEmWarning
 {
-    private static bool Prefix(SicEm __instance, ref bool __result)
+    internal static bool Apply(SicEm __instance, ref bool __result)
     {
         if (!RegentAdaptations.Owns(__instance)) return true;
         __result = false;
@@ -63,20 +60,18 @@ internal static class ConstructSicEmWarning
     }
 }
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.Tags), MethodType.Getter)]
 internal static class ConstructSicEmTags
 {
-    private static void Postfix(CardModel __instance, ref IEnumerable<CardTag> __result)
+    internal static void Apply(CardModel __instance, ref IEnumerable<CardTag> __result)
     {
         if (__instance is SicEm && RegentAdaptations.Owns(__instance))
             __result = __result.Where(t => t != CardTag.OstyAttack).ToArray();
     }
 }
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.Description), MethodType.Getter)]
 internal static class ConstructSicEmDescription
 {
-    private static void Postfix(CardModel __instance, ref LocString __result)
+    internal static void Apply(CardModel __instance, ref LocString __result)
     {
         if (__instance is not SicEm || !RegentAdaptations.Owns(__instance)) return;
         var text = new LocString("cards", "PUNCHCONSTRUCT_ADAPTED_SIC_EM.description");
@@ -95,7 +90,7 @@ public sealed class ConstructSicEmPower : CustomPowerModel
     public override PowerInstanceType InstanceType => PowerInstanceType.InstancedPerApplier;
     public override string CustomPackedIconPath => ModelDb.Power<SicEmPower>().PackedIconPath;
     public override string CustomBigIconPath => ModelDb.Power<SicEmPower>().ResolvedBigIconPath;
-    public override List<(string, string)> Localization => new PowerLoc("紧追不放", "本回合，你或奥斯提每次对这名敌人造成伤害时，召唤{Amount}。", "本回合，你或奥斯提每次对这名敌人造成伤害时，召唤{Amount}。");
+    public override List<(string, string)> Localization => Loc.Power("紧追不放", "本回合，你或奥斯提每次对这名敌人造成伤害时，召唤{Amount}。", "本回合，你或奥斯提每次对这名敌人造成伤害时，召唤{Amount}。");
 
     public override async Task AfterDamageGiven(PlayerChoiceContext context, Creature? dealer, DamageResult result, ValueProp props, Creature? target, CardModel? cardSource)
     {

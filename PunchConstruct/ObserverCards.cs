@@ -55,7 +55,7 @@ public sealed class ObserverJustLucky() : ObserverCard(0, CardType.Attack, CardR
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(3, ValueProp.Move), new BlockVar(2, ValueProp.Move), new DynamicVar("Scry", 1)];
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [ObserverRules.ScryTip];
-    public override List<(string, string)> Localization => new CardLoc("幸运一击", "[gold]预见[/gold]{Scry:diff()}。\n获得{Block:diff()}点[gold]格挡[/gold]。\n造成{Damage:diff()}点伤害。");
+    public override List<(string, string)> Localization => Loc.Card("幸运一击", "[gold]预见[/gold]{Scry:diff()}。\n获得{Block:diff()}点[gold]格挡[/gold]。\n造成{Damage:diff()}点伤害。");
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {
         await ObserverRules.Scry(context, Owner, DynamicVars["Scry"].IntValue);
@@ -70,7 +70,7 @@ public sealed class ObserverSashWhip() : ObserverCard(1, CardType.Attack, CardRa
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(8, ValueProp.Move), new DynamicVar("Weak", 1)];
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<WeakPower>()];
-    public override List<(string, string)> Localization => new CardLoc("腰带抽打", "造成{Damage:diff()}点伤害。\n如果这场战斗中打出的上一张牌是攻击牌，给予{Weak:diff()}层[gold]虚弱[/gold]。");
+    public override List<(string, string)> Localization => Loc.Card("腰带抽打", "造成{Damage:diff()}点伤害。\n如果这场战斗中打出的上一张牌是攻击牌，给予{Weak:diff()}层[gold]虚弱[/gold]。");
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {
         // Skip this play entry rather than all occurrences of the same card.
@@ -87,7 +87,7 @@ public sealed class ObserverProstrate() : ObserverCard(0, CardType.Skill, CardRa
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(4, ValueProp.Move), new DynamicVar("Mantra", 2)];
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<ObserverMantra>(), HoverTipFactory.FromPower<ObserverDivinity>()];
-    public override List<(string, string)> Localization => new CardLoc("五体投地", "获得{Mantra:diff()}点[gold]真言[/gold]。\n获得{Block:diff()}点[gold]格挡[/gold]。");
+    public override List<(string, string)> Localization => Loc.Card("五体投地", "获得{Mantra:diff()}点[gold]真言[/gold]。\n获得{Block:diff()}点[gold]格挡[/gold]。");
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {
         await PowerCmd.Apply<ObserverMantra>(context, Owner.Creature, DynamicVars["Mantra"].BaseValue, Owner.Creature, this);
@@ -102,7 +102,7 @@ public sealed class ObserverTalkToTheHand() : ObserverCard(1, CardType.Attack, C
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(5, ValueProp.Move), new DynamicVar("Amount", 2)];
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<ObserverBlockReturn>()];
-    public override List<(string, string)> Localization => new CardLoc("以手拒之", "造成{Damage:diff()}点伤害。\n每当目标受到攻击时，攻击者获得{Amount:diff()}点[gold]格挡[/gold]。");
+    public override List<(string, string)> Localization => Loc.Card("以手拒之", "造成{Damage:diff()}点伤害。\n每当目标受到攻击时，攻击者获得{Amount:diff()}点[gold]格挡[/gold]。");
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, play).Targeting(play.Target!).Execute(context);
@@ -116,7 +116,7 @@ public sealed class ObserverWallop() : ObserverCard(2, CardType.Attack, CardRari
 {
     public override bool GainsBlock => true;
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(9, ValueProp.Move)];
-    public override List<(string, string)> Localization => new CardLoc("当头棒喝", "造成{Damage:diff()}点伤害。\n获得等同于未被[gold]格挡[/gold]的伤害量的[gold]格挡[/gold]。");
+    public override List<(string, string)> Localization => Loc.Card("当头棒喝", "造成{Damage:diff()}点伤害。\n获得等同于未被[gold]格挡[/gold]的伤害量的[gold]格挡[/gold]。");
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {
         var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, play).Targeting(play.Target!).Execute(context);
@@ -132,7 +132,7 @@ public sealed class ObserverColdObservation() : ObserverCard(2, CardType.Skill, 
     public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Retain];
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Amount", 1)];
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<ObserverColdObservationPower>()];
-    public override List<(string, string)> Localization => new CardLoc("冷眼旁观", "所有玩家接下来的{Amount:diff()}次攻击，获得等同于造成伤害量的[gold]格挡[/gold]。");
+    public override List<(string, string)> Localization => Loc.Card("冷眼旁观", "所有玩家接下来的{Amount:diff()}次攻击，获得等同于造成伤害量的[gold]格挡[/gold]。");
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {
         foreach (var ally in CombatState!.GetTeammatesOf(Owner.Creature).Where(c => c.IsAlive && c.Player != null))
@@ -146,7 +146,7 @@ public sealed class ObserverSwivel() : ObserverCard(2, CardType.Skill, CardRarit
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(8, ValueProp.Move)];
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<FreeAttackPower>()];
-    public override List<(string, string)> Localization => new CardLoc("旋身", "获得{Block:diff()}点[gold]格挡[/gold]。\n你打出的下一张攻击牌耗能变为0。");
+    public override List<(string, string)> Localization => Loc.Card("旋身", "获得{Block:diff()}点[gold]格挡[/gold]。\n你打出的下一张攻击牌耗能变为0。");
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, play);
@@ -160,7 +160,7 @@ public sealed class ObserverFasting() : ObserverCard(2, CardType.Power, CardRari
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Amount", 3)];
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<StrengthPower>(), HoverTipFactory.FromPower<DexterityPower>(), HoverTipFactory.FromPower<ObserverEnergyDown>()];
-    public override List<(string, string)> Localization => new CardLoc("斋戒", "获得{Amount:diff()}点[gold]力量[/gold]。\n获得{Amount:diff()}点[gold]敏捷[/gold]。\n每回合开始时少获得1点[gold]能量[/gold]。");
+    public override List<(string, string)> Localization => Loc.Card("斋戒", "获得{Amount:diff()}点[gold]力量[/gold]。\n获得{Amount:diff()}点[gold]敏捷[/gold]。\n每回合开始时少获得1点[gold]能量[/gold]。");
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {
         await PowerCmd.Apply<StrengthPower>(context, Owner.Creature, DynamicVars["Amount"].BaseValue, Owner.Creature, this);
@@ -187,7 +187,6 @@ internal static class ObserverRules
 
 // Upgrade/enchantment/floor metadata remains native. Rewrite only these eight
 // former card IDs, and only when their original mod is absent.
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.FromSerializable))]
 internal static class ObserverSaveMigration
 {
     internal static readonly Dictionary<string, Type> OldCards = new()
@@ -197,7 +196,7 @@ internal static class ObserverSaveMigration
         ["WATCHER_WALLOP"] = typeof(ObserverWallop), ["WATCHER_COLD_OBSERVATION"] = typeof(ObserverColdObservation),
         ["WATCHER_SWIVEL"] = typeof(ObserverSwivel), ["WATCHER_FASTING2"] = typeof(ObserverFasting)
     };
-    private static void Prefix(SerializableCard __0)
+    internal static void Apply(SerializableCard __0)
     {
         // The removed ancient variant must not prevent older runs from loading.
         // No model is registered under the deleted ID; only saved copies migrate.

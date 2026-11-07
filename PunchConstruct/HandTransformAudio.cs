@@ -31,8 +31,3 @@ internal static class HandTransformAudio
     }
 }
 
-[HarmonyPatch(typeof(NCardTransformShineVfx), "UpdateCard")]
-internal static class FervorTransformRevealSound
-{
-    private static void Postfix(NCard __0, CardModel __1) => HandTransformAudio.Reveal(__0, __1);
-}

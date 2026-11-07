@@ -33,13 +33,18 @@ internal static class WaveEventRules
         .Invoke(room, [new LocString("events", "PUNCHCONSTRUCT_" + room.Id.Entry + ".pages." + page + ".description")]);
 }
 
-[HarmonyPatch(typeof(Bugslayer), "GenerateInitialOptions")]
 internal static class ConstructBugslayer
 {
-    private static bool Prefix(Bugslayer __instance, ref IReadOnlyList<EventOption> __result)
+    // Let the native generator run, then replace this character's options.
+    // A postfix keeps earlier option work from other mods in the result.
+    internal static void Apply(Bugslayer __instance, ref IReadOnlyList<EventOption> __result)
     {
-        if (__instance.Owner?.Character is not ConstructCharacter) return true;
-        __result = new[] { typeof(QuickPunch), typeof(CombinationPunch), typeof(BoxingGuard) }.Select((type, index) =>
+        if (!CharacterScope.IsConstruct(__instance.Owner)) return;
+        __result = Build(__instance);
+    }
+
+    private static IReadOnlyList<EventOption> Build(Bugslayer __instance) =>
+        new[] { typeof(QuickPunch), typeof(CombinationPunch), typeof(BoxingGuard) }.Select((type, index) =>
         {
             string page = new[] { "QUICK", "COMBINATION", "GUARD" }[index];
             string key = "PUNCHCONSTRUCT_BUGSLAYER.pages.INITIAL.options." + page;
@@ -49,15 +54,12 @@ internal static class ConstructBugslayer
             return new EventOption(__instance, Receive, new LocString("events", key + ".title"),
                 new LocString("events", key + ".description"), key, [HoverTipFactory.FromCard(ModelDb.GetById<CardModel>(ModelDb.GetId(type)))]);
         }).ToArray();
-        return false;
-    }
 }
 
 // Reuse the native observation selection, enchant animation and synchronization.
-[HarmonyPatch(typeof(Spiral), nameof(Spiral.CanEnchant))]
 internal static class SmallWaveSpiral
 {
-    private static void Postfix(CardModel __0, ref bool __result)
+    internal static void Apply(CardModel __0, ref bool __result)
     {
         if (!RegentAdaptations.Owns(__0)) return;
         __result = __0 is SmallWave &&
@@ -65,23 +67,24 @@ internal static class SmallWaveSpiral
     }
 }
 
-[HarmonyPatch(typeof(Amalgamator), "GenerateInitialOptions")]
 internal static class ConstructAmalgamation
 {
-    private static bool Prefix(Amalgamator __instance, ref IReadOnlyList<EventOption> __result)
+    // Native options are generated first; only this character's two choices
+    // are replaced, preserving earlier option work from other mods.
+    internal static void Apply(Amalgamator __instance, ref IReadOnlyList<EventOption> __result)
     {
-        if (__instance.Owner?.Character is not ConstructCharacter) return true;
+        var owner = __instance.Owner;
+        if (owner is null || !CharacterScope.IsConstruct(owner)) return;
         string prefix = "PUNCHCONSTRUCT_AMALGAMATOR.pages.INITIAL.options.";
         EventOption Option(string key, Func<Task> action, bool enabled, IEnumerable<IHoverTip> tips) => new(__instance,
             enabled ? action : null!, new LocString("events", prefix + key + ".title"),
             new LocString("events", prefix + key + ".description"), prefix + key, tips);
         __result = [
-            Option("COMBINE_STRIKES", () => Combine(__instance), __instance.Owner.Deck.Cards.Count(WaveEventRules.Small) >= 2,
+            Option("COMBINE_STRIKES", () => Combine(__instance), owner.Deck.Cards.Count(WaveEventRules.Small) >= 2,
                 HoverTipFactory.FromCardWithCardHoverTips<IronWave>()),
-            Option("COMBINE_DEFENDS", () => Reforge(__instance), __instance.Owner.Deck.Cards.Any(WaveEventRules.Iron),
+            Option("COMBINE_DEFENDS", () => Reforge(__instance), owner.Deck.Cards.Any(WaveEventRules.Iron),
                 [HoverTipFactory.FromCard<ScorchingIronWave>(true)])
         ];
-        return false;
     }
     private static Task Combine(Amalgamator room) => (Task)AccessTools.Method(typeof(Amalgamator), "CombineStrikes").Invoke(room, [])!;
     private static async Task Reforge(Amalgamator room)
@@ -95,52 +98,51 @@ internal static class ConstructAmalgamation
 
 // Keep native ingredient selection, smithing sounds, previews and choice sync;
 // replace only this owner's generated reward inside the native async callback.
-[HarmonyPatch]
 internal static class ConstructFusionReward
 {
-    private static MethodBase TargetMethod() => AccessTools.Method(typeof(Amalgamator).GetNestedTypes(BindingFlags.NonPublic)
+    internal static MethodBase Target() => AccessTools.Method(typeof(Amalgamator).GetNestedTypes(BindingFlags.NonPublic)
         .Single(t => t.Name.StartsWith("<CombineStrikes>")), "MoveNext");
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    internal static List<CodeInstruction> Transpile(List<CodeInstruction> original)
     {
-        int found = 0;
-        foreach (var instruction in instructions)
+        var create = original.Select(i => i.operand).OfType<MethodInfo>().FirstOrDefault(method =>
+            method.Name == "CreateCard" && method.IsGenericMethod &&
+            method.GetGenericArguments().SequenceEqual([typeof(UltimateStrike)]));
+        if (create == null)
         {
-            if (instruction.operand is MethodInfo method && method.Name == "CreateCard" && method.IsGenericMethod &&
-                method.GetGenericArguments().SequenceEqual([typeof(UltimateStrike)]))
-            {
-                var replacement = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ConstructFusionReward), nameof(Create)));
-                replacement.labels.AddRange(instruction.labels); replacement.blocks.AddRange(instruction.blocks);
-                yield return replacement;
-                found++;
-            }
-            else yield return instruction;
+            Diagnostics.Write("warn", "transpiler.skipped", new { site = "amalgamator fusion reward", expected = 1, replaced = 0 });
+            return original;
         }
-        if (found != 1) throw new InvalidOperationException("Expected one native fusion reward creation.");
+        return IlBridge.ReplaceCall(original, create, call =>
+            new CodeInstruction[]
+            {
+                IlBridge.Inherit(call,
+                    new CodeInstruction(OpCodes.Call,
+                        AccessTools.Method(typeof(ConstructFusionReward), nameof(Create))))
+            },
+            "amalgamator fusion reward");
     }
-    private static CardModel Create(IRunState run, Player owner) => owner.Character is ConstructCharacter
+    internal static CardModel Create(IRunState run, Player owner) => CharacterScope.IsConstruct(owner)
         ? run.CreateCard<IronWave>(owner) : run.CreateCard<UltimateStrike>(owner);
 }
 
-[HarmonyPatch]
 internal static class ConstructAmalgamationEligibility
 {
     // Patch the per-player predicate so mixed parties keep each native teammate's rules.
-    private static MethodBase TargetMethod() => typeof(Amalgamator).GetNestedTypes(BindingFlags.NonPublic)
+    internal static MethodBase Target() => typeof(Amalgamator).GetNestedTypes(BindingFlags.NonPublic)
         .SelectMany(t => t.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic))
         .Single(m => m.Name.StartsWith("<IsAllowed>") && m.GetParameters() is [{ ParameterType: var p }] &&
             p == typeof(MegaCrit.Sts2.Core.Entities.Players.Player));
-    private static bool Prefix(MegaCrit.Sts2.Core.Entities.Players.Player __0, ref bool __result)
+    internal static bool Apply(MegaCrit.Sts2.Core.Entities.Players.Player __0, ref bool __result)
     {
-        if (__0.Character is not ConstructCharacter) return true;
+        if (!CharacterScope.IsConstruct(__0)) return true;
         __result = __0.Deck.Cards.Count(WaveEventRules.Small) >= 2 || __0.Deck.Cards.Any(WaveEventRules.Iron);
         return false;
     }
 }
 
-[HarmonyPatch(typeof(Amalgamator), "IsValid")]
 internal static class ConstructFusionIngredients
 {
-    private static bool Prefix(CardTag __0, CardModel __1, ref bool __result)
+    internal static bool Apply(CardTag __0, CardModel __1, ref bool __result)
     {
         if (!RegentAdaptations.Owns(__1)) return true;
         __result = __0 == CardTag.Strike && WaveEventRules.Small(__1);

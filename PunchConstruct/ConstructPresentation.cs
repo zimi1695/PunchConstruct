@@ -36,7 +36,7 @@ internal static class ConstructPresentation
         NativeOnPlay.CreateDelegate<Func<CardModel, PlayerChoiceContext, CardPlay, Task>>();
 
     internal static Task OnPlay(CardModel card, PlayerChoiceContext context, CardPlay play) =>
-        card.Owner.Character is ConstructCharacter ? PlayConstruct(card, context, play) : PlayNative(card, context, play);
+        CharacterScope.IsConstruct(card.Owner) ? PlayConstruct(card, context, play) : PlayNative(card, context, play);
 
     private static async Task PlayConstruct(CardModel card, PlayerChoiceContext context, CardPlay play)
     {
@@ -91,65 +91,3 @@ internal static class ConstructPresentation
     }
 }
 
-// Wrap the virtual card-effect call, not the whole play queue. The async scope
-// follows nested/auto/replayed effects and is restored even if an effect fails.
-[HarmonyPatch]
-internal static class ConstructCardPresentation
-{
-    private static MethodBase TargetMethod() => AccessTools.Method(
-        AccessTools.Method(typeof(CardModel), nameof(CardModel.OnPlayWrapper))
-            .GetCustomAttribute<AsyncStateMachineAttribute>()!.StateMachineType, "MoveNext");
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> source)
-    {
-        int changed = 0;
-        foreach (var instruction in source)
-        {
-            if (instruction.Calls(ConstructPresentation.NativeOnPlay))
-            {
-                instruction.opcode = OpCodes.Call;
-                instruction.operand = AccessTools.Method(typeof(ConstructPresentation), nameof(ConstructPresentation.OnPlay));
-                changed++;
-            }
-            yield return instruction;
-        }
-        if (changed != 1) throw new InvalidOperationException("Construct card animation hook expected exactly one native OnPlay call; found " + changed);
-    }
-}
-
-[HarmonyPatch(typeof(AttackCommand), nameof(AttackCommand.Execute))]
-internal static class ConstructAttackPresentation
-{
-    private static void Prefix(AttackCommand __instance, int ____hitCount, ref string? ____attackerSfx, ref string? ____tmpAttackerSfx)
-    {
-        if (__instance.ModelSource is not CardModel card || card.Owner.Character is not ConstructCharacter ||
-            __instance.Attacker != card.Owner.Creature) return; // Osty and other characters keep their own presentation.
-        ____attackerSfx = null;
-        ____tmpAttackerSfx = null;
-        if (card.Type != CardType.Attack || !ConstructPresentation.ClaimAttack(__instance.CardPlay))
-        {
-            __instance.WithNoAttackerAnim();
-            return;
-        }
-        string trigger = ConstructPresentation.NextAttack(__instance.Attacker, ____hitCount);
-        __instance.WithAttackerAnim(trigger, trigger == "DoubleAttack" ? 0.2f : 0.25f).OnlyPlayAnimOnce();
-        Diagnostics.Observe(() => Diagnostics.Write("info", "character.animation.attack", new {
-            owner = Diagnostics.Slot(card.Owner.NetId), card = card.Id.ToString(), hits = ____hitCount, trigger }));
-    }
-}
-
-[HarmonyPatch(typeof(CreatureCmd), nameof(CreatureCmd.TriggerAnim))]
-internal static class ConstructAnimationSound
-{
-    private static bool Prefix(Creature creature, ref string triggerName, ref Task __result)
-    {
-        if (creature.Player?.Character is not ConstructCharacter) return true;
-        if (ConstructPresentation.SuppressDuplicateGuard(creature, ref triggerName))
-        {
-            __result = Task.CompletedTask;
-            return false;
-        }
-        if (triggerName == "DoubleAttack" && !creature.IsDead && creature.GetCreatureNode() != null)
-            SfxCmd.Play(ConstructPresentation.DoubleSfx);
-        return true;
-    }
-}

@@ -23,14 +23,12 @@ internal static class AbrasiveAdaptation
     }
 }
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.Owner), MethodType.Setter)]
 internal static class AbrasiveOwnerAdaptation
 {
-    private static void Postfix(CardModel __instance) => AbrasiveAdaptation.Apply(__instance);
+    internal static void Apply(CardModel card) => AbrasiveAdaptation.Apply(card);
 }
 
-[HarmonyPatch(typeof(CardModel), "AfterDowngraded")]
 internal static class AbrasiveDowngradeAdaptation
 {
-    private static void Postfix(CardModel __instance) => AbrasiveAdaptation.Apply(__instance, true);
+    internal static void Apply(CardModel card) => AbrasiveAdaptation.Apply(card, true);
 }

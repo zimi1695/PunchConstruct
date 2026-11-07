@@ -85,6 +85,16 @@ def main():
         assert hashlib.sha256((ROOT / row['output']).read_bytes()).hexdigest() == row['sha256']
     print('PASS: scoped Divinity textures, audio and shader provenance; no external runtime resource path.')
 
+    # Source-level guard for the ownership rule: only CharacterScope may test
+    # the concrete character type outside QA-only files.
+    allowed_character_files = {'CharacterScope.cs', 'PlaytestRunner.cs', 'SmokeCheck.cs',
+                               'QaStartupPreload.cs', 'Diagnostics.cs'}
+    for path in (ROOT / 'PunchConstruct').rglob('*.cs'):
+        if path.name in allowed_character_files or path.name.endswith('Checks.cs'):
+            continue
+        assert 'is ConstructCharacter' not in path.read_text(encoding='utf-8'), ('Direct character check outside CharacterScope', path)
+    print('PASS: only CharacterScope checks the concrete character type outside QA files.')
+
     docs = [ROOT / p for p in ['README.md', 'tools/README.md', 'dist/README.md', '资料/角色设计.md', '资料/美术素材/README.md']]
     for path in docs:
         text = path.read_text(encoding='utf-8')
@@ -108,6 +118,40 @@ def main():
                 assert normalize(value) in normalize(dialogue), ('Dialogue differs from actual game text', key)
     assert '四、漩涡与融合者事件' in dialogue and '至少两张可移除的小斩波' in dialogue
     print('PASS: event/relic game text matches dialogue document and active event rules.')
+
+    translations = json.loads((ROOT / 'tools/english_text.json').read_text(encoding='utf-8-sig'))
+    official = json.loads((ROOT / 'tools/official_terms.json').read_text(encoding='utf-8-sig'))
+    cjk = re.compile(r'[\u4e00-\u9fff]')
+    highlight = re.compile(r'\[(gold|purple|blue|red)\]([^\[]+)\[/\1\]')
+
+    def normalized(term):
+        term = term.lower().replace("'s", "")
+        return term[:-1] if term.endswith('s') else term
+
+    for chinese, text in translations.items():
+        assert text and not cjk.search(text), ('Untranslated English value', chinese)
+        if chinese in official:
+            assert normalized(text) == normalized(official[chinese]), ('Official term mismatch', chinese, text)
+        english_tags = {normalized(value) for _, value in highlight.findall(text)}
+        for zh_tag in [value for _, value in highlight.findall(chinese)]:
+            if zh_tag in official:
+                assert normalized(official[zh_tag]) in english_tags, ('Official highlighted term missing', chinese, text)
+    for table in ('ancients', 'events', 'relics', 'cards'):
+        zhs = json.loads((ROOT / 'PunchConstruct/assets/localization/zhs' / (table + '.json')).read_text(encoding='utf-8-sig'))
+        eng = json.loads((ROOT / 'PunchConstruct/assets/localization/eng' / (table + '.json')).read_text(encoding='utf-8-sig'))
+        assert set(zhs) == set(eng), ('Key mismatch', table)
+        assert all(not cjk.search(value) for value in eng.values() if isinstance(value, str)), ('Chinese remains', table)
+    generated = (ROOT / 'PunchConstruct/EnglishText.Generated.cs').read_text(encoding='utf-8')
+    assert generated.count('] = "') == len(translations), 'Compiled English table is stale; run prepare_text.py'
+    mirrors = {'zht': 'zhs', 'deu': 'eng', 'esp': 'eng', 'fra': 'eng', 'ind': 'eng',
+               'ita': 'eng', 'jpn': 'eng', 'kor': 'eng', 'pol': 'eng', 'ptb': 'eng',
+               'rus': 'eng', 'spa': 'eng', 'tha': 'eng', 'tur': 'eng'}
+    for locale, source in mirrors.items():
+        for table in ('ancients', 'events', 'relics', 'cards'):
+            expected = (ROOT / 'PunchConstruct/assets/localization' / source / (table + '.json')).read_bytes()
+            target = ROOT / 'PunchConstruct/assets/localization' / locale / (table + '.json')
+            assert target.exists() and target.read_bytes() == expected, ('Locale mirror differs', locale, table)
+    print('PASS: English tables use official terms, contain no Chinese and are compiled into the assembly; all locale mirrors match.')
 
     version = json.loads((ROOT / 'PunchConstruct/PunchConstruct.json').read_text(encoding='utf-8'))['version']
     for name in ['README.md', 'tools/README.md', '资料/角色设计.md', '资料/问题记录.txt', '资料/发布前清单.txt',

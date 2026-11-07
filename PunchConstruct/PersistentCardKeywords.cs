@@ -20,10 +20,9 @@ internal static class PersistentCardKeywords
 
 // Also covers Soup cards created by older builds after their saved marker loads.
 // The normal temporary cost modifiers still apply to the zero base cost.
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.EnergyCost), MethodType.Getter)]
 internal static class RestoreSoupFreeCost
 {
-    private static void Postfix(CardModel __instance, CardEnergyCost __result)
+    internal static void Apply(CardModel __instance, CardEnergyCost __result)
     {
         if (RegentAdaptations.Owns(__instance) && PersistentCardKeywords.SoupEternal[__instance] &&
             __result.GetWithModifiers(CostModifiers.None) != 0)
@@ -31,10 +30,9 @@ internal static class RestoreSoupFreeCost
     }
 }
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.Keywords), MethodType.Getter)]
 internal static class RestoreSoupEternal
 {
-    private static void Postfix(CardModel __instance, ref IReadOnlySet<CardKeyword> __result)
+    internal static void Apply(CardModel __instance, ref IReadOnlySet<CardKeyword> __result)
     {
         if (PersistentCardKeywords.SoupEternal[__instance] && !__result.Contains(CardKeyword.Eternal))
             __result = new HashSet<CardKeyword>(__result) { CardKeyword.Eternal };

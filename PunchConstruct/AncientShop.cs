@@ -6,13 +6,12 @@ using MegaCrit.Sts2.Core.Models.Cards;
 
 namespace PunchConstruct;
 
-[HarmonyPatch(typeof(MerchantInventory), "PopulateCharacterCardEntries")]
 internal static class AncientShopCards
 {
-    private static void Postfix(MerchantInventory __instance)
+    internal static void Apply(MerchantInventory __instance)
     {
         var player = __instance.Player;
-        if (player.Character is not ConstructCharacter || player.PlayerRng.Shops.NextFloat() >= CardAcquisition.AncientShopChance) return;
+        if (!CharacterScope.IsConstruct(player) || player.PlayerRng.Shops.NextFloat() >= CardAcquisition.AncientShopChance) return;
         Install(__instance);
     }
     internal static void Install(MerchantInventory inventory)
@@ -31,10 +30,9 @@ internal static class AncientShopCards
     }
 }
 
-[HarmonyPatch(typeof(MerchantCardEntry), "GetCost")]
 internal static class AncientShopPrice
 {
-    private static void Postfix(CardModel card, ref int __result)
+    internal static void Apply(CardModel card, ref int __result)
     {
         if (!RegentAdaptations.Owns(card) || !CardAcquisition.ShopAncients.Contains(card.GetType())) return;
         int rare = (int)AccessTools.Method(typeof(MerchantCardEntry), "GetCost").Invoke(null, [ModelDb.Card<Juggernaut>()])!;

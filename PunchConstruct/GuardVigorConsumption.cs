@@ -9,7 +9,6 @@ namespace PunchConstruct;
 // Native Vigor keeps an AttackCommand until the power disappears. A blocked
 // Thorns hit can replenish it *inside* that command, so it survives consumption
 // and the stale command otherwise prevents every subsequent consumption.
-[HarmonyPatch(typeof(VigorPower), nameof(VigorPower.AfterAttack))]
 internal static class GuardVigorConsumption
 {
     private static readonly Type DataType = AccessTools.Inner(typeof(VigorPower), "Data");
@@ -17,10 +16,11 @@ internal static class GuardVigorConsumption
     private static readonly FieldInfo Command = AccessTools.Field(DataType, "commandToModify");
     private static readonly FieldInfo StartingAmount = AccessTools.Field(DataType, "amountWhenAttackStarted");
 
-    private static void Postfix(VigorPower __instance, AttackCommand command, ref Task __result)
+    internal static void Apply(VigorPower __instance, AttackCommand command, ref Task __result)
     {
-        if (command.Attacker != __instance.Owner || __instance.Owner.Player is not { Character: ConstructCharacter } player ||
-            !player.Relics.Any(r => r is GuardStance)) return;
+        if (command.Attacker != __instance.Owner || !CharacterScope.IsConstruct(__instance.Owner.Player)) return;
+        var player = __instance.Owner.Player!;
+        if (!player.Relics.Any(r => r is GuardStance)) return;
         object data = GetData.Invoke(__instance, null)!;
         if (!ReferenceEquals(Command.GetValue(data), command)) return;
         __result = Complete(__result, __instance, command, data);

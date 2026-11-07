@@ -58,6 +58,11 @@ def checks_for_version(version):
         checks['boxing'] = '[Construct BOXING PASS]'
     if tuple(map(int, version.split('.')[:3])) >= (0, 4, 21):
         checks['selection'] = '[Construct SELECTION PASS]'
+    if tuple(map(int, version.split('.')[:3])) >= (0, 4, 26):
+        checks['compat'] = '[Construct COMPAT PASS]'
+        checks['english'] = '[Construct ENGLISH PASS]'
+        checks['locale'] = '[PunchConstruct SMOKE PASS]'
+        checks['localezh'] = '[PunchConstruct SMOKE PASS]'
     return checks
 
 

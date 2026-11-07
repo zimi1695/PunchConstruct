@@ -24,7 +24,7 @@ public sealed class ObserverMantra : ObserverPower
 {
     private bool _resolving;
     public override PowerType Type => PowerType.Buff;
-    public override List<(string, string)> Localization => new PowerLoc("真言", "达到10点时，消耗10点真言，进入[gold]神格[/gold]。", "达到10点时，消耗10点真言，进入[gold]神格[/gold]。当前{Amount}点。");
+    public override List<(string, string)> Localization => Loc.Power("真言", "达到10点时，消耗10点真言，进入[gold]神格[/gold]。", "达到10点时，消耗10点真言，进入[gold]神格[/gold]。当前{Amount}点。");
     public override async Task AfterPowerAmountChanged(PlayerChoiceContext context, PowerModel power, decimal amount, Creature? applier, CardModel? cardSource)
     {
         if (power != this || _resolving || Amount < 10 || Owner.Player == null) return;
@@ -45,7 +45,7 @@ public sealed class ObserverDivinity : ObserverPower
     protected override bool IsVisibleInternal => false;
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.None;
-    public override List<(string, string)> Localization => new PowerLoc("神格", "进入时获得3点能量。攻击造成三倍伤害。回合结束时退出神格。", "进入时获得3点能量。攻击造成三倍伤害。回合结束时退出神格。");
+    public override List<(string, string)> Localization => Loc.Power("神格", "进入时获得3点能量。攻击造成三倍伤害。回合结束时退出神格。", "进入时获得3点能量。攻击造成三倍伤害。回合结束时退出神格。");
     public override async Task AfterApplied(Creature? applier, CardModel? cardSource)
     {
         ObserverDivinityVfx.Enter(Owner);
@@ -72,7 +72,7 @@ public sealed class ObserverDivinity : ObserverPower
 public sealed class ObserverEnergyDown : ObserverPower
 {
     public override PowerType Type => PowerType.Debuff;
-    public override List<(string, string)> Localization => new PowerLoc("能量下降", "每回合开始时少获得{Amount}点能量。", "每回合开始时少获得{Amount}点能量。");
+    public override List<(string, string)> Localization => Loc.Power("能量下降", "每回合开始时少获得{Amount}点能量。", "每回合开始时少获得{Amount}点能量。");
     public override async Task AfterEnergyReset(Player player)
     {
         if (player.Creature == Owner) await PlayerCmd.LoseEnergy(Amount, player);
@@ -82,7 +82,7 @@ public sealed class ObserverEnergyDown : ObserverPower
 public sealed class ObserverBlockReturn : ObserverPower
 {
     public override PowerType Type => PowerType.Debuff;
-    public override List<(string, string)> Localization => new PowerLoc("以手拒之", "受到攻击时，攻击者获得{Amount}点格挡。", "受到攻击时，攻击者获得{Amount}点格挡。");
+    public override List<(string, string)> Localization => Loc.Power("以手拒之", "受到攻击时，攻击者获得{Amount}点格挡。", "受到攻击时，攻击者获得{Amount}点格挡。");
     public override async Task AfterDamageGiven(PlayerChoiceContext context, Creature? dealer, DamageResult result, ValueProp props, Creature? target, CardModel? cardSource)
     {
         if (target != Owner || dealer == null || dealer == Owner || cardSource?.Type != CardType.Attack ||
@@ -96,7 +96,7 @@ public sealed class ObserverColdObservationPower : ObserverPower
 {
     private CardPlay? _activePlay;
     public override PowerType Type => PowerType.Buff;
-    public override List<(string, string)> Localization => new PowerLoc("冷眼旁观", "接下来的{Amount}张攻击牌，每段伤害获得等量格挡。", "接下来的{Amount}张攻击牌，每段伤害获得等量格挡。");
+    public override List<(string, string)> Localization => Loc.Power("冷眼旁观", "接下来的{Amount}张攻击牌，每段伤害获得等量格挡。", "接下来的{Amount}张攻击牌，每段伤害获得等量格挡。");
     public override Task BeforeCardPlayed(CardPlay play)
     {
         if (play.Player.Creature == Owner && play.Card.Type == CardType.Attack && Amount > 0) _activePlay = play;

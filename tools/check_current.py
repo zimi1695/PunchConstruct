@@ -71,6 +71,10 @@ MODES = {
     'boundary': ('--punchconstruct-boundarycheck', '[Construct BOUNDARY PASS]'),
     'edge': ('--punchconstruct-edgecheck', '[Construct EDGE PASS]'),
     'persist': ('--punchconstruct-persistseed', '[Construct PERSIST PASS]'),
+    'compat': ('--punchconstruct-compatcheck', '[Construct COMPAT PASS]'),
+    'english': ('--punchconstruct-englishcheck', '[Construct ENGLISH PASS]'),
+    'locale': ('--punchconstruct-smoke', '[PunchConstruct SMOKE PASS]'),
+    'localezh': ('--punchconstruct-smoke', '[PunchConstruct SMOKE PASS]'),
 }
 
 
@@ -123,9 +127,16 @@ def main():
     parser.add_argument('mode', choices=MODES)
     parser.add_argument('--rendered', action='store_true', help='Use the real renderer for the selected targeted check')
     parser.add_argument('--package-dir', type=Path, help='Test these exact three packaged files instead of rebuilding the resource pack')
+    parser.add_argument('--language', default='zhs',
+                        choices=('zhs', 'zht', 'eng', 'deu', 'esp', 'fra', 'ind', 'ita',
+                                 'jpn', 'kor', 'pol', 'ptb', 'rus', 'spa', 'tha', 'tur'),
+                        help='Initial game language for the disposable fixture profile')
     args = parser.parse_args()
     if args.mode in ('poster', 'selection') and not args.rendered:
         parser.error('poster and selection require --rendered to verify native UI and actual output')
+    # A locale mode starts the game in that language: model metadata and table
+    # lookup happen before any runtime switch, so this catches missing mirrors.
+    language = {'locale': 'deu', 'localezh': 'zht'}.get(args.mode, args.language)
     if args.mode == 'startupbase' and args.package_dir:
         parser.error('startupbase excludes the character mod and cannot verify a release package')
     parent = Path(tempfile.gettempdir()).resolve()
@@ -181,7 +192,7 @@ def main():
         appdata = stage / 'userdata'
         settings = appdata / 'PunchConstructTest/default/1/settings.save'
         settings.parent.mkdir(parents=True)
-        settings.write_text(json.dumps(dict(schema_version=8, volume_master=0, volume_bgm=0, volume_sfx=0, volume_ambience=0, language='zhs', mod_settings=dict(mods_enabled=True, mod_list=[]),
+        settings.write_text(json.dumps(dict(schema_version=8, volume_master=0, volume_bgm=0, volume_sfx=0, volume_ambience=0, language=language, mod_settings=dict(mods_enabled=True, mod_list=[]),
                                             seen_ea_disclaimer=True, skip_intro_logo=True)), encoding='utf-8')
         if args.mode == 'poster':
             # Recording frame-by-frame while unfocused otherwise hits the
