@@ -10,9 +10,9 @@
 [已完成] 版本升至 0.4.26，构建 0 警告、237 份资源（含 14 个语言镜像）；0.4.24／0.4.25 归档不变，0.4.26 归档与 ZIP 已更新为兼容重构后的候选。
 [已完成] 本地 35/35、联机 4/4、恢复 4/4 全量通过；content-current.json 已同步 0.4.26 哈希与 full_release_acceptance=true，证据钉在 DLL 934e75d1…。
 [已完成] 死亡朝向修复：死亡／建筑师击倒时 `die` 动画的单帧姿态硬切改为固定 0.120 秒实时过渡，root 保持正向；`end`、`facing` 与全量验收通过。
-[已完成] 另建私密测试工坊条目 3835179658「拳击构装体(测试)」，原公开条目 3826907330 保持 0.4.24 未动。
-[未完成] 上传正式 Steam 工坊 0.4.26（跳过 0.4.25）与 GitHub 推送；Release 从 0.4.24 起每版都提供。
-[未完成] 上传后重跑 workshop.py --verify，并更新 verification.json 的线上状态。
+[已完成] 2026-11-07 私密测试工坊条目 3835179658「拳击构装体(测试)」已重新上传 0.4.26（含死亡朝向修复），上传器报告成功；原公开条目 3826907330 保持 0.4.24 未动。
+[已完成] GitHub 已推送 main 与 v0.4.24／v0.4.25／v0.4.26 三个标签；三版 Release 已创建并各附对应 ZIP（0.4.24 42,472,236 B、0.4.25 42,473,936 B、0.4.26 42,510,472 B）。
+[未完成] 上传正式 Steam 工坊 0.4.26（跳过 0.4.25）；上传后重跑 workshop.py --verify，并更新 verification.json 的线上状态。
 
 0.4.25（2026-11-06）
 
@@ -20,8 +20,8 @@
 [已完成] 兼容性结构重构：CharacterScope 统一归属判定、PatchRegistry 逐类装载与 Required／Optional 策略、事件选项改为 Last Postfix、TranspilerTools 降级并移除 6 处硬断言。
 [已完成] 构建通过（0 警告，181 份资源），候选 DLL cbf491cd…、PCK da249b64…、清单 84972fcb… 已同步 dist/SteamWorkshop/content。
 [已完成] 31 项本地功能与真实渲染验收全部通过；联机 4/4（含 4p 弱网）与断线恢复 4/4 通过；full_local_verification=true。shadernative 在长批跑后偶发场景解析抖动，隔离重跑 PASS。
-[未完成] 上传 Steam 工坊与 GitHub 推送：作者要求暂缓。GitHub Release 需同时保留 0.4.24 旧版与 0.4.25 新版。
-[未完成] 上传后重跑 workshop.py --verify，并更新 verification.json 与 content-current 的线上状态。
+[已完成] GitHub Release v0.4.25 已发布，附件 PunchConstruct-0.4.25.zip；源码未单独提交快照，标签指向 0.4.25 开发前的 3e81efe。
+[已完成] Steam 工坊按计划跳过 0.4.25，只保留二进制归档。
 
 0.4.24（2026-11-01）
 
