@@ -21,7 +21,7 @@
 
 4. 验收：本地 35/35、联机 4/4（含 4p 弱网）、恢复 4/4；`full_local_verification=true`、`full_invariant_verification=true`（16/16），证据钉在 DLL `5d407875…`。4p 首次重跑时 client3 出现一次 `SpineSkeletonDataResource` 的 `_internal_spine_objects_invalidated` 断连错误，单独重跑 4p 通过；该错误是否与 `before_world_transforms_change` 回调有关，留待后续观察。
 
-5. 发布：私密测试条目 3835179658 已更新为 0.4.27，标签改为 Characters、Expansion、schinese、English（第一次带标签上传 k_EResultFail，重试成功，日志见资料/历史/记录/上传日志-0.4.27-测试条目.log）；GitHub main 推到 1a0363b、标签 v0.4.27，Release 已创建并附 PunchConstruct-0.4.27.zip。公开条目 3826907330 保持 0.4.24 未动。
+5. 发布：私密测试条目 3835179658 已更新为 0.4.27，标签改为 Characters、Expansion、schinese、English（第一次带标签上传 k_EResultFail，重试成功，日志见资料/历史/记录/上传日志-0.4.27-测试条目.log）；GitHub main 推到 1a0363b、标签 v0.4.27，Release 已创建并附 PunchConstruct-0.4.27.zip。公开条目 3826907330 保持 0.4.24 内容，仅把标签同步为四类（日志见上传日志-0.4.24-标签修正.log）。
 
 
 0.4.25 本轮变更（2026-11-06）
