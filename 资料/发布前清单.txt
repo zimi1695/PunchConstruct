@@ -9,7 +9,9 @@
 [已完成] 遗物拾取前描述：无 Owner 的预览遗物按本地玩家角色判断，打击木偶在奖励／商店／宝箱预览即显示「斩波」；补「预览与拾取后一致」断言。
 [已完成] 构建 0 警告、237 份资源；本地 35/35、联机 4/4（含 4p 弱网）、恢复 4/4；`full_local_verification=true`、`full_invariant_verification=true`（16/16）；证据钉在 DLL `5d407875…`。
 [已完成] 候选三文件：DLL `5d40787582e7…`、PCK `1c76ea442bb5…`、清单 `a607012243ef…`；`workshop.py --verify` 全 PASS。
-[未完成] 上传 Steam 工坊与 GitHub Release：按作者要求暂缓。
+[已完成] 私密测试条目 3835179658 已更新为 0.4.27，标签为 Characters、Expansion、schinese、English；第一次带标签上传返回 k_EResultFail，重试成功。
+[已完成] GitHub main 已推到 1a0363b，标签 v0.4.27；Release（id 438153974）已创建并上传 PunchConstruct-0.4.27.zip（42,510,078 B）。
+[未完成] 正式 Steam 工坊公开条目 3826907330 仍未上传 0.4.27。
 
 0.4.26（2026-11-07）
 
