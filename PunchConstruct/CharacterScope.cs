@@ -26,6 +26,8 @@ internal static class CharacterScope
     internal static bool IsConstruct(Creature? creature) => player(creature) is { } owner && IsConstruct(owner);
     internal static bool IsConstruct(RelicModel? relic) => relic != null &&
         (RelicOwner(relic) ?? RelicPreviewContext.Owner(relic)) is { } owner && IsConstruct(owner);
+    // A relic shown in a reward, shop or chest preview has no live owner yet.
+    internal static bool IsUnowned(RelicModel relic) => RelicOwner(relic) is null;
     internal static bool IsConstruct(CardModel? card) => card?.Owner is { } owner && IsConstruct(owner);
     internal static bool IsConstruct(CardPoolModel? pool) => pool is ConstructCardPool;
     internal static bool IsConstruct(EventModel? eventModel) => eventModel?.Owner is { } owner && IsConstruct(owner);

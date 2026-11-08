@@ -6,6 +6,7 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -18,6 +19,7 @@ using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace PunchConstruct;
@@ -239,7 +241,12 @@ internal static class AdaptedRelicDescriptions
     ];
     internal static void Apply(RelicModel __instance, ref LocString __result)
     {
-        if (!CharacterScope.IsConstruct(__instance)) return;
+        // A reward/shop/chest preview has no owner. Use the local player's
+        // character so the pre-pickup hover text matches the owned relic text.
+        bool construct = CharacterScope.IsConstruct(__instance);
+        if (!construct && CharacterScope.IsUnowned(__instance))
+            construct = CharacterScope.IsConstruct(LocalContext.GetMe(RunManager.Instance.DebugOnlyGetState()));
+        if (!construct) return;
         string? key = __instance switch {
             StrikeDummy => "STRIKE_DUMMY", FakeStrikeDummy => "FAKE_STRIKE_DUMMY", GhostSeed => "GHOST_SEED",
             RippleBasin => "RIPPLE_BASIN", NutritiousSoup => "NUTRITIOUS_SOUP", RuinedHelmet => "RUINED_HELMET", HelicalDart => "HELICAL_DART",

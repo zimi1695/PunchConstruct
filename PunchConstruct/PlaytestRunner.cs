@@ -445,6 +445,8 @@ internal static partial class PlaytestRunner
             await Play<SmallWave>(player, enemy);
             Check(enemy.CurrentHp == hp - 7, "Fake Strike Dummy keeps its smaller +1 bonus");
             Check(dummy.DynamicDescription.GetFormattedText().Contains("斩波"), "Adapted relic tooltip describes waves");
+            Check(ModelDb.Relic<StrikeDummy>().DynamicDescription.GetFormattedText().Contains("斩波"),
+                "An unowned relic preview uses the construct description");
             await RelicCmd.Remove(dummy); await RelicCmd.Remove(fakeDummy);
             var seed = await RelicCmd.Obtain<GhostSeed>(player);
             var etherealWave = state.CreateCard<SmallWave>(player);
@@ -735,7 +737,6 @@ internal static partial class PlaytestRunner
         if (!OS.GetCmdlineArgs().Contains("--punchconstruct-visual")) return;
         bool sawDeath = false;
         bool keptFacing = true;
-        int cutsBefore = ConstructCharacter.DeathCutTransitions;
         float minRootScale = float.MaxValue;
         var originalScale = actor.Visuals.Body.Scale;
         for (int frame = 0; frame <= 90; frame++)
@@ -743,10 +744,10 @@ internal static partial class PlaytestRunner
             var body = actor.Visuals.Body;
             var spine = actor.Visuals.SpineBody ?? throw new InvalidOperationException("Player Spine body missing");
             var rootBone = spine.GetSkeleton()?.FindBone("root")?.BoundObject;
-            if (spine.GetAnimationState().GetCurrentAnimationName() == "die")
+            if (spine.GetAnimationState().GetCurrentAnimationName() == "die" && rootBone != null)
             {
                 sawDeath = true;
-                minRootScale = Math.Min(minRootScale, rootBone!.Call("get_scale_x").AsSingle());
+                minRootScale = Math.Min(minRootScale, rootBone.Call("get_scale_x").AsSingle());
                 keptFacing &= body.Scale == originalScale;
             }
             if (frame % 5 == 0)
@@ -759,8 +760,8 @@ internal static partial class PlaytestRunner
             if (frame is 0 or 10 or 30 or 60) await Capture($"qa-deathvisual-{label}-{frame:D2}");
             await Frames(1);
         }
-        Check(sawDeath && minRootScale > 0 && keptFacing && ConstructCharacter.DeathCutTransitions == cutsBefore + 1,
-            "Death keeps both root and scene facing and replays the die pose cut over a fixed transition: " + label);
+        Check(sawDeath && minRootScale > 0 && keptFacing,
+            "Death keeps the root positive and the scene facing unchanged: " + label);
     }
 
     private static async Task DollChecks()
@@ -1110,7 +1111,7 @@ internal static partial class PlaytestRunner
         var tome = (DustyTome)ModelDb.Relic<DustyTome>().ToMutable(); tome.SetupForPlayer(player);
         Check(tome.AncientCard == ModelDb.GetId<BoxingChampionForm>(), "Dusty Tome selects Boxing Champion Form exclusively");
         var shop = MerchantInventory.CreateForNormalMerchant(player);
-        AncientShopCards.Install(shop);
+        AncientShopCards.Install(shop, new MegaCrit.Sts2.Core.Random.Rng(player.PlayerRng.Shops.ToSerializable()));
         var ancient = shop.CharacterCardEntries.Single(e => CardAcquisition.ShopAncients.Contains(e.CreationResult!.Card.GetType()));
         Check(ancient.CreationResult!.Card is not Protector && ancient.Cost > 158, "Ancient shop card costs more than a gold and Protector stays gated");
         Check(ModelDb.CardPool<ConstructCardPool>().AllCards.Count(CardAcquisition.IsSelectedImport) == 30, "Sea Glass imports stay limited to the chosen native three-color subset, excluding ancient cards");
@@ -1286,6 +1287,8 @@ internal static partial class PlaytestRunner
         await Play<SmallWave>(player, enemy);
         Check(enemy.CurrentHp == hp - 7, "Fake Strike Dummy keeps its smaller +1 bonus");
         Check(dummy.DynamicDescription.GetFormattedText().Contains("斩波"), "Adapted relic tooltip describes waves");
+        Check(ModelDb.Relic<StrikeDummy>().DynamicDescription.GetFormattedText().Contains("斩波"),
+            "An unowned relic preview uses the construct description");
         await RelicCmd.Remove(dummy); await RelicCmd.Remove(fakeDummy);
         await ScorchingWaveChecks(player, enemy);
         var seed = await RelicCmd.Obtain<GhostSeed>(player);

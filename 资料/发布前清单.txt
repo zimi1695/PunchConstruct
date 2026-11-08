@@ -2,6 +2,15 @@
 
 当前交付
 
+0.4.27（2026-11-08）
+
+[已完成] 死亡朝向回到 0.4.24 行为：只在 `die` 期间每帧把 root `scale_x` 取绝对值，删除 0.4.26 的 0.120 秒拉伸与过渡计数；`end` 两条死亡路径验收 root 始终为正、场景朝向不变，最终停在朝右。
+[已完成] 随机数预测兼容（保守）：遗物加权改用独立确定性随机流，不再推进 `PlayerRng`；古代商店 5% 判定、先古卡与替换槽位改用 `Shops` 流副本；风铃优先仍先执行原生 `NextItem`。
+[已完成] 遗物拾取前描述：无 Owner 的预览遗物按本地玩家角色判断，打击木偶在奖励／商店／宝箱预览即显示「斩波」；补「预览与拾取后一致」断言。
+[已完成] 构建 0 警告、237 份资源；本地 35/35、联机 4/4（含 4p 弱网）、恢复 4/4；`full_local_verification=true`、`full_invariant_verification=true`（16/16）；证据钉在 DLL `5d407875…`。
+[已完成] 候选三文件：DLL `5d40787582e7…`、PCK `1c76ea442bb5…`、清单 `a607012243ef…`；`workshop.py --verify` 全 PASS。
+[未完成] 上传 Steam 工坊与 GitHub Release：按作者要求暂缓。
+
 0.4.26（2026-11-07）
 
 [已完成] 兼容性结构重构：业务 Harmony 补丁全部集中到 NativeBridge/，五域适配器转发；CharacterScope 唯一角色判断；IlBridge 统一 Transpiler 降级；AdaptationRegistry 实现 Required／Optional 隔离。

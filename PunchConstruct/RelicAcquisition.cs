@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Events;
@@ -42,6 +43,12 @@ internal static class RelicFactoryScope
 internal static class ConstructRelicRolls
 {
     private static readonly MethodInfo Available = AccessTools.Method(typeof(RelicGrabBag), "GetAvailableDeque");
+    // Relic weighting uses its own deterministic stream: it never advances the
+    // native RNG, yet still gets a fresh draw on every pull. Seeded from the run
+    // seed and player slot so multiplayer peers agree.
+    private static readonly ConditionalWeakTable<Player, Rng> WeightStreams = new();
+    private static Rng WeightStream(Player player) => WeightStreams.GetValue(player,
+        p => new Rng(p, ModelDb.GetId<ConstructCharacter>(), 0x52454C4943574549UL));
     internal static IEnumerable<MethodBase> Targets() => typeof(RelicGrabBag).GetMethods()
         .Where(m => m.Name is "PullFromFront" or "PullFromBack" && m.GetParameters().Length == 3);
     internal static bool Apply(RelicGrabBag __instance, RelicRarity rarity, Func<RelicModel, bool> filter, IRunState runState, MethodBase __originalMethod, ref RelicModel? __result)
@@ -55,8 +62,10 @@ internal static class ConstructRelicRolls
         // null: fall back to the same Circlet replacement the game uses when a
         // pool has no candidates left.
         if (candidates.Length == 0) { __result = ModelDb.Relic<Circlet>(); return false; }
-        var rng = RelicFactoryScope.CurrentRng ?? (__originalMethod.Name == "PullFromBack" ? player.PlayerRng.Shops : player.PlayerRng.Rewards);
-        __result = rng.WeightedNextItem(candidates, RelicWeights.Weight);
+        // Relic weighting must not consume the native stream: vanilla pulls take
+        // the first deque entry without a roll. Use the mod's own stream so RNG
+        // predictors that replay the native sequence stay aligned.
+        __result = WeightStream(player).WeightedNextItem(candidates, RelicWeights.Weight);
         if (__result != null) deque!.Remove(__result);
         return false;
     }
@@ -157,8 +166,18 @@ internal static class WindDollPriority
         return rewritten;
     }
     private static bool IsWind<T>(T item) => typeof(T).GetField("relic")!.GetValue(item) is DaughterOfTheWind;
-    private static T Next<T>(Rng rng, IEnumerable<T> items, DollRoom room) => (CharacterScope.IsConstruct(room.Owner)
-        ? items.First(IsWind) : rng.NextItem(items))!;
+    private static T Next<T>(Rng rng, IEnumerable<T> items, DollRoom room)
+    {
+        // Consume the native draw even when the wind doll wins, so a predictor
+        // replaying the vanilla stream stays on the same random counter.
+        var native = rng.NextItem(items);
+        if (CharacterScope.IsConstruct(room.Owner))
+        {
+            var wind = items.FirstOrDefault(IsWind);
+            if (wind is not null) return wind;
+        }
+        return native!;
+    }
     private static List<T> Shuffle<T>(List<T> items, Rng rng, DollRoom room)
     {
         var shuffled = (List<T>)_stableShuffle!.MakeGenericMethod(typeof(T)).Invoke(null, [items, rng])!;
