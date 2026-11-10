@@ -1,3 +1,4 @@
+using System.Reflection;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
@@ -62,7 +63,7 @@ internal static partial class PlaytestRunner
         for (int i = 0; i < enchantments.Length; i++) CardCmd.Enchant(enchantments[i].ToMutable(), waves[i], i + 1);
         var skipped = waves.Take(3).ToArray();
         var unchanged = player.Deck.Cards.Where(c => c is not SmallWave).ToArray();
-        await RelicCmd.Obtain<NutritiousSoup>(player);
+        await RelicCmd.Obtain(ModelDb.Relic<ConstructNutritiousSoup>().ToMutable(), player);
         var eternal = player.Deck.Cards.Where(c => PersistentCardKeywords.SoupEternal[c]).ToArray();
         Check(eternal.Length == 2 && player.Deck.Cards.Count == 8 && skipped.All(player.Deck.Cards.Contains),
             "Soup replaces the two unenchanted Small Waves and skips the three enchanted originals");
@@ -114,7 +115,7 @@ internal static partial class PlaytestRunner
         var run = RunManager.Instance.DebugOnlyGetState()!;
         var player = run.Players.Single();
         Check(player.Character is ConstructCharacter && player.Deck.Cards.Count == 16, "Real fresh-process Continue restores character and sixteen-card fixture");
-        Check(player.Relics.Any(r => r is NutritiousSoup) && player.Relics.Any(r => r is DustyTome), "Soup and Dusty Tome survive restart");
+        Check(player.Relics.Any(r => r is ConstructNutritiousSoup) && player.Relics.Any(r => r is DustyTome), "Migrated Soup variant and Dusty Tome survive restart");
         var eternal = player.Deck.Cards.Where(c => PersistentCardKeywords.SoupEternal[c]).ToArray();
         Check(eternal.Length == 2 && eternal.All(c => c is IronWave && c.Keywords.Contains(CardKeyword.Eternal) && c.EnergyCost.GetWithModifiers(CostModifiers.None) == 0),
             "Both Soup replacements retain Eternal and zero cost after process restart");
@@ -165,7 +166,7 @@ internal static partial class PlaytestRunner
         var player = run.Players.Single();
         var protectedWave = player.Deck.Cards.OfType<SmallWave>().First();
         CardCmd.Enchant<TezcatarasEmber>(protectedWave, 1);
-        var leaf = (LeafyPoultice)ModelDb.Relic<LeafyPoultice>().ToMutable();
+        var leaf = (ConstructLeafyPoultice)ModelDb.Relic<ConstructLeafyPoultice>().ToMutable();
         // Use the real command out of combat and a protected target, then reset
         // the fixture so the system-gate cases still begin with the starter deck.
         await RunManager.Instance.EnterRoomDebug(RoomType.Event, model: ModelDb.Event<DollRoom>(), showTransition: false);
@@ -261,6 +262,14 @@ internal static partial class PlaytestRunner
         await CreatureCmd.Damage(Context, target, 5, ValueProp.Unpowered, player.Creature);
         await CreatureCmd.Damage(Context, target, 4, ValueProp.Unpowered, player.Creature);
         Check(player.Creature.Block == 6, "Form uses actual unblocked damage from two separate instances without Dexterity scaling");
+        // Another mod rewriting the native OnPlayWrapper state machine must not
+        // affect this mod: the unarm hook is an ordinary Prefix, not an IL match.
+        var moveNext = AccessTools.Method(AccessTools.Method(typeof(CardModel), nameof(CardModel.OnPlayWrapper))
+            .GetCustomAttribute<System.Runtime.CompilerServices.AsyncStateMachineAttribute>()!.StateMachineType, "MoveNext");
+        new Harmony("PunchConstruct.QA.ThirdPartyOnPlay").Patch(moveNext,
+            transpiler: new HarmonyMethod(AccessTools.Method(typeof(PlaytestRunner), nameof(SimulatedThirdPartyOnPlayRewrite))));
+        Check(PatchRegistry.AppliedNames.Contains("BridgeUnarmBlock"),
+            "The unarm hook stays installed after another mod rewrites OnPlayWrapper");
         await Play<UnarmToArms>(player);
         var previousOsty = player.Osty?.CurrentHp ?? 0;
         await NextTurn(player, target);
@@ -270,7 +279,33 @@ internal static partial class PlaytestRunner
         await CreatureCmd.Damage(Context, target, 6, ValueProp.Unpowered, player.Creature);
         Check(player.Creature.Block == 0 && player.Osty!.CurrentHp == previousOsty + 6,
             "Form's granted block is replaced once by Unarm to Arms with equal summon");
+        // Kaleidoscope-style requests keep the untouched foreign pool, so the
+        // native rarity roll still has candidates for a construct player.
+        var foreign = new CardCreationOptions([ModelDb.CardPool<IroncladCardPool>()],
+                CardCreationSource.Other, CardRarityOddsType.RegularEncounter)
+            .WithFlags(CardCreationFlags.NoCardPoolModifications);
+        var foreignReward = CardFactory.CreateForReward(player, 1, foreign).ToArray();
+        Check(foreignReward.Length == 1 && foreignReward[0].Card.Pool is IroncladCardPool,
+            "A Kaleidoscope-style foreign pool query keeps its native candidates");
+        // A failed relic hook disables only itself; variant acquisition continues.
+        AdaptationRegistry.Fail("relic", "qa.simulated.relic", new InvalidOperationException("simulated relic hook failure"));
+        int waves = player.Deck.Cards.Count(c => c is SmallWave);
+        await RelicCmd.Obtain(ModelDb.Relic<ConstructLargeCapsule>().ToMutable(), player);
+        Check(player.Deck.Cards.Count(c => c is SmallWave) == waves + 2,
+            "Large Capsule still grants its two Small Waves after another relic hook failed");
+        await RelicCmd.Obtain(ModelDb.Relic<ConstructNeowsTalisman>().ToMutable(), player);
+        Check(player.Deck.Cards.OfType<SmallWave>().Count(c => c.IsUpgraded) >= 2,
+            "Neow's Talisman still upgrades two Small Waves after another relic hook failed");
         await NGame.Instance!.ReturnToMainMenu();
         SaveManager.Instance.DeleteCurrentRun();
+    }
+
+    private static IEnumerable<HarmonyLib.CodeInstruction> SimulatedThirdPartyOnPlayRewrite(
+        IEnumerable<HarmonyLib.CodeInstruction> instructions)
+    {
+        var list = instructions.ToList();
+        if (list.Count > 0) list.Insert(Math.Min(5, list.Count),
+            new HarmonyLib.CodeInstruction(System.Reflection.Emit.OpCodes.Nop));
+        return list;
     }
 }

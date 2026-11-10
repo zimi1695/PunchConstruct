@@ -58,8 +58,8 @@ internal static partial class PlaytestRunner
             var unenchanted = player.Deck.Cards.Where(c => c is SmallWave && c.Enchantment == null).ToArray();
             var unchanged = player.Deck.Cards.Where(c => c is not SmallWave).ToArray();
             int before = player.Deck.Cards.Count;
-            var soup = await RelicCmd.Obtain<NutritiousSoup>(player);
-            var tips = (IEnumerable<MegaCrit.Sts2.Core.HoverTips.IHoverTip>)HarmonyLib.AccessTools.PropertyGetter(typeof(NutritiousSoup), "ExtraHoverTips").Invoke(soup, [])!;
+            var soup = await RelicCmd.Obtain(ModelDb.Relic<ConstructNutritiousSoup>().ToMutable(), player);
+            var tips = (IEnumerable<MegaCrit.Sts2.Core.HoverTips.IHoverTip>)HarmonyLib.AccessTools.PropertyGetter(typeof(ConstructNutritiousSoup), "ExtraHoverTips").Invoke(soup, [])!;
             Check(tips.Count() == 2 && soup.DynamicDescription.GetFormattedText().Contains("拾起时") && soup.DynamicDescription.GetFormattedText().Contains("小斩波"),
                 "Adapted soup uses the native pickup sentence style and shows Eternal/Iron Wave tips instead of native extra-damage enchantment");
             Check(player.Deck.Cards.Count == before && player.Deck.Cards.OfType<SmallWave>().Count() == expected.Count &&

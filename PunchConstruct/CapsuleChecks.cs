@@ -27,8 +27,10 @@ internal static partial class PlaytestRunner
         // Native roles must keep the untouched Sea Glass pool. Capture the real
         // candidate list and prove no mod assembly card leaks into it. Assign the
         // character id the way a normal relic drop does.
-        var seaRelic = (SeaGlass)ModelDb.Relic<SeaGlass>().ToMutable();
-        AccessTools.Field(typeof(SeaGlass), "_characterId").SetValue(seaRelic, player.Character.Id);
+        var seaRelic = construct
+            ? ModelDb.Relic<ConstructSeaGlass>().ToMutable()
+            : ModelDb.Relic<SeaGlass>().ToMutable();
+        if (!construct) AccessTools.Field(typeof(SeaGlass), "_characterId").SetValue(seaRelic, player.Character.Id);
         var seaSelector = new UpdateSelector();
         using (CardSelectCmd.UseSelector(seaSelector))
         {
@@ -50,7 +52,9 @@ internal static partial class PlaytestRunner
         bag.Populate([ModelDb.Relic<Anchor>(), ModelDb.Relic<BronzeScales>(), ModelDb.Relic<OddlySmoothStone>(), ModelDb.Relic<BagOfPreparation>()], new Rng(912));
         AccessTools.Field(typeof(Player), "<RelicGrabBag>k__BackingField").SetValue(player, bag);
         var before = player.Deck.Cards.ToArray();
-        await RelicCmd.Obtain<LargeCapsule>(player);
+        await RelicCmd.Obtain(construct
+            ? ModelDb.Relic<ConstructLargeCapsule>().ToMutable()
+            : ModelDb.Relic<LargeCapsule>().ToMutable(), player);
         var added = player.Deck.Cards.Except(before).ToArray();
         Check(added.Length == 2 && (construct ? added.All(c => c is SmallWave) :
                 added.Any(c => c.Tags.Contains(CardTag.Strike)) && added.Any(c => c.Tags.Contains(CardTag.Defend))),
@@ -73,15 +77,15 @@ internal static partial class PlaytestRunner
         Check(!player.Character.CardPool.AllCards.Any(c => c.Rarity == CardRarity.Basic && c.Tags.Contains(CardTag.Strike)) &&
             !player.Character.CardPool.AllCards.Any(c => c.Rarity == CardRarity.Basic && c.Tags.Contains(CardTag.Defend)),
             "Capsule fixture reproduces missing native starter-tag candidates without adding global card tags");
-        Check(strike.Invoke(null, [player.Character]) is SmallWave && defend.Invoke(null, [player.Character]) is SmallWave,
-            "Both capsule starter lookups support the construct instead of throwing First() failures");
+        Check(ModelDb.Relic<ConstructLargeCapsule>().Rarity == ModelDb.Relic<LargeCapsule>().Rarity,
+            "The construct capsule variant keeps the native rarity instead of the native starter lookup");
         foreach (CharacterModel role in new CharacterModel[] { ModelDb.Character<Ironclad>(), ModelDb.Character<Silent>(), ModelDb.Character<Regent>(), ModelDb.Character<Necrobinder>(), ModelDb.Character<Defect>() })
             Check(((CardModel)strike.Invoke(null, [role])!).Tags.Contains(CardTag.Strike) && ((CardModel)defend.Invoke(null, [role])!).Tags.Contains(CardTag.Defend),
                 "Original role keeps its own Strike and Defend: " + role.Id);
         var originalDeck = player.Deck.Cards.ToArray();
         var originalBag = player.RelicGrabBag;
         int relics = player.Relics.Count;
-        var capsule = ModelDb.Relic<LargeCapsule>().ToMutable();
+        var capsule = ModelDb.Relic<ConstructLargeCapsule>().ToMutable();
         var bag = new RelicGrabBag();
         bag.Populate([ModelDb.Relic<Anchor>(), ModelDb.Relic<BronzeScales>(), ModelDb.Relic<OddlySmoothStone>(), ModelDb.Relic<BagOfPreparation>()], new Rng(912));
         var bagField = AccessTools.Field(typeof(Player), "<RelicGrabBag>k__BackingField");

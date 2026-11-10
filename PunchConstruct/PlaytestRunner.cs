@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Models.Characters;
+using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.RestSite;
@@ -436,11 +437,11 @@ internal static partial class PlaytestRunner
             await Play<TonyWave>(player, upgraded: true);
             await NextTurn(player, enemy);
             Check(enemy.CurrentHp == hp - 16 && player.Creature.Block == 16, "Two delayed waves preserve their separate 7 and 9 values");
-            var dummy = await RelicCmd.Obtain<StrikeDummy>(player);
+            var dummy = (ConstructStrikeDummy)await RelicCmd.Obtain(ModelDb.Relic<ConstructStrikeDummy>().ToMutable(), player);
             hp = enemy.CurrentHp; block = player.Creature.Block;
             await Play<SmallWave>(player, enemy);
             Check(enemy.CurrentHp == hp - 6 && player.Creature.Block == block + 3, "Strike Dummy adds 3 damage to Small Wave without adding block");
-            var fakeDummy = await RelicCmd.Obtain<FakeStrikeDummy>(player);
+            var fakeDummy = (ConstructFakeStrikeDummy)await RelicCmd.Obtain(ModelDb.Relic<ConstructFakeStrikeDummy>().ToMutable(), player);
             hp = enemy.CurrentHp;
             await Play<SmallWave>(player, enemy);
             Check(enemy.CurrentHp == hp - 7, "Fake Strike Dummy keeps its smaller +1 bonus");
@@ -448,14 +449,14 @@ internal static partial class PlaytestRunner
             Check(ModelDb.Relic<StrikeDummy>().DynamicDescription.GetFormattedText().Contains("斩波"),
                 "An unowned relic preview uses the construct description");
             await RelicCmd.Remove(dummy); await RelicCmd.Remove(fakeDummy);
-            var seed = await RelicCmd.Obtain<GhostSeed>(player);
+            var seed = (ConstructGhostSeed)await RelicCmd.Obtain(ModelDb.Relic<ConstructGhostSeed>().ToMutable(), player);
             var etherealWave = state.CreateCard<SmallWave>(player);
             await CardPileCmd.AddGeneratedCardToCombat(etherealWave, PileType.Hand, player);
             var plainIron = state.CreateCard<IronWave>(player);
             await CardPileCmd.AddGeneratedCardToCombat(plainIron, PileType.Hand, player);
             Check(etherealWave.Keywords.Contains(CardKeyword.Ethereal) && !plainIron.Keywords.Contains(CardKeyword.Ethereal), "Ghost Seed affects Small Wave only");
             await RelicCmd.Remove(seed);
-            var basin = await RelicCmd.Obtain<RippleBasin>(player);
+            var basin = (ConstructRippleBasin)await RelicCmd.Obtain(ModelDb.Relic<ConstructRippleBasin>().ToMutable(), player);
             block = player.Creature.Block;
             await basin.BeforeSideTurnEnd(Context, CombatSide.Player, [player.Creature]);
             Check(player.Creature.Block == block + 4, "Reversed basin grants 4 block after playing an attack");
@@ -1258,6 +1259,21 @@ internal static partial class PlaytestRunner
         RelicRollChecks();
         PreviewChecks(player);
         VisualIconChecks();
+        // Paels Claw: native Goopy only accepts Defend-tagged cards. Small Wave
+        // is this character's defence, and an existing enchantment must win.
+        var skippedWave = player.Deck.Cards.OfType<SmallWave>().First();
+        CardCmd.Enchant<Sharp>(skippedWave, 2m);
+        var unenchantedWaves = player.Deck.Cards.OfType<SmallWave>().Where(c => c != skippedWave).ToArray();
+        var untouchedCards = player.Deck.Cards.Where(c => c is not SmallWave).ToArray();
+        var claw = await RelicCmd.Obtain(ModelDb.Relic<PaelsClaw>().ToMutable(), player);
+        Check(claw is ConstructPaelsClaw, "Native Paels Claw is replaced by the construct variant");
+        Check(unenchantedWaves.All(c => c.Enchantment is Goopy { Amount: 1 } && c.Keywords.Contains(CardKeyword.Exhaust)) &&
+            skippedWave.Enchantment is Sharp { Amount: 2 } && untouchedCards.All(c => c.Enchantment == null),
+            "Paels Claw enchants every unenchanted Small Wave and skips other cards and existing enchantments");
+        Check(claw.DynamicDescription.GetFormattedText().Contains("小斩波") &&
+            ModelDb.Relic<PaelsClaw>().DynamicDescription.GetFormattedText().Contains("小斩波"),
+            "Paels Claw owned and unowned previews both describe Small Waves");
+        await RelicCmd.Remove(claw);
         await RunManager.Instance.EnterRoomDebug(RoomType.Monster, model: ModelDb.Encounter<PunchConstructNormal>().ToMutable(), showTransition: false);
         await Until(() => player.PlayerCombatState?.Phase == PlayerTurnPhase.Play && !CombatManager.Instance.PlayerActionsDisabled, "Relic fixture ready");
         var state = (CombatState)player.Creature.CombatState!;
@@ -1278,11 +1294,11 @@ internal static partial class PlaytestRunner
         await Play<TonyWave>(player, upgraded: true);
         await NextTurn(player, enemy);
         Check(enemy.CurrentHp == hp - 16 && player.Creature.Block == 16, "Two delayed waves preserve their separate 7 and 9 values");
-        var dummy = await RelicCmd.Obtain<StrikeDummy>(player);
+        var dummy = (ConstructStrikeDummy)await RelicCmd.Obtain(ModelDb.Relic<ConstructStrikeDummy>().ToMutable(), player);
         hp = enemy.CurrentHp; block = player.Creature.Block;
         await Play<SmallWave>(player, enemy);
         Check(enemy.CurrentHp == hp - 6 && player.Creature.Block == block + 3, "Strike Dummy adds 3 damage to Small Wave without adding block");
-        var fakeDummy = await RelicCmd.Obtain<FakeStrikeDummy>(player);
+        var fakeDummy = (ConstructFakeStrikeDummy)await RelicCmd.Obtain(ModelDb.Relic<ConstructFakeStrikeDummy>().ToMutable(), player);
         hp = enemy.CurrentHp;
         await Play<SmallWave>(player, enemy);
         Check(enemy.CurrentHp == hp - 7, "Fake Strike Dummy keeps its smaller +1 bonus");
@@ -1291,14 +1307,14 @@ internal static partial class PlaytestRunner
             "An unowned relic preview uses the construct description");
         await RelicCmd.Remove(dummy); await RelicCmd.Remove(fakeDummy);
         await ScorchingWaveChecks(player, enemy);
-        var seed = await RelicCmd.Obtain<GhostSeed>(player);
+        var seed = (ConstructGhostSeed)await RelicCmd.Obtain(ModelDb.Relic<ConstructGhostSeed>().ToMutable(), player);
         var etherealWave = state.CreateCard<SmallWave>(player);
         await CardPileCmd.AddGeneratedCardToCombat(etherealWave, PileType.Hand, player);
         var plainIron = state.CreateCard<IronWave>(player);
         await CardPileCmd.AddGeneratedCardToCombat(plainIron, PileType.Hand, player);
         Check(etherealWave.Keywords.Contains(CardKeyword.Ethereal) && !plainIron.Keywords.Contains(CardKeyword.Ethereal), "Ghost Seed affects Small Wave only");
         await RelicCmd.Remove(seed);
-        var basin = await RelicCmd.Obtain<RippleBasin>(player);
+        var basin = (ConstructRippleBasin)await RelicCmd.Obtain(ModelDb.Relic<ConstructRippleBasin>().ToMutable(), player);
         block = player.Creature.Block;
         await basin.BeforeSideTurnEnd(Context, CombatSide.Player, [player.Creature]);
         Check(player.Creature.Block == block + 4, "Reversed basin grants 4 block after playing an attack");
@@ -1315,12 +1331,6 @@ internal static partial class PlaytestRunner
         await NextTurn(player, enemy);
         Check(player.Creature.GetPowerAmount<DexterityPower>() == 0, "Dart Dexterity expires at turn end");
         await RelicCmd.Remove(dart);
-        var nativeDart = await RelicCmd.Obtain<HelicalDart>(player);
-        await Play<FightMe>(player, enemy);
-        Check(player.Creature.GetPowerAmount<DexterityPower>() == 3, "Native Helical Dart uses its construct adaptation, once for a multi-hit card");
-        await NextTurn(player, enemy);
-        Check(player.Creature.GetPowerAmount<DexterityPower>() == 2, "Native Helical Dart temporary bonus expires without removing permanent Dexterity");
-        await RelicCmd.Remove(nativeDart);
         var summonHp = player.Osty?.CurrentHp ?? 0;
         await OstyCmd.Summon(Context, player, 5, ModelDb.Card<SicEm>());
         Check(player.Osty is { IsAlive: true } && player.Osty.CurrentHp == summonHp + 5, "Native Summon creates Osty for this character");
@@ -1484,7 +1494,7 @@ internal static partial class PlaytestRunner
         await RelicCmd.Obtain(tooth, player);
         Check(player.Deck.Cards.Any(c => c is ScorchingIronWave && c.CurrentUpgradeLevel == 3) && player.Deck.Cards.All(c => c is not Doubt), "Actually acquiring Archaic Tooth transforms Iron Wave into Scorching Iron Wave upgraded three times");
         int waves = player.Deck.Cards.Count(c => c is SmallWave);
-        await RelicCmd.Obtain<NutritiousSoup>(player);
+        await RelicCmd.Obtain(ModelDb.Relic<ConstructNutritiousSoup>().ToMutable(), player);
         Check(player.Deck.Cards.All(c => c is not SmallWave) && player.Deck.Cards.Count(c => c is IronWave && c.Keywords.Contains(CardKeyword.Eternal)) == waves, "Nutritious Soup transforms every Small Wave and makes the replacements Eternal");
         Check(ModelDb.Relic<GuardStance>().GetUpgradeReplacement() is AncientGuardStance, "The starter relic has its ancient replacement");
         await RunManager.Instance.EnterRoomDebug(RoomType.Event, model: ModelDb.Event<FakeMerchant>(), showTransition: false);

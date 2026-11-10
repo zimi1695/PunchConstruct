@@ -54,7 +54,7 @@ internal static partial class PlaytestRunner
             .Count(_ => CardFactory.CreateForReward(player, 1, value).Single().Card is FightMe);
         int baseline = Sample(options);
         Check(baseline is > 480 and < 720, "Without rug, two same-rarity reward candidates have equal weight");
-        var rug = await RelicCmd.Obtain<DingyRug>(player);
+        var rug = await RelicCmd.Obtain(ModelDb.Relic<ConstructDingyRug>().ToMutable(), player);
         Check(rug.DynamicDescription.GetFormattedText().Contains("概率大幅提高"), "Owned rug shows the new probability description");
         Check(rug.ModifyCardRewardCreationOptions(player, options).CardPools.SequenceEqual(options.CardPools),
             "Construct rug leaves the already-selected card pools intact");

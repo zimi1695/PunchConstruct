@@ -26,7 +26,10 @@ internal static class RelicWeights
         ModelDb.GetId<SpareKnuckles>().Entry, ModelDb.GetId<EmergencyOilCan>().Entry
     ];
     internal static float Weight(RelicModel? relic) => relic != null && Preferred.Contains(relic.Id.Entry) ? PreferredWeight : 1f;
-    internal static bool Allowed(RelicModel relic) => relic is not (Orichalcum or FakeOrichalcum or ChemicalX or MassiveScroll);
+    // Shared relics with a construct variant are never rolled natively; the
+    // variant in the character pool carries the adapted rules.
+    internal static bool Allowed(RelicModel relic) => relic is not (Orichalcum or FakeOrichalcum or ChemicalX or MassiveScroll) &&
+        !AdaptedRelicVariants.IsNativeAdapted(relic);
 }
 
 internal static class RelicFactoryScope

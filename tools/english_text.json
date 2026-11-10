@@ -112,6 +112,7 @@
   "拾起时，失去[red]{MaxHp}[/red]点最大生命，并[gold]变化[/gold]你的[blue]2[/blue]张[gold]小斩波[/gold]。": "On pickup, lose [red]{MaxHp}[/red] Max HP and [gold]Transform[/gold] [blue]2[/blue] of your [gold]Small Waves[/gold].",
   "拾起时，将你[gold]牌组[/gold]中的所有[gold]小斩波[/gold][gold]变化[/gold]为[gold]铁斩波[/gold]，并赋予[gold]永恒[/gold]。": "On pickup, [gold]Transform[/gold] all [gold]Small Waves[/gold] in your [gold]deck[/gold] into [gold]Iron Waves[/gold] and give them [gold]Eternal[/gold].",
   "拾起时，将所有可变化的[gold]小斩波[/gold]、[gold]打击[/gold]和[gold]防御[/gold][gold]变化[/gold]为其他牌。": "On pickup, [gold]Transform[/gold] all transformable [gold]Small Waves[/gold], [gold]Strikes[/gold], and [gold]Defends[/gold] into other cards.",
+  "拾起时，为所有未附魔的[gold]小斩波[/gold]附魔[purple]黏糊[/purple]。": "On pickup, enchant all unenchanted [gold]Small Waves[/gold] with [purple]Goopy[/purple].",
   "损毁头盔": "Ruined Helmet",
   "接下来的{Amount}张攻击牌，每段伤害获得等量格挡。": "For the next {Amount} Attacks, each damage instance grants an equal amount of Block.",
   "放心，亲爱的。我会把它们弄合身的。": "Don't worry, dear. I'll make them fit.",

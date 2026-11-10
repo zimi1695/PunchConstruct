@@ -106,19 +106,14 @@ internal static class BridgeCampAnimation
     }
 }
 
-[HarmonyPatch]
-internal static class BridgeCardPresentation
+// Prefix on the public async stub, not on its MoveNext state machine: any
+// third-party IL rewrite of OnPlayWrapper cannot prevent this hook from loading.
+[HarmonyPatch(typeof(CardModel), nameof(CardModel.OnPlayWrapper))]
+internal static class BridgeConstructCardCast
 {
-    private static MethodBase TargetMethod() => AccessTools.Method(
-        AccessTools.Method(typeof(CardModel), nameof(CardModel.OnPlayWrapper))
-            .GetCustomAttribute<AsyncStateMachineAttribute>()!.StateMachineType, "MoveNext");
-
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> source)
-    {
-        var original = source.ToList();
-        return AdaptationRegistry.Run("presentation", "CardPresentation", original,
-            () => PresentationAdapter.CardPresentationTranspiler(original));
-    }
+    private static void Prefix(CardModel __instance) =>
+        AdaptationRegistry.Run("presentation", "CardPlayCast",
+            () => PresentationAdapter.CardPlayCast(__instance));
 }
 
 [HarmonyPatch(typeof(AttackCommand), nameof(AttackCommand.Execute))]

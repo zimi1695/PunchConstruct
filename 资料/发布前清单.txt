@@ -1,6 +1,18 @@
-拳击构装体：发布前清单（2026-10-26，2026-11-01更新）
+﻿拳击构装体：发布前清单（2026-10-26，2026-11-10更新）
 
 当前交付
+
+0.4.28（2026-11-09）
+[已完成] 移除 `CardModel.OnPlayWrapper` 的 IL transpiler 与 ConstructPresentation 的 NativeOnPlay／PlayNative 支撑代码；第三方（RitsuLib／RandomForeseer）改写 OnPlayWrapper 不再导致补丁安装中断。仍保留 4 组表现／事件层的原生 async 状态机补丁（CreatureCmd.Damage、PowerCmd.Apply／ModifyAmount、Amalgamator.CombineStrikes、DollRoom 选牌），不涉及卡牌主流程。
+[已完成] PatchRegistry 增加安装审计：`patch.summary` 记录 applied／failed／patchedMethods／required 明细，启动时按类打印 `[PunchConstruct PATCH]`；COMPAT 断言关键 Bridge（BridgeUnarmBlock、BridgePhilosopherRandomRewards、BridgeConstructColorlessShop、BridgeConstructRelicVariants）均带 Required 策略。
+[已完成] AdaptationRegistry 改为按 `adapter:hook` 禁用；单个 hook 异常只禁用自身，同域其它 hook 继续运行，COMPAT 增加隔离断言。
+[已完成] 修复 Kaleidoscope：GroupCardGates 尊重 `NoCardPoolModifications`／`NoModifyHooks`，跨角色卡池查询保持原生候选。
+[已完成] 尼奥护符改为自动升级牌组最后 2 张可升级小斩波（不弹选择、空列表保护）；大型扭蛋变体固定给 2 件遗物＋2 张小斩波，不再调用原生 `First()`。
+[已完成] 15 个共享遗物改为本角色变体模型：StrikeDummy、FakeStrikeDummy、GhostSeed、RippleBasin、NutritiousSoup、LeafyPoultice、SeaGlass、DingyRug、LargeCapsule、NeowsTalisman、PrismaticGem、PandorasBox、PaelsClaw、RuinedHelmet、HelicalDart。常规获取在 `RelicCmd.Obtain` 前缀换模型，抽取池排除原生版本，旧档在 `Player.PopulateRelics` 载入时静默迁移。
+[已完成] 构建 0 警告；候选三文件：DLL `0bdff675…`、PCK `7058955f…`、清单 `57f12420…`；本地 35/35、联机 4/4（含 4p 弱网）、恢复 4/4 全量通过，`full_local_verification=true`、`full_invariant_verification=true`（16/16）；architect／shadernative 与 4p／恢复在并行负载下各出现一次原生抖动，隔离重跑通过。
+[已完成] 归档 `dist/releases/0.4.28/` 与 `PunchConstruct-0.4.28.zip`（42,514,884 B）。
+[已完成] 2026-11-09 21:05 同时上传 0.4.28 到私密测试条目 3835179658 与公开条目 3826907330；21:12 按作者定稿文案重新上传工坊说明，包含观者原模组可点击链接、GitHub 仓库链接、0.4.28 更新简报与一键日志命令，均 Successfully uploaded。
+[未完成] GitHub Release（v0.4.28 标签与附件）尚未创建。
 
 0.4.27（2026-11-08）
 
@@ -68,3 +80,4 @@ Steam现状
 
 当前证据入口：tools/runtime/current-verification.json、tools/runtime/followup-0.4.23.json、tools/runtime/content-current.json。
 历次清单和排查过程：历史/记录/文档整理前记录.txt；原始QA日志仍在tools/runtime/qa。
+

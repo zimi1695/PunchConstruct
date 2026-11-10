@@ -1,4 +1,4 @@
-using BaseLib.Abstracts;
+﻿using BaseLib.Abstracts;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -95,8 +95,10 @@ public sealed class IronWaveForm() : CustomCardModel(3, CardType.Power, CardRari
     public override string CustomPortraitPath => "res://PunchConstruct/art/iron_wave_form.ctex";
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Amount", 1)];
     public override List<(string, string)> Localization => Loc.Card("铁斩波形态", "每回合前{Amount:diff()}次造成伤害时，获得等同于未被格挡的伤害量的[gold]格挡[/gold]。");
-    protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play) =>
+    protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
+    {
         await PowerCmd.Apply<IronWaveFormPower>(context, Owner.Creature, DynamicVars["Amount"].BaseValue, Owner.Creature, this);
+    }
     protected override void OnUpgrade() => DynamicVars["Amount"].UpgradeValueBy(1);
 }
 

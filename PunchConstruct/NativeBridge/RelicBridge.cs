@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -102,49 +103,6 @@ internal static class BridgeWindDollPriority
 }
 
 [HarmonyPatch]
-[PatchPolicy(true)]
-internal static class BridgeConstructCapsuleStarters
-{
-    private static IEnumerable<MethodBase> TargetMethods() => ConstructCapsuleStarters.Targets();
-
-    [HarmonyPriority(Priority.First)]
-    private static bool Prefix(CharacterModel character, ref CardModel __result)
-    {
-        var card = __result;
-        var runNative = AdaptationRegistry.Guard("relic", "ConstructCapsuleStarters",
-            () => ConstructCapsuleStarters.Apply(character, ref card));
-        __result = card;
-        return runNative;
-    }
-}
-
-[HarmonyPatch(typeof(SeaGlass), nameof(SeaGlass.AfterObtained))]
-internal static class BridgeConstructSeaGlass
-{
-    [HarmonyPriority(Priority.First)]
-    private static bool Prefix(SeaGlass __instance, ref Task __result)
-    {
-        var result = __result;
-        var runNative = AdaptationRegistry.Guard("relic", "ConstructSeaGlass",
-            () => ConstructSeaGlass.Apply(__instance, ref result));
-        __result = result;
-        return runNative;
-    }
-}
-
-[HarmonyPatch(typeof(SeaGlass), nameof(SeaGlass.Title), MethodType.Getter)]
-internal static class BridgeConstructSeaGlassTitle
-{
-    private static void Postfix(SeaGlass __instance, ref LocString __result)
-    {
-        var title = __result;
-        AdaptationRegistry.Run("relic", "ConstructSeaGlassTitle",
-            () => ConstructSeaGlassTitle.Apply(__instance, ref title));
-        __result = title;
-    }
-}
-
-[HarmonyPatch]
 internal static class BridgeConstructSoupOffer
 {
     private static MethodBase TargetMethod() => ConstructSoupOffer.Target();
@@ -160,87 +118,41 @@ internal static class BridgeConstructSoupOffer
     }
 }
 
-[HarmonyPatch(typeof(NeowsTalisman), nameof(NeowsTalisman.AfterObtained))]
-internal static class BridgeConstructNeowsTalisman
+// Normal acquisition swaps a construct player's shared relic for its variant.
+// A scripted RelicCmd.Obtain<T> caller is left native because it casts the
+// result back to the requested type.
+[HarmonyPatch(typeof(RelicCmd), nameof(RelicCmd.Obtain), [typeof(RelicModel), typeof(Player), typeof(int)])]
+[PatchPolicy(true)]
+internal static class BridgeConstructRelicVariants
 {
     [HarmonyPriority(Priority.First)]
-    private static bool Prefix(NeowsTalisman __instance, ref Task __result)
+    private static void Prefix(ref RelicModel relic, Player player)
     {
-        var result = __result;
-        var runNative = AdaptationRegistry.Guard("relic", "ConstructNeowsTalisman",
-            () => ConstructNeowsTalisman.Apply(__instance, ref result));
-        __result = result;
-        return runNative;
+        var original = relic;
+        var value = relic;
+        AdaptationRegistry.Run("relic", "ConstructRelicVariants",
+            () => AdaptedRelicVariants.Substitute(ref value, player));
+        relic = value;
+        if (ReferenceEquals(original, relic)) return;
+        // The native bag entries are the shared relic; remove them so the roll
+        // cannot offer it again while this player owns the variant.
+        player.RelicGrabBag.Remove(original);
+        player.RunState.SharedRelicGrabBag.Remove(original);
     }
 }
 
-[HarmonyPatch]
-internal static class BridgeWaveDummy
+// Saves and multiplayer syncs created before variants still deserialize the
+// shared relic. Convert them silently while the inventory loads; AfterObtained
+// must not run again.
+[HarmonyPatch(typeof(Player), "PopulateRelics")]
+internal static class BridgeConstructRelicMigration
 {
-    private static IEnumerable<MethodBase> TargetMethods() => WaveDummyPatch.Targets();
-
-    private static bool Prefix(RelicModel __instance, Creature? dealer, ValueProp props, CardModel? cardSource, ref decimal __result)
+    private static void Prefix(Player __instance, ref IEnumerable<RelicModel> relics)
     {
-        var value = __result;
-        var runNative = AdaptationRegistry.Guard("relic", "WaveDummy",
-            () => WaveDummyPatch.Apply(__instance, dealer, props, cardSource, ref value));
-        __result = value;
-        return runNative;
-    }
-}
-
-[HarmonyPatch(typeof(GhostSeed), "CanAffect")]
-internal static class BridgeGhostSeedWave
-{
-    private static void Postfix(CardModel card, ref bool __result)
-    {
-        var affected = __result;
-        AdaptationRegistry.Run("relic", "GhostSeedWave", () => GhostSeedWavePatch.Apply(card, ref affected));
-        __result = affected;
-    }
-}
-
-[HarmonyPatch(typeof(RippleBasin), nameof(RippleBasin.BeforeSideTurnEnd))]
-internal static class BridgeAttackingBasin
-{
-    private static bool Prefix(RippleBasin __instance, IEnumerable<Creature> participants, ref Task __result)
-    {
-        var result = __result;
-        var runNative = AdaptationRegistry.Guard("relic", "AttackingBasin",
-            () => AttackingBasinPatch.Apply(__instance, participants, ref result));
-        __result = result;
-        return runNative;
-    }
-}
-
-[HarmonyPatch(typeof(RippleBasin), nameof(RippleBasin.AfterCardPlayed))]
-internal static class BridgeBasinStatus
-{
-    private static void Postfix(RippleBasin __instance, CardPlay cardPlay) =>
-        AdaptationRegistry.Run("relic", "BasinStatus", () => BasinStatusPatch.Apply(__instance, cardPlay));
-}
-
-[HarmonyPatch(typeof(NutritiousSoup), nameof(NutritiousSoup.AfterObtained))]
-internal static class BridgeSoupWave
-{
-    private static bool Prefix(NutritiousSoup __instance, ref Task __result)
-    {
-        var result = __result;
-        var runNative = AdaptationRegistry.Guard("relic", "SoupWave",
-            () => SoupWavePatch.Apply(__instance, ref result));
-        __result = result;
-        return runNative;
-    }
-}
-
-[HarmonyPatch(typeof(NutritiousSoup), "ExtraHoverTips", MethodType.Getter)]
-internal static class BridgeSoupWaveHoverTips
-{
-    private static void Postfix(NutritiousSoup __instance, ref IEnumerable<IHoverTip> __result)
-    {
-        var tips = __result;
-        AdaptationRegistry.Run("relic", "SoupWaveHoverTips", () => SoupWaveHoverTips.Apply(__instance, ref tips));
-        __result = tips;
+        var loaded = relics;
+        AdaptationRegistry.Run("relic", "ConstructRelicMigration",
+            () => AdaptedRelicVariants.Migrate(__instance, ref loaded));
+        relics = loaded;
     }
 }
 
@@ -253,64 +165,6 @@ internal static class BridgeSoupExplicitReplacement
         AdaptationRegistry.Run("relic", "SoupExplicitReplacement",
             () => SoupExplicitReplacement.Apply(__instance, ref transformable));
         __result = transformable;
-    }
-}
-
-[HarmonyPatch(typeof(LeafyPoultice), nameof(LeafyPoultice.AfterObtained))]
-internal static class BridgeLeafyPoultice
-{
-    private static bool Prefix(LeafyPoultice __instance, ref Task __result)
-    {
-        var result = __result;
-        var runNative = AdaptationRegistry.Guard("relic", "LeafyPoultice",
-            () => LeafyPoulticeWaves.Apply(__instance, ref result));
-        __result = result;
-        return runNative;
-    }
-}
-
-[HarmonyPatch(typeof(RuinedHelmet), nameof(RuinedHelmet.TryModifyPowerAmountReceived))]
-internal static class BridgeNativeHelmetDisableDouble
-{
-    private static bool Prefix(RuinedHelmet __instance, ref bool __result)
-    {
-        var modified = __result;
-        var runNative = AdaptationRegistry.Guard("relic", "NativeHelmetDisableDouble",
-            () => NativeHelmetDisableDouble.Apply(__instance, ref modified));
-        __result = modified;
-        return runNative;
-    }
-}
-
-[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.AfterPowerAmountChanged))]
-internal static class BridgeNativeHelmetMirror
-{
-    private static void Postfix(AbstractModel __instance, PlayerChoiceContext choiceContext, PowerModel power, decimal amount, ref Task __result)
-    {
-        var result = __result;
-        AdaptationRegistry.Run("relic", "NativeHelmetMirror",
-            () => NativeHelmetMirrorHook.Apply(__instance, choiceContext, power, amount, ref result));
-        __result = result;
-    }
-}
-
-[HarmonyPatch(typeof(RuinedHelmet), nameof(RuinedHelmet.AfterCombatEnd))]
-internal static class BridgeNativeHelmetReset
-{
-    private static void Postfix(RuinedHelmet __instance) =>
-        AdaptationRegistry.Run("relic", "NativeHelmetReset", () => NativeHelmetReset.Apply(__instance));
-}
-
-[HarmonyPatch(typeof(HelicalDart), nameof(HelicalDart.AfterCardPlayed))]
-internal static class BridgeNativeDart
-{
-    private static bool Prefix(HelicalDart __instance, PlayerChoiceContext choiceContext, CardPlay cardPlay, ref Task __result)
-    {
-        var result = __result;
-        var runNative = AdaptationRegistry.Guard("relic", "NativeDart",
-            () => NativeDartAdaptation.Apply(__instance, choiceContext, cardPlay, ref result));
-        __result = result;
-        return runNative;
     }
 }
 

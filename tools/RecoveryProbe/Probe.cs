@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.Json;
 using Godot;
 using HarmonyLib;
@@ -213,7 +213,7 @@ public static class RecoveryProbe
             await RelicCmd.Obtain<EmergencyOilCan>(p);
             int momentum = 4 + (int)p.NetId;
             CardCmd.Enchant(ModelDb.Enchantment<Momentum>().ToMutable(), p.Deck.Cards.OfType<SmallWave>().First(), momentum);
-            await RelicCmd.Obtain<NutritiousSoup>(p);
+            await RelicCmd.Obtain(ModelDb.Relic<ConstructNutritiousSoup>().ToMutable(), p);
             Check(p.Deck.Cards.OfType<IronWave>().Count(c => c.Keywords.Contains(CardKeyword.Eternal) && c.EnergyCost.GetWithModifiers(CostModifiers.None) == 0) == 4 &&
                 p.Deck.Cards.OfType<SmallWave>().Any(c => c.Enchantment is Momentum m && m.Amount == momentum),
                 "Soup prepares four zero-cost Eternal Iron Waves and skips the Momentum Small Wave for disk recovery");
@@ -389,3 +389,4 @@ public static class RecoveryProbe
         catch (Exception ex) { GD.Print("[Recovery FAIL] " + ex); Tree.Quit(1); }
     }
 }
+

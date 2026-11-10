@@ -16,6 +16,6 @@ public static class ModEntry
         Diagnostics.Initialize();
         CombatRelicState.Initialize();
         PatchRegistry.ApplyAll();
-        Godot.GD.Print("[PunchConstruct] v0.4.26 loaded (game 0.111.0 / BaseLib 3.4.7; native bridge + adapters)");
+        Godot.GD.Print("[PunchConstruct] v0.4.28 loaded (game 0.111.0 / BaseLib 3.4.7; per-hook patches + relic variants)");
     }
 }

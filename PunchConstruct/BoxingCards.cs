@@ -1,4 +1,4 @@
-using BaseLib.Abstracts;
+﻿using BaseLib.Abstracts;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -150,7 +150,10 @@ public sealed class BoxingGuard() : CustomCardModel(1, CardType.Skill, CardRarit
     public override string CustomPortraitPath => "res://PunchConstruct/art/boxing_guard.ctex";
     protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(10, ValueProp.Move)];
     public override List<(string, string)> Localization => Loc.Card("格挡", "获得{Block:diff()}点[gold]格挡[/gold]。");
-    protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play) => await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, play);
+    protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
+    {
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, play);
+    }
     protected override void OnUpgrade() => AddKeyword(CardKeyword.Retain);
 }
 

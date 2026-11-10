@@ -45,6 +45,9 @@ public sealed class ConstructCharacter : CustomCharacterModel
         }
         var animator = SetupAnimationState(controller, "idle_loop", deadName: "die", hitName: "hurt", attackName: "attack", castName: "block");
         animator.AddAnyState("DoubleAttack", new AnimState("attack_double", false) { NextState = new AnimState("idle_loop", true) }, null);
+        // Native power cards call the PowerUp trigger; use the same cast pose so
+        // borrowed powers still animate without any native patch.
+        animator.AddAnyState("PowerUp", new AnimState("block", false) { NextState = new AnimState("idle_loop", true) }, null);
         return animator;
     }
     public override string CustomCharacterSelectBg => "res://PunchConstruct/scenes/character_select.tscn";

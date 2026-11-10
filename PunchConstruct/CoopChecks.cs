@@ -361,7 +361,7 @@ internal static partial class PlaytestRunner
         var previousDecks = run.Players.Select(p => p.Deck.Cards.ToHashSet()).ToArray();
         int choicesBeforeRelics = remoteChoices;
         var offers = run.Players.Where(p => p.Character is ConstructCharacter)
-            .Select(p => RelicCmd.Obtain<SeaGlass>(p)).ToArray();
+            .Select(p => RelicCmd.Obtain(ModelDb.Relic<ConstructSeaGlass>().ToMutable(), p)).ToArray();
         if (LocalContext.GetMe(run)?.Character is ConstructCharacter)
         {
             await CoopWait(() => Descendants(_tree.Root).OfType<NSimpleCardSelectScreen>().Any(s => s.IsVisibleInTree()), "Actual Sea Glass selection UI opens");
@@ -395,7 +395,7 @@ internal static partial class PlaytestRunner
         var before = owner.Deck.Cards.ToArray();
         var waves = before.OfType<SmallWave>().Where(c => c.IsRemovable && c.IsTransformable).ToArray();
         Check(waves.Length > 0, "Network Pandora fixture retains eligible Small Waves");
-        await RelicCmd.Obtain<PandorasBox>(owner);
+        await RelicCmd.Obtain(ModelDb.Relic<ConstructPandorasBox>().ToMutable(), owner);
         var added = owner.Deck.Cards.Except(before).ToArray();
         Check(added.Length == waves.Length && waves.All(c => !owner.Deck.Cards.Contains(c)) &&
             before.Except(waves).All(c => owner.Deck.Cards.Contains(c)) && added.All(c => CardAcquisition.Eligible(owner, c)),

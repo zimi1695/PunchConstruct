@@ -43,11 +43,11 @@ def main():
     save()
     # Render- and timing-sensitive suites run alone; concurrent game processes
     # can make native resources load slowly enough to fail their own checks.
-    serial = {'vigor', 'shadernative'}
+    serial = {'vigor', 'shadernative', 'architect'}
     with ThreadPoolExecutor(max_workers=3) as pool:
         for task in as_completed([pool.submit(run, mode) for mode in required_checks if mode not in serial]):
             record(task.result())
-    for mode in ('vigor', 'shadernative'):
+    for mode in ('vigor', 'shadernative', 'architect'):
         result = run(mode)
         if mode == 'shadernative' and result[1] != 0:
             # Real-renderer scene parsing has failed transiently after a long

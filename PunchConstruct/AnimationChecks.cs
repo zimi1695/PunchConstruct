@@ -67,10 +67,11 @@ internal static partial class PlaytestRunner
             AnimationProbe.Clear();
             decimal hp = target.CurrentHp;
             await Play<T>(player, ModelDb.Card<T>().TargetType == TargetType.AnyEnemy ? target : null);
-            string animation = trigger switch { "DoubleAttack" => "attack_double", "Cast" => "block", _ => "attack" };
-            string sound = trigger switch { "DoubleAttack" => ConstructPresentation.DoubleSfx, "Cast" => ConstructPresentation.GuardSfx, _ => ConstructPresentation.SingleSfx };
+            string animation = trigger switch { "DoubleAttack" => "attack_double", "Cast" or "PowerUp" => "block", _ => "attack" };
+            string sound = trigger switch { "DoubleAttack" => ConstructPresentation.DoubleSfx, "Cast" or "PowerUp" => ConstructPresentation.GuardSfx, _ => ConstructPresentation.SingleSfx };
             Check(AnimationProbe.Motions.SequenceEqual(new[] { (trigger, animation) }),
-                typeof(T).Name + " triggers exactly one real native " + animation + " animation");
+                typeof(T).Name + " triggers exactly one real native " + animation + " animation; saw " +
+                string.Join(", ", AnimationProbe.Motions.Select(m => m.Trigger + "->" + m.Animation)));
             Check(AnimationProbe.Sounds.SequenceEqual(new[] { sound }), typeof(T).Name + " plays exactly one matching original monster sound");
             if (typeof(T) == typeof(SmallWave)) Check(target.CurrentHp == hp - 3, "Double-punch presentation leaves a single-hit Small Wave at 3 damage");
             if (typeof(T) == typeof(FightMe)) Check(target.CurrentHp == hp - 12, "Multi-hit Fight Me retains two 6-damage hits");
@@ -86,7 +87,7 @@ internal static partial class PlaytestRunner
         // Keep later raw-damage assertions independent of this skill's real debuff.
         foreach (var enemy in state.HittableEnemies.ToArray()) await PowerCmd.Remove<VulnerablePower>(enemy);
         await Verify<IronWaveForm>("Cast");
-        await Verify<DemonForm>("Cast"); // Native powers call PowerUp; route once to the same guard.
+        await Verify<DemonForm>("Cast"); // Wrapper cast covers native powers as well.
         await Verify<DefendIronclad>("Cast"); // Native skills already call Cast: no duplicate pose/sound.
         await Verify<SmallWave>("Attack"); // Skills/powers do not consume the attack sequence.
         await Verify<SmallWave>("DoubleAttack");

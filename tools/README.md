@@ -1,12 +1,12 @@
 # 开发工具
 
-`python tools/check_current.py boxing --rendered`检查八张无色新牌、获取限制、所有单位荆棘、左右勾拳顺序、格斗流程当回合生成、过载与满手牌计数。联机从0.4.20起增加boxing-generated／boxing-resolved两阶段快照。当前0.4.26候选完整功能验收要求35项；本轮content已同步为0.4.26（含死亡／建筑师击倒的朝向瞬变修复），Steam条目3826907330仍为线上0.4.24（已公开，尚未上传新版）。
+`python tools/check_current.py boxing --rendered`检查八张无色新牌、获取限制、所有单位荆棘、左右勾拳顺序、格斗流程当回合生成、过载与满手牌计数。联机从0.4.20起增加boxing-generated／boxing-resolved两阶段快照。当前0.4.28候选完整功能验收要求35项；本轮content已同步为0.4.28（删除OnPlayWrapper IL改写、补丁安装审计、按hook熔断、15个共享遗物变体），公开条目3826907330与私密测试条目3835179658均已上传0.4.28。
 
 ## 本地使用
 
 `run_all_checks.ps1` 一次串行执行本地 35 项（含 `compat`、`english`、`locale`、`localezh`）、联机 4 项、断线恢复 4 项，最后调用 `report_local.py` 汇总；`check_local.py` 对长批跑后偶发失败的 `shadernative` 会隔离重跑一次。
 
-`launch.ps1`启动工作区离线试玩，`-PrepareOnly`仅同步最新DLL、清单与资源；运行中的本地试玩会阻止同步。用户存档在runtime/play-userdata，不被QA覆盖。`sync_runtime_art.py`校对资源，不写dist。手动分发content为0.4.26，已同步含 Native Bridge + 五域适配器重构与英文本地化的当前Release构建。已有试玩窗口须退出后由启动器同步；只依赖BaseLib。
+`launch.ps1`启动工作区离线试玩，`-PrepareOnly`仅同步最新DLL、清单与资源；运行中的本地试玩会阻止同步。用户存档在runtime/play-userdata，不被QA覆盖。`sync_runtime_art.py`校对资源，不写dist。手动分发content为0.4.28，已同步含按hook隔离的Native Bridge、共享遗物变体与英文本地化的当前Release构建。已有试玩窗口须退出后由启动器同步；只依赖BaseLib。
 
 仅编译：
 

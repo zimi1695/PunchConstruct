@@ -16,11 +16,11 @@ internal static class RelicIcons
         bool own = relic is ConstructDart or ConstructHelmet;
         if (!own && !CharacterScope.IsConstruct(relic)) return source;
         int operation = relic switch {
-            RippleBasin => 1,
+            RippleBasin or ConstructRippleBasin => 1,
             ConstructDart or HelicalDart => 2,
             ConstructHelmet or RuinedHelmet => 3,
-            DingyRug => 4,
-            PrismaticGem => 5,
+            DingyRug or ConstructDingyRug => 4,
+            PrismaticGem or ConstructPrismaticGem => 5,
             _ => 0
         };
         if (operation == 0 || DisplayServer.GetName() == "headless") return source;

@@ -121,6 +121,7 @@ internal static class EnglishText
         ["拳击构装体的卡牌加入奖励和商店。"] = "Punch Construct cards appear in rewards and shops.",
         ["拳头够大！！来，打我！！"] = "Fists big enough!! Come on, hit me!!",
         ["拳王形态"] = "Boxing Champion Form",
+        ["拾起时，为所有未附魔的[gold]小斩波[/gold]附魔[purple]黏糊[/purple]。"] = "On pickup, enchant all unenchanted [gold]Small Waves[/gold] with [purple]Goopy[/purple].",
         ["拾起时，失去[red]{MaxHp}[/red]点最大生命，并[gold]变化[/gold]你的[blue]2[/blue]张[gold]小斩波[/gold]。"] = "On pickup, lose [red]{MaxHp}[/red] Max HP and [gold]Transform[/gold] [blue]2[/blue] of your [gold]Small Waves[/gold].",
         ["拾起时，将你[gold]牌组[/gold]中的所有[gold]小斩波[/gold][gold]变化[/gold]为[gold]铁斩波[/gold]，并赋予[gold]永恒[/gold]。"] = "On pickup, [gold]Transform[/gold] all [gold]Small Waves[/gold] in your [gold]deck[/gold] into [gold]Iron Waves[/gold] and give them [gold]Eternal[/gold].",
         ["拾起时，将所有可变化的[gold]小斩波[/gold]、[gold]打击[/gold]和[gold]防御[/gold][gold]变化[/gold]为其他牌。"] = "On pickup, [gold]Transform[/gold] all transformable [gold]Small Waves[/gold], [gold]Strikes[/gold], and [gold]Defends[/gold] into other cards.",

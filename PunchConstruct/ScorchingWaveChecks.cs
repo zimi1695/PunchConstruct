@@ -61,8 +61,8 @@ internal static partial class PlaytestRunner
         {
             if (dummy != null) { await RelicCmd.Remove(dummy); dummy = null; }
             if (fake != null) { await RelicCmd.Remove(fake); fake = null; }
-            if (bonus is 3 or 4) dummy = await RelicCmd.Obtain<StrikeDummy>(player);
-            if (bonus is 1 or 4) fake = await RelicCmd.Obtain<FakeStrikeDummy>(player);
+            if (bonus is 3 or 4) dummy = await RelicCmd.Obtain(ModelDb.Relic<ConstructStrikeDummy>().ToMutable(), player);
+            if (bonus is 1 or 4) fake = await RelicCmd.Obtain(ModelDb.Relic<ConstructFakeStrikeDummy>().ToMutable(), player);
             foreach (int level in new[] { 0, 3 })
             {
                 var played = ((CombatState)player.Creature.CombatState!).CreateCard<ScorchingIronWave>(player);

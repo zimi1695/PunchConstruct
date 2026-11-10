@@ -94,7 +94,7 @@ internal static class CardAcquisition
         if (!CharacterScope.IsConstruct(player)) return rng.NextItem(cards)!;
         // Weight at the final draw, after the native Except/Distinct and rarity roll.
         var weighted = cards.SelectMany(c => Enumerable.Repeat(c, Weight(player, c) *
-            (CardFactoryScope.RugReward && c.Pool is ColorlessCardPool && player.Relics.Any(r => r is DingyRug)
+            (CardFactoryScope.RugReward && c.Pool is ColorlessCardPool && player.Relics.Any(r => r is DingyRug or ConstructDingyRug)
                 ? ConstructDingyRug.ColorlessMultiplier : 1))).ToArray();
         return rng.NextItem(weighted)!;
     }
@@ -153,6 +153,11 @@ internal static class GroupCardGates
         }
         else
         {
+            // Kaleidoscope and similar effects explicitly ask for the untouched
+            // native pools. Filtering them would cross out every foreign card
+            // and leave the reward roller with no legal rarity (native crash).
+            if (__instance.Flags.HasFlag(CardCreationFlags.NoCardPoolModifications) ||
+                __instance.Flags.HasFlag(CardCreationFlags.NoModifyHooks)) return;
             var additions = __instance.CardPools.Any(p => p is ColorlessCardPool)
                 ? ModelDb.CardPool<ConstructCardPool>().AllCards.Where(c => c.Pool is ColorlessCardPool &&
                     (__instance.CardPoolFilter?.Invoke(c) ?? true)) : [];

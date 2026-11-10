@@ -19,9 +19,9 @@ internal static partial class PlaytestRunner
             .WithFlags(CardCreationFlags.IsCardReward | (combat ? CardCreationFlags.IsFromCombat : 0)).WithRngOverride(new Rng(722));
         foreach (bool rugFirst in new[] { false, true })
         {
-            DingyRug? rug = rugFirst ? await RelicCmd.Obtain<DingyRug>(player) : null;
-            var gem = await RelicCmd.Obtain<PrismaticGem>(player);
-            rug ??= await RelicCmd.Obtain<DingyRug>(player);
+            RelicModel? rug = rugFirst ? await RelicCmd.Obtain(ModelDb.Relic<ConstructDingyRug>().ToMutable(), player) : null;
+            var gem = await RelicCmd.Obtain(ModelDb.Relic<ConstructPrismaticGem>().ToMutable(), player);
+            rug ??= await RelicCmd.Obtain(ModelDb.Relic<ConstructDingyRug>().ToMutable(), player);
             var input = Options(true);
             var originalFilter = input.CardPoolFilter;
             var modified = gem.ModifyCardRewardCreationOptions(player, input);

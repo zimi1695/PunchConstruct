@@ -1,6 +1,17 @@
-拳击构装体：本地交付与发布审查（2026-10-26，2026-10-27更新）
+﻿拳击构装体：本地交付与发布审查（2026-10-26，2026-11-10更新）
 
-content现为0.4.26，三个模组文件与当前Release构建一致；237份资源（含 14 个语言镜像）、82种卡牌。0.4.26 完成 Native Bridge 与五域适配器重构、英文本地化与多语言镜像、死亡朝向瞬变修复，本地 35 项、联机 4 项、恢复 4 项验收通过后上传。Steam 条目3826907330线上仍为0.4.24，已公开；0.4.25 保留归档但跳过工坊。
+content现为0.4.28，三个模组文件与当前Release构建一致；237份资源（含 14 个语言镜像）、82种卡牌。0.4.28 删除 OnPlayWrapper IL 改写、补丁安装审计、AdaptationRegistry 按 hook 熔断、15 个共享遗物变体，已通过全量验收并上传。Steam 条目3826907330 已更新为 0.4.28；0.4.25 起保留归档但只发最新版。
+
+0.4.28（2026-11-09）
+
+[已完成] 删除 `CardModel.OnPlayWrapper` transpiler 与 ConstructPresentation 的 NativeOnPlay／PlayNative 支撑代码；卡牌主流程不再改写原生 async 状态机 IL。仍保留 4 组表现／事件层状态机补丁（CreatureCmd.Damage、PowerCmd.Apply／ModifyAmount、Amalgamator.CombineStrikes、DollRoom 选牌）。
+[已完成] PatchRegistry 安装审计：`patch.summary` 记录 patchedMethods／required 明细，启动打印 `[PunchConstruct PATCH]`；关键 Bridge 强制 Required。
+[已完成] AdaptationRegistry 改为按 adapter:hook 熔断，单个 hook 失败不再关闭同域其它钩子。
+[已完成] 修复 Kaleidoscope 跨角色卡池；尼奥护符自动升级最后 2 张小斩波；大型扭蛋固定 2 遗物＋2 小斩波。
+[已完成] 15 个共享遗物改为本角色变体模型，常规获取换模型、抽取池排除原生版本、旧档载入静默迁移。
+[已完成] 构建 0 警告；候选三文件 DLL `0bdff675…`、PCK `7058955f…`、清单 `57f12420…`；本地 35/35、联机 4/4（含 4p 弱网）、恢复 4/4 全部通过，`full_local_verification=true`、`full_invariant_verification=true`（16/16）。
+[已完成] 2026-11-09 21:05 用 ModUploader v0.2.0 上传 0.4.28 到私密测试条目 3835179658 与公开条目 3826907330，均 Successfully uploaded。
+[未完成] GitHub Release（v0.4.28 标签与附件）。
 
 0.4.26（2026-11-07）
 
@@ -38,7 +49,13 @@ Steam条目3826907330已于2026-10-27上传0.4.23，当时private、未公开：
 
 害虫杀手后续正文已获作者确认并同步；相对上述声音专项，只有两份事件文本资源变化，DLL与清单未变，本次静态核对而未重复游戏测试。
 
-当前content SHA256
+0.4.28 content SHA256（2026-11-10 复核，与 verification.json 一致）
+PunchConstruct.dll  0bdff6758f95706952d85e4ed42253b7d09ba1e56eba952cb1a3b0b85ddad728
+PunchConstruct.pck  7058955f147f1617b65fe446e897bca50597bb1e24841e0613649a140536d6c9
+PunchConstruct.json 57f12420485c2d7d8220f95c96fe5e0de8a20a9cf04c5767fcf1611d9b85a76c
+
+0.4.26 历史 SHA256
 PunchConstruct.dll  934e75d188998f3135f86e265fbacd4d7ae75d9fdd0a322db79b039b3dc5d1fa
 PunchConstruct.pck  1c76ea442bb5e873c7d2c40f69349d61935ffcff382e8fabdcf761ea2a9f0e26
-PunchConstruct.json  f72c1ed2e9e0e4c87d70a43269fd57b559ff2710c7953e73401a5eba031e5d80
+PunchConstruct.json f72c1ed2e9e0e4c87d70a43269fd57b559ff2710c7953e73401a5eba031e5d80
+

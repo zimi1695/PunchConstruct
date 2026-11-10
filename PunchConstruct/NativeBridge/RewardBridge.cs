@@ -244,46 +244,6 @@ internal static class BridgeAncientShopPrice
     }
 }
 
-[HarmonyPatch(typeof(DingyRug), nameof(DingyRug.ModifyCardRewardCreationOptions))]
-internal static class BridgeConstructDingyRug
-{
-    private static bool Prefix(DingyRug __instance, Player player, CardCreationOptions options, ref CardCreationOptions __result)
-    {
-        var result = __result;
-        var runNative = AdaptationRegistry.Guard("reward", "ConstructDingyRug",
-            () => ConstructDingyRug.Apply(__instance, player, options, ref result));
-        __result = result;
-        return runNative;
-    }
-}
-
-[HarmonyPatch]
-internal static class BridgePandoraWaveEligibility
-{
-    private static MethodBase TargetMethod() => PandoraWaveEligibility.Target();
-
-    private static void Postfix(CardModel __0, ref bool __result)
-    {
-        var eligible = __result;
-        AdaptationRegistry.Run("reward", "PandoraWaveEligibility",
-            () => PandoraWaveEligibility.Apply(__0, ref eligible));
-        __result = eligible;
-    }
-}
-
-[HarmonyPatch(typeof(PrismaticGem), nameof(PrismaticGem.ModifyCardRewardCreationOptions))]
-internal static class BridgeConstructPrismaticGem
-{
-    private static bool Prefix(PrismaticGem __instance, Player player, CardCreationOptions options, ref CardCreationOptions __result)
-    {
-        var result = __result;
-        var runNative = AdaptationRegistry.Guard("reward", "ConstructPrismaticGem",
-            () => ConstructPrismaticGem.Apply(__instance, player, options, ref result));
-        __result = result;
-        return runNative;
-    }
-}
-
 [HarmonyPatch(typeof(CardModel), nameof(CardModel.Pool), MethodType.Getter)]
 internal static class BridgeNativeCardOwnership
 {

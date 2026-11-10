@@ -140,15 +140,6 @@ internal static class PresentationAdapter
     private static string CampAnimationName(string original, NRestSiteCharacter character) =>
         character.HasMeta("punch_construct") ? "idle_loop" : original;
 
-    internal static List<CodeInstruction> CardPresentationTranspiler(List<CodeInstruction> original) =>
-        IlBridge.ReplaceCall(original, ConstructPresentation.NativeOnPlay, call =>
-            new CodeInstruction[]
-            {
-                IlBridge.Inherit(call, new CodeInstruction(OpCodes.Call,
-                    AccessTools.Method(typeof(ConstructPresentation), nameof(ConstructPresentation.OnPlay))))
-            },
-            "construct card presentation");
-
     internal static void AttackPresentation(AttackCommand command, int hitCount, ref string? attackerSfx, ref string? tmpAttackerSfx)
     {
         if (command.ModelSource is not CardModel card || !CharacterScope.IsConstruct(card.Owner) ||
@@ -171,10 +162,25 @@ internal static class PresentationAdapter
         }));
     }
 
+    // Runs before the public OnPlayWrapper stub (not the async state machine),
+    // so a third-party rewrite of CardModel.OnPlayWrapper.MoveNext cannot break
+    // it. Skill and power cards get the shared cast pose and character SFX.
+    internal static void CardPlayCast(CardModel card)
+    {
+        if (card.Type is not (CardType.Skill or CardType.Power) || !CharacterScope.IsConstruct(card)) return;
+        if (card.Owner?.Creature is not { } creature) return;
+        if (creature.IsDead || creature.GetCreatureNode() is not { } node) return;
+        SfxCmd.Play(ConstructPresentation.GuardSfx);
+        node.SetAnimationTrigger("Cast");
+    }
+
     internal static bool AnimationSound(Creature creature, ref string trigger, ref Task result)
     {
         if (!CharacterScope.IsConstruct(creature)) return true;
-        if (ConstructPresentation.SuppressDuplicateGuard(creature, ref trigger))
+        // The wrapper prefix owns every construct skill/power cast, so native
+        // cards that also call TriggerAnim("Cast"/"PowerUp") must not play a
+        // second pose or sound.
+        if (trigger is "Cast" or "PowerUp")
         {
             result = Task.CompletedTask;
             return false;
@@ -257,7 +263,7 @@ internal static class PresentationAdapter
     {
         if (!control.IsNodeReady() || control.Icon == null || IconSize(control) != NRelic.IconSize.Small) return;
         var relic = IconModel(control);
-        if (relic is not (RippleBasin or ConstructDart or HelicalDart or ConstructHelmet or RuinedHelmet)) return;
+        if (relic is not (RippleBasin or ConstructRippleBasin or ConstructDart or HelicalDart or ConstructHelmet or RuinedHelmet)) return;
         var icon = ResourceLoader.Load<Texture2D>(relic.PackedIconPath);
         control.Icon.Texture = RelicIcons.Adapt(relic, icon);
         var outline = ResourceLoader.Load<Texture2D>((string)PackedOutline.Invoke(relic, null)!);

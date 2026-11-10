@@ -1,4 +1,4 @@
-拳击构装体：当前问题与验证（2026-11-08，0.4.27）
+﻿拳击构装体：当前问题与验证（2026-11-10，0.4.28）
 
 0.4.26 本轮变更（2026-11-07）
 
@@ -22,6 +22,23 @@
 4. 验收：本地 35/35、联机 4/4（含 4p 弱网）、恢复 4/4；`full_local_verification=true`、`full_invariant_verification=true`（16/16），证据钉在 DLL `5d407875…`。4p 首次重跑时 client3 出现一次 `SpineSkeletonDataResource` 的 `_internal_spine_objects_invalidated` 断连错误，单独重跑 4p 通过；该错误是否与 `before_world_transforms_change` 回调有关，留待后续观察。
 
 5. 发布：私密测试条目 3835179658 已更新为 0.4.27，标签改为 Characters、Expansion、schinese、English（第一次带标签上传 k_EResultFail，重试成功，日志见资料/历史/记录/上传日志-0.4.27-测试条目.log）；GitHub main 推到 1a0363b、标签 v0.4.27，Release 已创建并附 PunchConstruct-0.4.27.zip。公开条目 3826907330 保持 0.4.24 内容，仅把标签同步为四类（日志见上传日志-0.4.24-标签修正.log）。
+
+0.4.28 本轮变更（玩家反馈，2026-11-09 定位并修复）
+
+1. 已定位共同根因：玩家使用的是公开条目 3826907330 的 0.4.24，而 0.4.24 的 ModEntry 直接用 `Harmony.PatchAll`。日志 `資料/历史` 外的原始件在 tools/runtime/player-report-20261109，其中 godot2026-11-08T22.23.46.log 记录 `Exception thrown when calling mod initializer of type PunchConstruct.ModEntry` → `InvalidOperationException: Construct card animation hook expected exactly one native OnPlay call; found 0`，栈顶为 `PunchConstruct.ConstructCardPresentation.Transpiler`。该类位于 ConstructPresentation.cs，按元数据顺序其后的所有补丁类都没有安装；`patch.summary` 之类的隔离机制在 0.4.24 尚不存在。0.4.25 起改用 PatchRegistry 按类装载，但公开条目仍是 0.4.24，所以玩家侧表现为「大面积失效」。
+2. 卸甲成军失效：能力的格挡替换前缀在 NativeBridge/CombatBridge.cs 的 BridgeUnarmBlockReplacement，正好落在 PatchAll 中断点之后，因而没有安装；卡牌与能力本身正常（godot.log 有 `Player 1 playing card PUNCHCONSTRUCT-UNARM_TO_ARMS`，`Asset not cached: res://PunchConstruct/art/power_unarm_to_arms_big.ctex` 是原版资源缓存提示，pck 内两个资源都在，不是缺图）。
+3. 触发条件：玩家同时启用 RitsuLib 与 RandomForeseer。二者都改写 `CardModel.OnPlayWrapper` 状态机（RitsuLib 有 CardModelOnPlayWrapperSecondaryResourcesPatch，RandomForeseer 有 OnPlay 镜像/预测）；加载顺序为 BaseLib→RitsuLib→RandomForeseer→…→PunchConstruct。0.4.24 的 transpiler 要求 IL 中恰好 1 处 `call CardModel.OnPlay`，在已有第三方改写时不成立即抛异常，而异常又中断了整个 PatchAll。
+4. 连锁后果：全部 NativeBridge 补丁未安装时，遗物适配、遗物预览描述、卸甲成军、大型扭蛋与尼奥护符的接管全部失效，并回落到会抛异常的原生实现（LargeCapsule.GetStrikeForCharacter 的 `First` 抛「Sequence contains no matching element」，NeowsTalisman 对 null 调用 Upgrade），这正是「拿到打击／防御相关遗物卡死或闪退」的来源。玩家日志 seq 149 在 Floor 1 EVENT.NEOW 已出现该 LargeCapsule 异常。
+5. 0.4.28 已实施：
+   - 彻底删除 `OnPlayWrapper` 的 IL transpiler（ConstructPresentation 不再提供 NativeOnPlay/PlayNative/SuppressDuplicateGuard），卡牌表现只保留攻击动作选择与 DoubleAttack 音效两个普通 Prefix；卡牌主流程不再改写原生 async 状态机，但表现／事件层仍有 4 组状态机补丁（CreatureCmd.Damage、PowerCmd.Apply／ModifyAmount、Amalgamator.CombineStrikes、DollRoom 选牌）。
+   - PatchRegistry 保持按类 try/catch 装载，并新增安装审计：`patch.summary` 写入 applied/failed/patchedMethods/required 明细，启动时按类打印 `[PunchConstruct PATCH]`，必需类缺失会出现在 required failures；COMPAT 断言关键 Bridge 均带 Required 策略。
+   - AdaptationRegistry 由「整域禁用」改为「按 adapter:hook 禁用」：一个 hook 抛异常只禁用自身，同域的其它 hook 继续运行；COMPAT 增加失败 hook 与兄弟 hook 的隔离断言。
+   - GroupCardGates 尊重 `CardCreationFlags.NoCardPoolModifications`／`NoModifyHooks`，Kaleidoscope 式跨角色卡池查询原样保留，不再被过滤空导致奖励生成异常与事件卡死。
+   - 尼奥护符改为自动升级牌组最后 2 张可升级小斩波，不弹选择界面，空列表直接返回。
+   - 大型扭蛋、尼奥护符、营养汤、叶敷、海玻璃、脏地毯、棱彩宝石、潘多拉魔盒、打击木偶、假打击木偶、幽灵种子、涟漪盆、损毁头盔、螺线飞镖、佩尔之爪共 15 个共享遗物改为本角色自定义变体（ConstructLargeCapsule 等），规则写在模型 override 内；常规获取在 `RelicCmd.Obtain` 前缀换模型，遗物抽取池排除原生版本，旧存档／联机同步中的原生模型在 `Player.PopulateRelics` 载入时静默迁移。原生模型只保留拾取前描述与营养汤事件规则两处无 IL 的薄桥接；已检索原版程序集，不存在这些遗物的脚本化 `Obtain<T>` 调用。
+6. 卡牌表现随同重构：技能／能力牌的格挡姿态与 Guard 音效改由 `CardModel.OnPlayWrapper` 的普通前缀统一播放（不改写 MoveNext），原生卡自带的 Cast／PowerUp 触发在该角色上被同一个 TriggerAnim 前缀去重；攻击动作选择与 DoubleAttack 音效不变。ANIMATION 套件覆盖自定义技能、能力、搬运的原生技能与能力。
+7. 补 QA：Kaleidoscope 式跨角色卡池查询；强制一个 relic hook 失败后再拿大型扭蛋／尼奥护符；尼奥护符在事件房间自动升级；注入第三方 OnPlayWrapper transpiler 后卸甲成军钩子仍安装且格挡替换生效；变体获取（打击木偶、假打击木偶、幽灵种子、涟漪盆、营养汤、叶敷、海玻璃、大型扭蛋、尼奥护符、脏地毯、棱彩宝石、潘多拉魔盒）；旧档载入后营养汤迁移为变体。佩尔之爪在 RELICS 套件新增专项：原生获替换为变体、所有未附魔小斩波获得原生黏糊（消耗关键词）、已附魔小斩波与非小斩波不受影响、拾取前后描述均写小斩波。
+8. 验收与交付：构建 0 警告、237 份资源；候选三文件 DLL `0bdff675…`、PCK `7058955f…`、清单 `57f12420…`。本地 35/35（含 COMPAT、ENGLISH、locale／localezh）、联机 4/4（2p、3p 死灵、4p、4p 弱网）、恢复 4/4 全部通过；`full_local_verification=true`、`full_invariant_verification=true`（16/16）。architect／shadernative 在并行批跑中出现原生场景资源解析抖动，2p 出现一次原生启动诊断，均隔离重跑通过；check_local 已将 architect 加入串行套件。归档 `dist/releases/0.4.28/` 与 `PunchConstruct-0.4.28.zip`（42,514,884 B）。2026-11-09 21:05 已用 ModUploader 把 0.4.28 同时上传到私密测试条目 3835179658 与公开条目 3826907330；21:12 按作者定稿文案重新上传工坊说明（含观者原模组可点击链接、GitHub 仓库链接、0.4.28 更新简报与一键日志命令），两条均返回 Successfully uploaded；日志见资料/历史/记录/上传日志-0.4.28-*.log。GitHub Release 尚未创建（2026-11-10 创建后回填）。
 
 
 0.4.25 本轮变更（2026-11-06）
@@ -95,3 +112,4 @@ dist/SteamWorkshop/content三个文件已同步为当前Release构建（13d52d6e
 待办（2026-11-06 记录）
 
 1. 英文语言下仍显示中文：assets/localization/eng 下的 ancients.json、cards.json、events.json、relics.json 与 zhs 同名文件内容完全相同（ancients 两文件 SHA256 一致），全部为中文。游戏语言设为英语时，角色、卡牌、遗物、事件与先古对白仍按中文显示。后续需要单独制作英文文本并放入 eng 目录，本次只记录，不改动。
+

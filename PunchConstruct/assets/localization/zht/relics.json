@@ -13,5 +13,6 @@
   "PUNCHCONSTRUCT_ADAPTED_PRISMATIC_GEM.description": "在每个回合开始时获得{Energy:energyIcons()}。战斗卡牌奖励不再出现[gold]无色牌[/gold]。",
   "PUNCHCONSTRUCT_ADAPTED_ARCHAIC_TOOTH.description": "将一张[gold]铁斩波[/gold][gold]变化[/gold]为[gold]灼热铁斩波[/gold]并[gold]强化[/gold]3次。",
   "PUNCHCONSTRUCT_ADAPTED_NEOWS_TALISMAN.description": "[gold]强化[/gold]两张[gold]小斩波[/gold]。",
-  "PUNCHCONSTRUCT_ADAPTED_PANDORAS_BOX.description": "拾起时，将所有可变化的[gold]小斩波[/gold]、[gold]打击[/gold]和[gold]防御[/gold][gold]变化[/gold]为其他牌。"
+  "PUNCHCONSTRUCT_ADAPTED_PANDORAS_BOX.description": "拾起时，将所有可变化的[gold]小斩波[/gold]、[gold]打击[/gold]和[gold]防御[/gold][gold]变化[/gold]为其他牌。",
+  "PUNCHCONSTRUCT_ADAPTED_PAELS_CLAW.description": "拾起时，为所有未附魔的[gold]小斩波[/gold]附魔[purple]黏糊[/purple]。"
 }

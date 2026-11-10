@@ -27,7 +27,7 @@ internal static partial class PlaytestRunner
             if (protectedWave) PersistentCardKeywords.MakeEternal(waves[0]);
             var targets = waves.Where(c => c.IsTransformable && c.IsRemovable).ToArray();
             var expectedPreserved = original.Except(targets).ToArray();
-            var relic = await RelicCmd.Obtain<PandorasBox>(player);
+            var relic = await RelicCmd.Obtain(ModelDb.Relic<ConstructPandorasBox>().ToMutable(), player);
             var replacements = player.Deck.Cards.Except(original).ToArray();
             Check(targets.Length == (protectedWave ? 4 : 5) && targets.All(c => !player.Deck.Cards.Contains(c)) &&
                 replacements.Length == targets.Length && player.Deck.Cards.Count == 8,

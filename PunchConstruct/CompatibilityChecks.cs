@@ -133,19 +133,21 @@ internal static class CompatibilityChecks
         harmony.Patch(AccessTools.Method(typeof(CompatibilityChecks), nameof(FallbackFixture)),
             prefix: new HarmonyMethod(AccessTools.Method(typeof(CompatibilityChecks), nameof(ThrowingPrefix))));
         Check(FallbackFixture(11) == 11, "a throwing optional adapter falls back to native behavior");
-        Check(!AdaptationRegistry.Enabled("qa.compat.fail"), "a failed optional adapter is disabled after the first error");
-        Check(FallbackFixture(11) == 11, "a disabled adapter no longer runs");
-        Check(AdaptationRegistry.Run("qa.compat.fail", "value", 3, () => 9) == 3, "disabled adapters return the native fallback value");
+        Check(!AdaptationRegistry.Enabled("qa.compat.fail", "throwing"), "a failed hook is disabled after the first error");
+        Check(AdaptationRegistry.Enabled("qa.compat.fail", "value"), "a sibling hook of the same adapter stays enabled");
+        Check(FallbackFixture(11) == 11, "a disabled hook no longer runs");
+        Check(AdaptationRegistry.Run("qa.compat.fail", "throwing", 3, () => 9) == 3, "disabled hooks return the native fallback value");
+        Check(AdaptationRegistry.Run("qa.compat.fail", "value", 3, () => 9) == 9, "the sibling hook still returns its own value");
     }
 
     private static void AdapterIsolation()
     {
-        Check(AdaptationRegistry.Enabled("qa.compat.iso1") && AdaptationRegistry.Enabled("qa.compat.iso2"),
+        Check(AdaptationRegistry.Enabled("qa.compat.iso1", "throw") && AdaptationRegistry.Enabled("qa.compat.iso2", "throw"),
             "test adapters start enabled");
         AdaptationRegistry.Run("qa.compat.iso1", "throw",
             () => throw new InvalidOperationException("simulated optional failure"));
-        Check(!AdaptationRegistry.Enabled("qa.compat.iso1"), "the failing adapter disables only itself");
-        Check(AdaptationRegistry.Enabled("qa.compat.iso2"), "a sibling adapter remains enabled");
+        Check(!AdaptationRegistry.Enabled("qa.compat.iso1", "throw"), "the failing hook disables only itself");
+        Check(AdaptationRegistry.Enabled("qa.compat.iso2", "throw"), "a sibling adapter remains enabled");
         Check(AdaptationRegistry.Run("qa.compat.iso2", "value", 7, () => 9) == 9,
             "the sibling adapter still returns its own value");
     }
@@ -286,7 +288,7 @@ internal static class CompatibilityChecks
 
     private static void RequiredPolicies()
     {
-        string[] required = ["BridgeUnarmBlock", "BridgePhilosopherRandomRewards", "BridgeConstructColorlessShop", "BridgeConstructCapsuleStarters"];
+        string[] required = ["BridgeUnarmBlock", "BridgePhilosopherRandomRewards", "BridgeConstructColorlessShop", "BridgeConstructRelicVariants"];
         var types = Assembly.GetExecutingAssembly().GetTypes();
         foreach (var name in required)
         {

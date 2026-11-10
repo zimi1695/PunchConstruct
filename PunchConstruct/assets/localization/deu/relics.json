@@ -13,5 +13,6 @@
   "PUNCHCONSTRUCT_ADAPTED_PRISMATIC_GEM.description": "Gain {Energy:energyIcons()} at the start of each turn. Combat card rewards no longer contain [gold]Colorless cards[/gold].",
   "PUNCHCONSTRUCT_ADAPTED_ARCHAIC_TOOTH.description": "[gold]Transform[/gold] an [gold]Iron Wave[/gold] into [gold]Scorching Iron Wave[/gold] and [gold]Upgrade[/gold] it 3 times.",
   "PUNCHCONSTRUCT_ADAPTED_NEOWS_TALISMAN.description": "[gold]Upgrade[/gold] two [gold]Small Waves[/gold].",
-  "PUNCHCONSTRUCT_ADAPTED_PANDORAS_BOX.description": "On pickup, [gold]Transform[/gold] all transformable [gold]Small Waves[/gold], [gold]Strikes[/gold], and [gold]Defends[/gold] into other cards."
+  "PUNCHCONSTRUCT_ADAPTED_PANDORAS_BOX.description": "On pickup, [gold]Transform[/gold] all transformable [gold]Small Waves[/gold], [gold]Strikes[/gold], and [gold]Defends[/gold] into other cards.",
+  "PUNCHCONSTRUCT_ADAPTED_PAELS_CLAW.description": "On pickup, enchant all unenchanted [gold]Small Waves[/gold] with [purple]Goopy[/purple]."
 }

@@ -72,9 +72,9 @@ internal static partial class PlaytestRunner
                     "Native ancient Soup offer recognizes Small Waves and stops checking ordinary strikes for Construct");
                 Check((bool)soupOffer.Invoke(closure, [run.CreateCard<StrikeIronclad>(native)])!, "Native teammates retain the original Soup offer predicate");
                 await RunManager.Instance.EnterRoomDebug(RoomType.Event, model: ModelDb.Event<DollRoom>(), showTransition: false);
-                var talisman = await RelicCmd.Obtain<NeowsTalisman>(player);
-                Check(player.Deck.Cards.OfType<SmallWave>().Count(c => c.IsUpgraded) == 2 && selector.Options.Last().All(c => c is SmallWave),
-                    "Actually obtaining Neow's Talisman selects and upgrades exactly two Small Waves");
+                var talisman = await RelicCmd.Obtain(ModelDb.Relic<ConstructNeowsTalisman>().ToMutable(), player);
+                Check(player.Deck.Cards.OfType<SmallWave>().Count(c => c.IsUpgraded) == 2 && selector.Options.Count == 0,
+                    "Actually obtaining Neow's Talisman upgrades exactly two Small Waves without a selection screen");
                 Check(talisman.DynamicDescription.GetFormattedText().Contains("两张") && talisman.DynamicEventDescription.GetFormattedText().Contains("小斩波"),
                     "Talisman inventory and ancient-event descriptions match the confirmed adaptation");
                 await RunManager.Instance.EnterRoomDebug(RoomType.Event, model: ModelDb.Event<SpiralingWhirlpool>(), showTransition: false);

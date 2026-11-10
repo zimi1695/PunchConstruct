@@ -19,6 +19,7 @@ dist/SteamWorkshop/验收日志/
 
 # 发版附件：随 GitHub Release 上传，不写入仓库历史
 dist/releases/
+*.zip
 
 # 第三方上传工具二进制，来源记录见 tools/ModUploader/provenance.json
 tools/ModUploader/ModUploader.exe
