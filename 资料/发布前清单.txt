@@ -12,7 +12,8 @@
 [已完成] 构建 0 警告；候选三文件：DLL `0bdff675…`、PCK `7058955f…`、清单 `57f12420…`；本地 35/35、联机 4/4（含 4p 弱网）、恢复 4/4 全量通过，`full_local_verification=true`、`full_invariant_verification=true`（16/16）；architect／shadernative 与 4p／恢复在并行负载下各出现一次原生抖动，隔离重跑通过。
 [已完成] 归档 `dist/releases/0.4.28/` 与 `PunchConstruct-0.4.28.zip`（42,514,884 B）。
 [已完成] 2026-11-09 21:05 同时上传 0.4.28 到私密测试条目 3835179658 与公开条目 3826907330；21:12 按作者定稿文案重新上传工坊说明，包含观者原模组可点击链接、GitHub 仓库链接、0.4.28 更新简报与一键日志命令，均 Successfully uploaded。
-[未完成] GitHub Release（v0.4.28 标签与附件）尚未创建。
+[已完成] 2026-11-10 源码已提交并推送 GitHub：main `6493ae5`，标签 `v0.4.28` 指向该提交。
+[未完成] GitHub Release 与 PunchConstruct-0.4.28.zip 附件尚未创建。
 
 0.4.27（2026-11-08）
 
