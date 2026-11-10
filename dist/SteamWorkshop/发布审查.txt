@@ -12,7 +12,7 @@ content现为0.4.28，三个模组文件与当前Release构建一致；237份资
 [已完成] 构建 0 警告；候选三文件 DLL `0bdff675…`、PCK `7058955f…`、清单 `57f12420…`；本地 35/35、联机 4/4（含 4p 弱网）、恢复 4/4 全部通过，`full_local_verification=true`、`full_invariant_verification=true`（16/16）。
 [已完成] 2026-11-09 21:05 用 ModUploader v0.2.0 上传 0.4.28 到私密测试条目 3835179658 与公开条目 3826907330，均 Successfully uploaded。
 [已完成] 2026-11-10 源码提交 `6493ae5` 与标签 `v0.4.28` 已推送 GitHub。
-[未完成] GitHub Release 与 PunchConstruct-0.4.28.zip 附件。
+[已完成] GitHub Release `v0.4.28` 已创建（id 440206436），附件 `PunchConstruct-0.4.28.zip`（42,514,884 B），线上 digest 与本地 SHA256 一致。
 
 0.4.26（2026-11-07）
 
