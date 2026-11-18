@@ -125,7 +125,7 @@
 
 ## G. 外部阻塞 / 安全 / 护栏
 
-- **G1 = #30 GitHub 完整发布**：BLOCKED 待作者 GCM 自认证。**已暴露的 PAT（ghp_…）必须撤销**，令牌绝不以明文出现在命令/文件/仓库/远程 URL。排除 `tools/runtime-0.113.1/`、`tools/_refscratch/`、含 SteamID 的日志压缩包；**不 git add -A**。流程：commit + push main + v0.5.1 tag + Release 附 ZIP。
+- **G1 = #30 GitHub 完整发布**：✅ **已完成（2026-11-18）**。main `72277cd` 已推送（195 文件，+4939/−1196）、`v0.5.1` 标签已推送、Release（id 449470960）已创建并附 ZIP（`PunchConstruct-0.5.1.zip`，51,345,112 字节 / SHA256 `2915f84b…`，state=uploaded）。Release：https://github.com/zimi1695/PunchConstruct/releases/tag/v0.5.1 。排除 `tools/runtime-0.113.1/`（3.0 GB）、`tools/_refscratch/`；ZIP 不入仓库（.gitignore）改作 Release 附件；扫描无令牌/SteamID 混入。**凭据经 GCM（旧凭据失效→`git credential reject` 清除→重新认证后 push 成功），全程未使用作者贴出的 PAT 明文**；该 PAT 已在对话暴露，**仍须作者撤销**。
 - **G2 Workshop 宣传图空壳（屡犯）**：每次上传后跑 `tools/verify_previews.py`；若空壳→先清空 previews/ 上传删除→再放回重传。已记入项目记忆 + tools/README.md + 两份发布文档横幅。
 - **G3 美术授权 UNRESOLVED**：无 Watcher 授权（verification.json）；外部边界。
 - **G4 外部验证边界 NOT_VERIFIED**：steam_invites / hot_rejoin / workshop_subscription；full_playthrough NOT_RUN。
@@ -148,7 +148,7 @@
    ① 修模板 A1–A3（invariants.json coverage + release.py 旧基线）→ ② 用重跑结果重生成 current-verification 或明确标注「首跑快照、不作发布记录」（A4）→ ③ 统一 upload_status / ZIP 哈希 / 公开已上线 到 verification.json、content-current、README、dist/README、待办、发布审查、发布前清单、问题记录、实现任务书、兼容性台账（A5–A10）→ ④ 澄清陈旧副本（A11）。= 任务 #23 + #29。
 2. **0.5.2 代码批量（§B + §C 选项 + §D）**：作者点头后合并重建 → 35/35+4/4+4/4 → 重传私测 3835179658 → workshop --verify → 更新 ZIP/SHA256/verification.json/content-current.json → 作者许可后公开。
 3. **§F 设计意图（已定夺 2026-11-18）**：F1/F2/F3 均保持现状、**无代码改动**（F1 改判 P1，F2/F3 判非问题）。F4 须按 **§I** 的 native-alignment 方向实现（权重流持久化+主机同步，镜像原版），归 0.5.2+、经作者批准后合并重建；护栏「不仓促改 RNG 架构」仍生效。
-4. **§G1 GitHub**：待作者 GCM 认证 + 撤销暴露 PAT 后执行。
+4. **§G1 GitHub**：✅ 已完成（main `72277cd` + `v0.5.1` tag + Release 附 ZIP，详见 §G1）。暴露的 PAT 仍待作者撤销。
 
 > 下一步等作者拍板：是否先执行第 1 步记录清理（低风险、可立即完成）；代码批量（第 2 步，含 F4 native-alignment）按护栏需重建管线，待作者批准。
 
