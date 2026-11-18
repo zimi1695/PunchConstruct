@@ -46,6 +46,9 @@ internal static partial class PlaytestRunner
     internal static bool HoldEnemyActions;
     internal static Func<MonsterModel, Task>? EnemyMoveForQa;
     private static readonly ThrowingPlayerChoiceContext Context = new();
+    // 0.113 requires callers to build the run's Player themselves.
+    private static Player QaNewRunPlayer(CharacterModel character) =>
+        Player.CreateForNewRun(character, new MegaCrit.Sts2.Core.Unlocks.UnlockState(SaveManager.Instance.Progress), 1);
     private static void Postfix(NMainMenu __instance)
     {
         if (_started || !OS.GetCmdlineArgs().Any(a => a is "--punchconstruct-selectioncheck" or "--punchconstruct-boxingcheck" or "--punchconstruct-animationcheck" or "--punchconstruct-draftcheck" or "--punchconstruct-postercheck" or "--punchconstruct-vigorcheck" or "--punchconstruct-modescheck" or "--punchconstruct-coopcheck" or "--punchconstruct-adaptcheck" or "--punchconstruct-soupcheck" or "--punchconstruct-facingcheck" or "--punchconstruct-playtest" or "--punchconstruct-launchcheck" or "--punchconstruct-endcheck" or "--punchconstruct-designcheck" or "--punchconstruct-flowcheck" or "--punchconstruct-focuscheck" or "--punchconstruct-dollcheck" or "--punchconstruct-updatecheck" or "--punchconstruct-persistseed" or "--punchconstruct-persistresume" or "--punchconstruct-edgecheck" or "--punchconstruct-eventcheck" or "--punchconstruct-boundarycheck" or "--punchconstruct-reliccheck" or "--punchconstruct-additionscheck" or "--punchconstruct-architectcheck" or "--punchconstruct-observercheck" or "--punchconstruct-observerseed" or "--punchconstruct-observerresume")) return;
@@ -332,7 +335,7 @@ internal static partial class PlaytestRunner
             await Frames(60);
             var select = Descendants(menu).OfType<NCharacterSelectScreen>().Single();
             var characterButton = Descendants(select).OfType<NCharacterSelectButton>().Single(b => b.Character is ConstructCharacter);
-            select.SelectCharacter(characterButton, ModelDb.Character<ConstructCharacter>());
+            select.SelectCharacter(characterButton);
             await Frames(90);
             Check(select.Lobby.LocalPlayer.character is ConstructCharacter, "Select the construct through the real character-selection lobby");
             Check(Descendants(select).OfType<TextureRect>().Any(n => n.Name == "Poster" && n.Texture != null), "Selection poster loads during the actual character-select scene");
@@ -353,8 +356,8 @@ internal static partial class PlaytestRunner
                 _tree.Quit();
                 return;
             }
-            var run = await NGame.Instance!.StartNewSingleplayerRun(ModelDb.Character<ConstructCharacter>(), true,
-                [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "IRONWAVEQA1", GameMode.Standard);
+            var run = await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<ConstructCharacter>()), true,
+                [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "IRONWAVEQA1", GameMode.Standard, isCustomGame: false);
             var player = run.Players.Single();
             Check(player.Deck.Cards.Count == 8, "New run receives eight cards");
             RelicRollChecks();
@@ -542,10 +545,10 @@ internal static partial class PlaytestRunner
         var guard = player.Relics.OfType<GuardStance>().Single();
         await RelicCmd.Replace(guard, ModelDb.Relic<AncientGuardStance>().ToMutable());
         var strength = player.Creature.GetPowerAmount<StrengthPower>();
+        var vigor = player.Creature.GetPowerAmount<VigorPower>();
         await CreatureCmd.Damage(Context, player.Creature, 1, ValueProp.Unpowered, enemy);
-        Check(player.Creature.GetPowerAmount<StrengthPower>() == strength && player.Creature.GetPowerAmount<GuardStrengthNextTurnPower>() == 1,
-            "Actual ancient replacement queues one next-turn temporary Strength instead of granting permanent Strength");
-        await PowerCmd.Remove<GuardStrengthNextTurnPower>(player.Creature);
+        Check(player.Creature.GetPowerAmount<StrengthPower>() == strength && player.Creature.GetPowerAmount<VigorPower>() == vigor + 5,
+            "Actual ancient replacement grants five Vigor instead of permanent Strength");
         await RelicCmd.Replace(player.Relics.OfType<AncientGuardStance>().Single(), ModelDb.Relic<GuardStance>().ToMutable());
         await PowerCmd.Remove<VigorPower>(player.Creature);
     }
@@ -672,8 +675,8 @@ internal static partial class PlaytestRunner
         {
             string label = abandon ? "abandon" : "lethal enemy damage";
             if (RunManager.Instance.IsInProgress) await NGame.Instance!.ReturnToMainMenu();
-            var run = await NGame.Instance!.StartNewSingleplayerRun(ModelDb.Character<ConstructCharacter>(), true,
-                [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "ENDCHECK" + abandon, GameMode.Standard);
+            var run = await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<ConstructCharacter>()), true,
+                [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "ENDCHECK" + abandon, GameMode.Standard, isCustomGame: false);
             var player = run.Players.Single();
             await RunManager.Instance.EnterRoomDebug(RoomType.Monster, model: ModelDb.Encounter<NibbitsWeak>().ToMutable(), showTransition: false);
             await Until(() => player.PlayerCombatState?.Phase == PlayerTurnPhase.Play && !CombatManager.Instance.PlayerActionsDisabled, "End-flow fixture ready");
@@ -705,8 +708,8 @@ internal static partial class PlaytestRunner
             await Frames(60);
             Check(!RunManager.Instance.IsInProgress && !CombatManager.Instance.IsInProgress, "Main menu has no running combat: " + label);
         }
-        var fresh = await NGame.Instance!.StartNewSingleplayerRun(ModelDb.Character<ConstructCharacter>(), true,
-            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "AFTERDEATH", GameMode.Standard);
+        var fresh = await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<ConstructCharacter>()), true,
+            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "AFTERDEATH", GameMode.Standard, isCustomGame: false);
         var freshPlayer = fresh.Players.Single();
         await RunManager.Instance.EnterRoomDebug(RoomType.Monster, model: ModelDb.Encounter<NibbitsWeak>().ToMutable(), showTransition: false);
         await Until(() => freshPlayer.PlayerCombatState?.Phase == PlayerTurnPhase.Play && !CombatManager.Instance.PlayerActionsDisabled, "New combat after death");
@@ -767,8 +770,8 @@ internal static partial class PlaytestRunner
 
     private static async Task DollChecks()
     {
-        var run = await NGame.Instance!.StartNewSingleplayerRun(ModelDb.Character<ConstructCharacter>(), true,
-            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "WINDDOLL", GameMode.Standard);
+        var run = await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<ConstructCharacter>()), true,
+            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "WINDDOLL", GameMode.Standard, isCustomGame: false);
         var player = run.Players.Single();
         await RunManager.Instance.EnterRoomDebug(RoomType.Event, model: ModelDb.Event<DollRoom>(), showTransition: false);
         var doll = ((EventRoom)run.CurrentRoom!).LocalMutableEvent!;
@@ -804,8 +807,8 @@ internal static partial class PlaytestRunner
 
     private static async Task UpdateChecks()
     {
-        var run = await NGame.Instance!.StartNewSingleplayerRun(ModelDb.Character<ConstructCharacter>(), true,
-            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "POOLANDCARDS", GameMode.Standard);
+        var run = await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<ConstructCharacter>()), true,
+            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "POOLANDCARDS", GameMode.Standard, isCustomGame: false);
         var player = run.Players.Single();
         Check(player.Deck.Cards.Count == 8 && player.Deck.Cards.Count(c => c is SmallWave) == 5,
             "New run starts with five Small Waves and eight cards total");
@@ -816,10 +819,11 @@ internal static partial class PlaytestRunner
         var colorlessPool = ModelDb.CardPool<MegaCrit.Sts2.Core.Models.CardPools.ColorlessCardPool>();
         var colorlessOptions = CardCreationOptions.ForNonCombatWithUniformOdds([colorlessPool]);
         var candidates = colorlessOptions.GetPossibleCards(player).ToArray();
-        Check(candidates.Length == 11 && candidates.All(c => c.Pool == colorlessPool && player.Character.CardPool.AllCardIds.Contains(c.Id) && !BoxingGeneration.Restricted(c)),
-            "Colorless sources offer eleven allowed cards and exclude the four fixed-source boxing cards");
-        Check(candidates.Count(c => c is IronWaveForm or NeverBackDown) == 2 && candidates.Any(c => c is FightMe) && candidates.Any(c => c is BattleFervor),
-            "Selected colorless cards include Form, Never Back Down, Fight Me and Battle Fervor");
+        Check(candidates.Length == 14 && candidates.All(c => c.Pool == colorlessPool && player.Character.CardPool.AllCardIds.Contains(c.Id) && !BoxingGeneration.Restricted(c)),
+            "Colorless sources offer fourteen allowed cards and exclude the four fixed-source boxing cards");
+        Check(candidates.Count(c => c is IronWaveForm or NeverBackDown or ConstructClockworkMechanism or ConstructMechanicalAscension or ConstructBurnOut) == 5 &&
+            candidates.Any(c => c is FightMe) && candidates.Any(c => c is BattleFervor) && !candidates.OfType<ConstructPanacea>().Any(),
+            "Selected colorless cards include the new three, Form, Never Back Down, Fight Me and Battle Fervor but not the shop-only Panacea");
         var nativeRun = RunState.CreateForTest([native], [ModelDb.Act<Overgrowth>()]);
         Check(colorlessOptions.GetPossibleCards(native).Any(c => !player.Character.CardPool.AllCardIds.Contains(c.Id)),
             "Other characters still use the original full colorless candidates");
@@ -830,10 +834,11 @@ internal static partial class PlaytestRunner
             Check(CardFactory.CreateForReward(player, 2, colorlessOptions).All(r => candidates.Any(c => c.Id == r.Card.Id)),
                 "Colorless reward draw stays within the selected eleven: " + i);
         var shop = MerchantInventory.CreateForNormalMerchant(player);
-        Check(shop.ColorlessCardEntries.Count == 2 && shop.ColorlessCardEntries.All(e => e.CreationResult?.Card is { } c && candidates.Any(v => v.Id == c.Id)),
-            "Actual colorless shop slots contain only selected colorless cards");
+        Check(shop.ColorlessCardEntries.Count == 2 && shop.ColorlessCardEntries[0].CreationResult?.Card is ConstructPanacea { Rarity: CardRarity.Common } &&
+            shop.ColorlessCardEntries[1].CreationResult?.Card is { } rare && candidates.Any(v => v.Id == rare.Id) && rare.Rarity == CardRarity.Rare,
+            "Actual colorless shop guarantees a common Panacea plus one selected rare colorless card");
         var selector = new UpdateSelector();
-        using (CardSelectCmd.UseSelector(selector))
+        using (RunManager.Instance.CardSelectorStack.UseSelector(player, selector))
         {
             int count = player.Deck.Cards.Count;
             await RelicCmd.Obtain(ModelDb.Relic<LeadPaperweight>().ToMutable(), player);
@@ -871,8 +876,8 @@ internal static partial class PlaytestRunner
         foreach (var power in enemy.Powers.ToArray()) await PowerCmd.Remove(power);
         enemy.LoseBlockInternal(enemy.Block);
         var generated = CardFactory.GetDistinctForCombat(player, colorlessPool.GetUnlockedCards(player.UnlockState, player.RunState.CardMultiplayerConstraint), 20, new Rng(91)).ToArray();
-        Check(generated.Length == 11 && generated.Select(c => c.Id).ToHashSet().SetEquals(candidates.Select(c => c.Id)),
-            "Combat colorless generator includes exactly the eleven allowed cards and safely limits distinct count");
+        Check(generated.Length == 14 && generated.Select(c => c.Id).ToHashSet().SetEquals(candidates.Select(c => c.Id)),
+            "Combat colorless generator includes exactly the fourteen allowed cards and safely limits distinct count");
         var randomCards = CardFactory.GetDistinctForCombat(player, ModelDb.AllCards.Where(c => c.Rarity is CardRarity.Common or CardRarity.Uncommon or CardRarity.Rare), 12, new Rng(92)).ToArray();
         Check(randomCards.Length == 12 && randomCards.All(c => CardAcquisition.Eligible(player, c)),
             "Combat random generation cannot escape the selected pool or bypass group gates");
@@ -899,14 +904,14 @@ internal static partial class PlaytestRunner
         await PowerCmd.Remove<IronWaveFormPower>(player.Creature);
         var hp = enemy.CurrentHp;
         var fight = await Play<FightMe>(player, enemy);
-        Check(enemy.CurrentHp == hp - 12 && player.Creature.GetPowerAmount<DexterityPower>() == 2 && enemy.GetPowerAmount<StrengthPower>() == 1 && fight.EnergyCost.Canonical == 2,
-            "Fight Me actually deals 6x2, grants 2 Dexterity and gives target 1 Strength at 2 cost");
+        Check(enemy.CurrentHp == hp - 10 && player.Creature.GetPowerAmount<DexterityPower>() == 2 && enemy.GetPowerAmount<StrengthPower>() == 1 && fight.EnergyCost.Canonical == 2,
+            "Fight Me actually deals 5x2, grants 2 Dexterity and gives target 1 Strength at 2 cost");
         await PowerCmd.Remove<DexterityPower>(player.Creature);
         await PowerCmd.Remove<StrengthPower>(enemy);
         hp = enemy.CurrentHp;
         await Play<FightMe>(player, enemy, upgraded: true);
         Check(enemy.CurrentHp == hp - 12 && player.Creature.GetPowerAmount<DexterityPower>() == 3 && enemy.GetPowerAmount<StrengthPower>() == 1,
-            "Fight Me+ keeps 6x2 damage, grants 3 Dexterity and still gives target 1 Strength");
+            "Fight Me+ deals 6x2, grants 3 Dexterity and still gives target 1 Strength");
         await PowerCmd.Remove<DexterityPower>(player.Creature);
         var royal = await Play<RoyalBearing>(player);
         var blade = player.PlayerCombatState!.Hand.Cards.OfType<SovereignBlade>().Single();
@@ -920,8 +925,8 @@ internal static partial class PlaytestRunner
 
     private static async Task FocusChecks()
     {
-        var run = await NGame.Instance!.StartNewSingleplayerRun(ModelDb.Character<ConstructCharacter>(), true,
-            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "IRONWAVEFOCUS", GameMode.Standard);
+        var run = await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<ConstructCharacter>()), true,
+            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "IRONWAVEFOCUS", GameMode.Standard, isCustomGame: false);
         var player = run.Players.Single();
         var iron = player.Deck.Cards.First(c => c is IronWave);
         var native = Player.CreateForNewRun<Ironclad>(new MegaCrit.Sts2.Core.Unlocks.UnlockState([], [], 0), 9999);
@@ -986,57 +991,32 @@ internal static partial class PlaytestRunner
         await RelicCmd.Obtain(touch, player);
         Check(player.Relics.Any(r => r is AncientGuardStance) && player.Relics.All(r => r is not GuardStance), "Actually acquiring Touch replaces the starter with its ancient version");
         var upgradedRelic = player.Relics.OfType<AncientGuardStance>().Single();
-        int strength = target.GetPowerAmount<StrengthPower>();
         vigor = target.GetPowerAmount<VigorPower>();
         await CreatureCmd.Damage(Context, target, 2, ValueProp.Unpowered, enemies[0]);
         await CreatureCmd.Damage(Context, target, 2, ValueProp.Unpowered, enemies[0]);
-        Check(target.GetPowerAmount<StrengthPower>() == strength && target.GetPowerAmount<GuardStrengthNextTurnPower>() == 3 && target.GetPowerAmount<VigorPower>() == vigor &&
-            !target.HasPower<DrawCardsNextTurnPower>() && upgradedRelic.DisplayAmount == 3,
-            "Ancient first two blocked hits queue one then two temporary Strength, with no immediate Strength, Vigor or draw");
-        var brassNut = Godot.ResourceLoader.Load<Godot.Texture2D>(target.GetPower<GuardStrengthNextTurnPower>()!.PackedIconPath);
-        Check(brassNut != null && brassNut.GetSize() == new Vector2(64, 64) &&
-            brassNut.GetImage().GetData().Any(b => b != 0) && brassNut.GetImage().GetPixel(0, 0).A == 0 &&
-            target.GetPower<GuardStrengthNextTurnPower>()!.HoverTips.OfType<MegaCrit.Sts2.Core.HoverTips.HoverTip>().First().Description.Contains("3"),
-            "Brass-nut power icon loads at 64px with transparent margins; pending amount and tooltip remain available");
+        Check(target.GetPowerAmount<VigorPower>() == vigor + 11 && upgradedRelic.DisplayAmount == 7 &&
+            !target.HasPower<GuardStrengthNextTurnPower>() && !target.HasPower<GuardTemporaryStrengthPower>() && !target.HasPower<DrawCardsNextTurnPower>(),
+            "Ancient first two blocked hits grant five then six Vigor, with no Strength or draw");
         target.LoseBlockInternal(target.Block); target.GainBlockInternal(1);
         await CreatureCmd.Damage(Context, target, 2, ValueProp.Unpowered, enemies[0]);
-        Check(target.GetPowerAmount<StrengthPower>() == strength && target.GetPowerAmount<GuardStrengthNextTurnPower>() == 3 && upgradedRelic.DisplayAmount == 3,
-            "Partial block neither queues temporary Strength nor advances ancient growth");
-        await PowerCmd.Apply<StrengthPower>(Context, target, 2, target, null);
-        strength += 2;
-        var indicator = target.GetPower<GuardStrengthNextTurnPower>()!;
-        await Frames(2);
-        var indicatorUi = Descendants(_tree.Root).OfType<NPower>().Single(p => p.Model == indicator);
-        ulong indicatorId = indicatorUi.GetInstanceId();
+        Check(target.GetPowerAmount<VigorPower>() == vigor + 11 && upgradedRelic.DisplayAmount == 7,
+            "Partial block neither grants Vigor nor advances ancient growth");
         await NextTurn(player, enemies[0]);
         Check(player.PlayerCombatState!.Hand.Cards.Count == 5 && !target.HasPower<DrawCardsNextTurnPower>() &&
-            target.GetPowerAmount<StrengthPower>() == strength + 3 && target.GetPowerAmount<GuardTemporaryStrengthPower>() == 3 &&
-            indicator.ActiveAmount == 3 && indicator.PendingAmount == 0 && target.GetPower<GuardStrengthNextTurnPower>() == indicator,
-            "Next actual turn activates the queued temporary Strength and draws the normal five cards");
-        Check(Godot.GodotObject.IsInstanceValid(indicatorUi) && indicatorUi.IsInsideTree() && indicatorUi.GetInstanceId() == indicatorId &&
-            !Descendants(_tree.Root).OfType<NPower>().Any(p => p.Model is GuardTemporaryStrengthPower),
-            "The same visible status node survives pending-to-active transition; the internal expiry helper has no icon");
+            !target.HasPower<GuardStrengthNextTurnPower>() && !target.HasPower<GuardTemporaryStrengthPower>(),
+            "Next actual turn draws the normal five cards without queuing Strength");
         await CreatureCmd.GainBlock(target, 20, ValueProp.Unpowered, null);
         await CreatureCmd.Damage(Context, target, 2, ValueProp.Unpowered, enemies[0]);
-        Check(target.GetPowerAmount<StrengthPower>() == strength + 3 && indicator.PendingAmount == 3 && indicator.ActiveAmount == 3 && upgradedRelic.DisplayAmount == 4,
-            "Blocking during temporary Strength queues the next turn without increasing the current turn's Strength");
-        Check(indicator.HoverTips.OfType<MegaCrit.Sts2.Core.HoverTips.HoverTip>().First().Description.Contains("本回合已获得3") &&
-            indicator.HoverTips.OfType<MegaCrit.Sts2.Core.HoverTips.HoverTip>().First().Description.Contains("下回合获得3"),
-            "One continuous status distinguishes active Strength from next-turn queued Strength");
-        await NextTurn(player, enemies[0]);
-        Check(target.GetPowerAmount<StrengthPower>() == strength + 3 && target.GetPowerAmount<GuardTemporaryStrengthPower>() == 3,
-            "Old temporary Strength expires before the next queued grant, without accumulating permanently");
-        await NextTurn(player, enemies[0]);
-        Check(target.GetPowerAmount<StrengthPower>() == strength && !target.HasPower<GuardTemporaryStrengthPower>() && !target.HasPower<GuardStrengthNextTurnPower>(),
-            "Temporary Strength fully expires and preserves independent permanent Strength");
+        Check(target.GetPowerAmount<VigorPower>() == vigor + 18 && upgradedRelic.DisplayAmount == 8,
+            "Ancient growth continues at seven on the next turn of the same combat");
         await RestartCombat();
-        Check(upgradedRelic.DisplayAmount == 1 && target.GetPowerAmount<StrengthPower>() == 0,
-            "Ancient grant and native Strength reset for the next combat");
+        Check(upgradedRelic.DisplayAmount == 5 && target.GetPowerAmount<StrengthPower>() == 0,
+            "Ancient grant resets to five for the next combat");
         await CreatureCmd.GainBlock(target, 20, ValueProp.Unpowered, null);
         await CreatureCmd.Damage(Context, target, 2, ValueProp.Unpowered, enemies[0]);
-        Check(target.GetPowerAmount<StrengthPower>() == 0 && target.GetPowerAmount<GuardStrengthNextTurnPower>() == 1 && upgradedRelic.DisplayAmount == 2,
-            "New-combat ancient relic starts at one queued temporary Strength again");
-        await GuardStanceTiming<GuardStrengthNextTurnPower>(upgradedRelic, blockedResult, enemies[0]);
+        Check(target.GetPowerAmount<StrengthPower>() == 0 && target.GetPowerAmount<VigorPower>() == 5 && upgradedRelic.DisplayAmount == 6,
+            "New-combat ancient relic starts at five Vigor again");
+        await GuardStanceTiming<VigorPower>(upgradedRelic, blockedResult, enemies[0]);
         await Capture("qa-relic-shock-update");
         await NGame.Instance.ReturnToMainMenu();
         SaveManager.Instance.DeleteCurrentRun();
@@ -1201,8 +1181,8 @@ internal static partial class PlaytestRunner
         await player.Creature.GetPower<NeverBackDownPower>()!.AfterPlayerTurnStart(Context, player);
         var fistCards = player.PlayerCombatState.AllCards.OfType<Fisticuffs>().Except(existingFists).ToArray();
         Check(fistCards.Length == 2 && fistCards.All(c => !c.IsUpgraded) &&
-            player.PlayerCombatState.DiscardPile.Cards.Count(c => c is Burn) == discardBurns + 2,
-            "Stacked Never Back Down generates two normal Fisticuffs, plus two Burns in discard");
+            player.PlayerCombatState.DiscardPile.Cards.Count(c => c is Burn) == discardBurns,
+            "Stacked Never Back Down generates two normal Fisticuffs and no Burn");
         await PowerCmd.Remove<NeverBackDownPower>(player.Creature);
         await Play<BoxingChampionForm>(player, upgraded: true);
         Check(player.Creature.GetPower<BoxingChampionFormPower>()!.HoverTips.OfType<MegaCrit.Sts2.Core.HoverTips.HoverTip>().First().Description.Contains("3"),
@@ -1221,8 +1201,8 @@ internal static partial class PlaytestRunner
         foreach (var encounter in new EncounterModel[] { ModelDb.Encounter<NibbitsWeak>(), ModelDb.Encounter<SlimesWeak>(), ModelDb.Encounter<CorpseSlugsWeak>() })
         {
             await NGame.Instance!.ReturnToMainMenu();
-            var run = await NGame.Instance.StartNewSingleplayerRun(ModelDb.Character<ConstructCharacter>(), true,
-                [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "BASELINE" + encounter.Id.Entry, GameMode.Standard);
+            var run = await NGame.Instance.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<ConstructCharacter>()), true,
+                [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "BASELINE" + encounter.Id.Entry, GameMode.Standard, isCustomGame: false);
             var player = run.Players.Single();
             await RunManager.Instance.EnterRoomDebug(RoomType.Monster, model: encounter.ToMutable(), showTransition: false);
             await Until(() => player.PlayerCombatState?.Phase == PlayerTurnPhase.Play && !CombatManager.Instance.PlayerActionsDisabled, "Baseline combat starts");
@@ -1347,8 +1327,8 @@ internal static partial class PlaytestRunner
         if (OS.GetCmdlineArgs().Contains("--punchconstruct-shader-control")) { await NativeShaderControl(); return; }
         if (OS.GetCmdlineArgs().Contains("--punchconstruct-capsule-native-control")) { await CapsuleNativeControl(); return; }
         bool nativeControl = OS.GetCmdlineArgs().Contains("--punchconstruct-event-native-control");
-        var run = nativeControl ? await NGame.Instance!.StartNewSingleplayerRun(ModelDb.Character<MegaCrit.Sts2.Core.Models.Characters.Ironclad>(), true,
-            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "EVENTROUTES", GameMode.Standard) : await ReliabilityRun("EVENTROUTES");
+        var run = nativeControl ? await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<MegaCrit.Sts2.Core.Models.Characters.Ironclad>()), true,
+            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "EVENTROUTES", GameMode.Standard, isCustomGame: false) : await ReliabilityRun("EVENTROUTES");
         var player = run.Players.Single();
         if (nativeControl)
             AccessTools.Field(typeof(Player), "<UnlockState>k__BackingField").SetValue(player,
@@ -1400,7 +1380,7 @@ internal static partial class PlaytestRunner
                 "All nine Philosopher candidates are distinct across all three rows: " + pool.EnergyColorName);
             var possible = CardCreationOptions.ForNonCombatWithUniformOdds([pool], CardAcquisition.IsPhilosopherCard).GetPossibleCards(player).ToArray();
             int expectedCount = pool is MegaCrit.Sts2.Core.Models.CardPools.RegentCardPool ? 15 :
-                pool is MegaCrit.Sts2.Core.Models.CardPools.NecrobinderCardPool ? 11 : 10;
+                pool is MegaCrit.Sts2.Core.Models.CardPools.NecrobinderCardPool ? 11 : 11;
             Check(nativeControl || possible.Length == expectedCount && possible.All(c => c.Pool == pool && CardAcquisition.IsPhilosopherCard(c)) &&
                 ModelDb.CardPool<ConstructCardPool>().AllCards.Where(c => c.Pool == pool && c.GetType().Assembly == typeof(ConstructCharacter).Assembly &&
                     !CardAcquisition.IsAncient(c)).All(c => possible.Any(p => p.Id == c.Id)),
@@ -1465,12 +1445,12 @@ internal static partial class PlaytestRunner
         await rewardTask;
         Check(player.Deck.Cards.Count == rewardDeck + 1, "Selecting a card in the real reward screen adds the reward");
         await RunManager.Instance.EnterRoomDebug(RoomType.Shop, showTransition: false);
-        var shop = ((MerchantRoom)run.CurrentRoom!).GetLocalInventory();
+        var shop = RunManager.Instance.MerchantSynchronizer.GetLocalInventory();
         Check(shop.CharacterCardEntries.Count > 0 && shop.RelicEntries.All(e => e.Model is {} model && RelicWeights.Allowed(model)), "A normal shop creates cards and contains no excluded relics");
         var entry = shop.CharacterCardEntries.First();
         int deckBefore = player.Deck.Cards.Count;
         await PlayerCmd.SetGold(999, player);
-        await entry.OnTryPurchaseWrapper(shop);
+        await entry.OnTryPurchaseUnsynchronized(shop);
         Check(player.Deck.Cards.Count == deckBefore + 1, "Buying a card through the shop entry adds it to the deck");
         await Capture("qa-shop");
         await RunManager.Instance.EnterRoomDebug(RoomType.RestSite, showTransition: false);
@@ -1545,7 +1525,7 @@ internal static partial class PlaytestRunner
                 "All nine Philosopher candidates are distinct across all three rows: " + pool.EnergyColorName);
             var possible = CardCreationOptions.ForNonCombatWithUniformOdds([pool], CardAcquisition.IsPhilosopherCard).GetPossibleCards(player).ToArray();
             int expectedCount = pool is MegaCrit.Sts2.Core.Models.CardPools.RegentCardPool ? 15 :
-                pool is MegaCrit.Sts2.Core.Models.CardPools.NecrobinderCardPool ? 11 : 10;
+                pool is MegaCrit.Sts2.Core.Models.CardPools.NecrobinderCardPool ? 11 : 11;
             Check(possible.Length == expectedCount && possible.All(c => c.Pool == pool && CardAcquisition.IsPhilosopherCard(c)) &&
                 ModelDb.CardPool<ConstructCardPool>().AllCards.Where(c => c.Pool == pool && c.GetType().Assembly == typeof(ConstructCharacter).Assembly &&
                     !CardAcquisition.IsAncient(c)).All(c => possible.Any(p => p.Id == c.Id)),

@@ -53,7 +53,7 @@ public sealed class LeftHook() : CustomCardModel(1, CardType.Attack, CardRarity.
 {
     public override CardPoolModel Pool => ModelDb.CardPool<ColorlessCardPool>();
     public override string CustomPortraitPath => "res://PunchConstruct/art/left_hook.ctex";
-    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Retain, CardKeyword.Exhaust];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(6, ValueProp.Move), new BlockVar(4, ValueProp.Move)];
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<RightHook>(IsUpgraded)];
     public override List<(string, string)> Localization => Loc.Card("左勾拳", "造成{Damage:diff()}点伤害。\n获得{Block:diff()}点[gold]格挡[/gold]。\n将一张[gold]{RightTitle}[/gold]加入你的手牌。");
@@ -70,7 +70,7 @@ public sealed class LeftHook() : CustomCardModel(1, CardType.Attack, CardRarity.
         if (IsUpgraded) CardCmd.Upgrade(right);
         await BoxingGeneration.Add(right);
     }
-    protected override void OnUpgrade() { DynamicVars.Damage.UpgradeValueBy(2); DynamicVars.Block.UpgradeValueBy(2); }
+    protected override void OnUpgrade() => AddKeyword(CardKeyword.Retain);
 }
 
 [Pool(typeof(ConstructCardPool))]

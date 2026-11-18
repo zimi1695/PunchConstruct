@@ -62,8 +62,10 @@ internal static partial class PlaytestRunner
             int hp = enemy.CurrentHp;
             var left = await Play<LeftHook>(player, enemy, upgraded);
             var right = player.PlayerCombatState.Hand.Cards.OfType<RightHook>().Single();
-            Check(hp - enemy.CurrentHp == (upgraded ? 8 : 6) && player.Creature.Block == (upgraded ? 6 : 4), "Left Hook damage and block: upgraded=" + upgraded);
-            Check(right.IsUpgraded == upgraded && right.Keywords.Contains(CardKeyword.Retain) && left.Pile?.Type == PileType.Exhaust, "Left Hook exhausts and generates matching retained Right Hook");
+            Check(hp - enemy.CurrentHp == 6 && player.Creature.Block == 4, "Left Hook damage and block stay 6/4: upgraded=" + upgraded);
+            Check(left.Keywords.Contains(CardKeyword.Retain) == upgraded && left.Pile?.Type == PileType.Exhaust,
+                "Left Hook exhausts and retains only when upgraded: upgraded=" + upgraded);
+            Check(right.IsUpgraded == upgraded && right.Keywords.Contains(CardKeyword.Retain), "Left Hook generates matching retained Right Hook: upgraded=" + upgraded);
             if (upgraded) Check(left.GetDescriptionForPile(PileType.Hand).Contains("右勾拳+"), "Upgraded Left Hook text shows Right Hook+");
             await NextTurn(player, enemy);
             Check(right.Pile?.Type == PileType.Hand, "Generated Right Hook retains across the real turn boundary");

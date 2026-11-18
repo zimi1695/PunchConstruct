@@ -112,9 +112,9 @@ public sealed class DoomResonance() : CustomCardModel(1, CardType.Skill, CardRar
 public sealed class NeverBackDown() : CustomCardModel(2, CardType.Power, CardRarity.Rare, TargetType.Self)
 {
     public override CardPoolModel Pool => ModelDb.CardPool<ColorlessCardPool>();
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<Fisticuffs>(), HoverTipFactory.FromCard<Burn>()];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<Fisticuffs>()];
     public override string CustomPortraitPath => "res://PunchConstruct/art/never_back_down.ctex";
-    public override List<(string, string)> Localization => Loc.Card("不倒不休", "每回合开始时，将一张[gold]拳斗[/gold]加入你的手牌，将一张[gold]灼烧[/gold]加入弃牌堆。");
+    public override List<(string, string)> Localization => Loc.Card("不倒不休", "每回合开始时，将一张[gold]拳斗[/gold]加入你的手牌。");
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {
         await PowerCmd.Apply<NeverBackDownPower>(context, Owner.Creature, 1, Owner.Creature, this);

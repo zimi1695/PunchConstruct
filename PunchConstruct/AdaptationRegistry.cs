@@ -69,7 +69,13 @@ internal static class AdaptationRegistry
             adapter,
             hook,
             policy = policy.ToString(),
-            disabled = hook
+            disabled = hook,
+            error = new
+            {
+                type = error.GetType().FullName,
+                message = error.Message,
+                stack = error.StackTrace
+            }
         });
     }
 }

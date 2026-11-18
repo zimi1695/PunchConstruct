@@ -5,12 +5,14 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Events;
+using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.Models.Events;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Entities.Players;
 
@@ -25,6 +27,17 @@ internal static class WaveEventRules
         var result = source.Owner.RunState.CreateCard<ScorchingIronWave>(source.Owner);
         // This is a fixed upgrade count, independent of the removed starter's upgrade.
         for (int i = 0; i < upgrades; i++) CardCmd.Upgrade(result);
+        if (source.Enchantment is { } enchantment)
+            CardCmd.Enchant((EnchantmentModel)enchantment.MutableClone(), result, enchantment.Amount);
+        return result;
+    }
+    // Native ancient tooth rule: an upgraded starter yields an upgraded
+    // transcendent card, an unupgraded starter yields an unupgraded one, and
+    // any enchantment is copied with its amount.
+    internal static CardModel DomineeringReplacement(CardModel source)
+    {
+        var result = source.Owner.RunState.CreateCard<ConstructDomineering>(source.Owner);
+        if (source.IsUpgraded) CardCmd.Upgrade(result);
         if (source.Enchantment is { } enchantment)
             CardCmd.Enchant((EnchantmentModel)enchantment.MutableClone(), result, enchantment.Amount);
         return result;
@@ -147,5 +160,52 @@ internal static class ConstructFusionIngredients
         if (!RegentAdaptations.Owns(__1)) return true;
         __result = __0 == CardTag.Strike && WaveEventRules.Small(__1);
         return false;
+    }
+}
+
+// 缺陷构装体修订：keep the native event room and layout; replace only this
+// character's page text and options. Native players never enter this path.
+internal static class ConstructInfestedAutomaton
+{
+    internal static void Apply(InfestedAutomaton room, ref IReadOnlyList<EventOption> __result)
+    {
+        if (!CharacterScope.IsConstruct(room.Owner)) return;
+        string prefix = "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.";
+        EventOption Option(string key, Func<Task>? action, bool enabled, IEnumerable<IHoverTip> tips) => new(room,
+            enabled ? action : null, new LocString("events", prefix + key + ".title"),
+            new LocString("events", prefix + key + ".description"), prefix + key, tips);
+        __result = [
+            Option("REPAIR", () => Repair(room), room.Owner!.Gold >= 67,
+                HoverTipFactory.FromRelic<ConstructClockworkSouvenir>()),
+            Option("SEARCH", () => Search(room), true,
+                [HoverTipFactory.FromCard<ConstructPanacea>(true)])
+        ];
+    }
+
+    private static async Task Repair(InfestedAutomaton room)
+    {
+        await PlayerCmd.LoseGold(67, room.Owner!, GoldLossType.Spent);
+        await RelicCmd.Obtain<ConstructClockworkSouvenir>(room.Owner!);
+        WaveEventRules.Finish(room, "REPAIR");
+    }
+
+    private static async Task Search(InfestedAutomaton room)
+    {
+        var card = room.Owner!.RunState.CreateCard<ConstructPanacea>(room.Owner);
+        CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(card, PileType.Deck), 1.2f, CardPreviewStyle.EventLayout);
+        WaveEventRules.Finish(room, "SEARCH");
+    }
+}
+
+internal static class ConstructInfestedAutomatonAllowed
+{
+    // The room set is shared, so keep the native event for any native party
+    // member. An all-construct party sees it only while someone can still use it.
+    internal static void Apply(EventModel __instance, IRunState runState, ref bool __result)
+    {
+        if (__instance is not InfestedAutomaton) return;
+        var players = runState.Players;
+        if (players.Count == 0 || players.Any(p => !CharacterScope.IsConstruct(p))) return;
+        __result = players.Any(p => p.Gold >= 67 && !p.Relics.Any(r => r is ConstructClockworkSouvenir));
     }
 }

@@ -94,7 +94,7 @@ internal static class PresentationAdapter
     internal static IEnumerable<MethodBase> SelectionTargets()
     {
         yield return AccessTools.Method(typeof(NCharacterSelectScreen), nameof(NCharacterSelectScreen.SelectCharacter));
-        yield return AccessTools.Method(typeof(NCharacterSelectScreen), "OnLocalCharacterChangedForRandom");
+        yield return AccessTools.Method(typeof(NCharacterSelectScreen), "DoRandomCharacterChange");
         yield return AccessTools.Method(typeof(NCustomRunScreen), nameof(NCustomRunScreen.SelectCharacter));
     }
 
@@ -282,7 +282,7 @@ internal static class PresentationAdapter
     internal static List<CodeInstruction> GuardDamageTranspiler(List<CodeInstruction> original, MethodBase originalMethod) =>
         GuardDamagePresentation.Transpile(original, originalMethod);
 
-    internal static bool WaveFacingRedirect(PlayerChoiceContext context, IEnumerable<Creature> targets, decimal amount, ValueProp props,
+    internal static bool WaveFacingRedirect(PlayerChoiceContext context, IEnumerable<DamageTargetData>? targets, decimal amount, ValueProp props,
         Creature? dealer, CardModel? cardSource, CardPlay? cardPlay, ref Task<IEnumerable<DamageResult>> result) =>
         DelayedWaveFacing.Redirect(context, targets, amount, props, dealer, cardSource, cardPlay, ref result);
 
@@ -302,7 +302,7 @@ internal static class PresentationAdapter
     internal static bool DifficultyMultiplayer(StartRunLobby lobby)
     {
         if (!lobby.Players.Any(p => CharacterScope.IsConstruct(p))) return true;
-        int maximum = ConstructDifficulty.LobbyMaximum(lobby.Players);
+        int maximum = ConstructDifficulty.LobbyMaximum(lobby);
         if (maximum != lobby.MaxAscension)
         {
             AccessTools.PropertySetter(typeof(StartRunLobby), nameof(StartRunLobby.MaxAscension)).Invoke(lobby, [maximum]);
@@ -316,6 +316,6 @@ internal static class PresentationAdapter
     internal static void DifficultyChanged(StartRunLobby lobby)
     {
         if (lobby.NetService.Type is NetGameType.Host or NetGameType.Client)
-            AccessTools.Method(typeof(StartRunLobby), "UpdateMaxMultiplayerAscension").Invoke(lobby, []);
+            AccessTools.Method(typeof(StartRunLobby), "UpdateMaxSharedAscension").Invoke(lobby, [true]);
     }
 }

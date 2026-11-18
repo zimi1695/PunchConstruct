@@ -20,5 +20,12 @@
   "PUNCHCONSTRUCT_BUGSLAYER.pages.INITIAL.options.GUARD.description": "Add a [gold]Block[/gold] to your deck.",
   "PUNCHCONSTRUCT_BUGSLAYER.pages.QUICK.description": "One punch.\n\nThere is a new fist print in the wall, and a few fewer bugs.",
   "PUNCHCONSTRUCT_BUGSLAYER.pages.COMBINATION.description": "The first punch scatters the swarm; the second lands right behind it.\n\nThe warrior quietly sets down the insecticide.",
-  "PUNCHCONSTRUCT_BUGSLAYER.pages.GUARD.description": "You raise both arms.\n\nThe swarm hits your gloves and rains down in a crackling heap."
+  "PUNCHCONSTRUCT_BUGSLAYER.pages.GUARD.description": "You raise both arms.\n\nThe swarm hits your gloves and rains down in a crackling heap.",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.description": "Deep in the scrap heap, a [gold]construct[/gold] kneels half-buried.\nIts shell is cracked, its gears rusted shut, and the [blue]core[/blue] in its chest has long gone dark.\nThe only thing still moving is a [gold]Clockwork Souvenir[/gold] in its chest. Its spring still turns, [sine]tick, tick[/sine].",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.REPAIR.title": "Repair",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.REPAIR.description": "Lose [red]67[/red] Gold and obtain a [gold]Clockwork Souvenir[/gold].",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.REPAIR.description": "You buy parts and replace the rusted gears one by one.\nThe core stays dark. You cannot repair a machine that has stopped.\nYou take the still-turning [gold]Clockwork Souvenir[/gold] from its chest.\nThe spring still turns, [sine]tick, tick[/sine].",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.SEARCH.title": "Search",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.SEARCH.description": "Obtain a [gold]Panacea[/gold].",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.SEARCH.description": "You crouch down and search through its remains.\nA small vial rolls out of the cracked chest.\nYou pull the stopper. Inside is a [blue]Panacea[/blue].\nWhen you leave, it still holds the same pose."
 }

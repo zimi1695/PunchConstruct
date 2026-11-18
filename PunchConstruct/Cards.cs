@@ -1,5 +1,6 @@
 ﻿using BaseLib.Abstracts;
 using BaseLib.Utils;
+using BaseLib.Utils.Attributes;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -103,12 +104,13 @@ public sealed class IronWaveForm() : CustomCardModel(3, CardType.Power, CardRari
 }
 
 [Pool(typeof(ConstructCardPool))]
+[CustomID("PUNCHCONSTRUCT-FIGHT_ME")]
 public sealed class FightMe() : CustomCardModel(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 {
     public override CardPoolModel Pool => ModelDb.CardPool<ColorlessCardPool>();
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<DexterityPower>(), HoverTipFactory.FromPower<StrengthPower>()];
     public override string CustomPortraitPath => "res://PunchConstruct/art/fight_me.ctex";
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(6, ValueProp.Move), new DynamicVar("Dexterity", 2)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(5, ValueProp.Move), new DynamicVar("Dexterity", 2)];
     public override List<(string, string)> Localization => Loc.Card("与我一斗", "造成{Damage:diff()}点伤害2次。\n获得{Dexterity:diff()}点[gold]敏捷[/gold]。\n该敌人获得1点[gold]力量[/gold]。");
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {
@@ -119,6 +121,7 @@ public sealed class FightMe() : CustomCardModel(2, CardType.Attack, CardRarity.U
     }
     protected override void OnUpgrade()
     {
+        DynamicVars.Damage.UpgradeValueBy(1);
         DynamicVars["Dexterity"].UpgradeValueBy(1);
     }
 }

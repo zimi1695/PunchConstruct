@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
@@ -251,16 +252,16 @@ internal static class BridgeGuardDamagePresentation
     }
 }
 
-[HarmonyPatch(typeof(CreatureCmd), nameof(CreatureCmd.Damage), [typeof(PlayerChoiceContext), typeof(IEnumerable<Creature>),
-    typeof(decimal), typeof(ValueProp), typeof(Creature), typeof(CardModel), typeof(CardPlay)])]
+[HarmonyPatch(typeof(CreatureCmd), nameof(CreatureCmd.Damage), [typeof(PlayerChoiceContext), typeof(IEnumerable<DamageTargetData>),
+    typeof(decimal), typeof(ValueProp), typeof(Creature), typeof(CardModel), typeof(CardPlay), typeof(ModifyDamageHookType)])]
 internal static class BridgeWaveFacing
 {
-    private static bool Prefix(PlayerChoiceContext choiceContext, IEnumerable<Creature> targets, decimal amount, ValueProp props,
+    private static bool Prefix(PlayerChoiceContext choiceContext, IEnumerable<DamageTargetData>? targetData, decimal amount, ValueProp props,
         Creature? dealer, CardModel? cardSource, CardPlay? cardPlay, ref Task<IEnumerable<DamageResult>> __result)
     {
         var redirected = __result;
         var runNative = AdaptationRegistry.Guard("presentation", "WaveFacing",
-            () => PresentationAdapter.WaveFacingRedirect(choiceContext, targets, amount, props, dealer, cardSource, cardPlay, ref redirected));
+            () => PresentationAdapter.WaveFacingRedirect(choiceContext, targetData, amount, props, dealer, cardSource, cardPlay, ref redirected));
         __result = redirected;
         return runNative;
     }
@@ -282,7 +283,7 @@ internal static class BridgeDifficultySingleplayer
             () => PresentationAdapter.DifficultySingleplayer(__0));
 }
 
-[HarmonyPatch(typeof(StartRunLobby), "UpdateMaxMultiplayerAscension")]
+[HarmonyPatch(typeof(StartRunLobby), "UpdateMaxSharedAscension")]
 internal static class BridgeDifficultyMultiplayer
 {
     private static bool Prefix(StartRunLobby __instance) =>

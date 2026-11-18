@@ -60,13 +60,31 @@ class NetworkProxy:
                 self.events.append(dict(event='blackout.end', monotonic=now))
         return active
 
+    def _note_reset(self, exc):
+        # Windows surfaces ICMP port-unreachable on a connected UDP socket as
+        # 10054. During host startup the ENet port may not be bound yet, so a
+        # forwarded handshake can bounce once; that transient reset must not
+        # stop forwarding for the other peers. Genuine peer loss is still
+        # caught by the traversal/blackout validation and peer exit codes.
+        event = 'udp.endpoint_closed_after_checks' if self.shutdown_ready() else 'udp.transient_reset'
+        self.events.append(dict(event=event, monotonic=time.monotonic(), detail=repr(exc)))
+
     def _run(self):
         try:
             while not self.stop_event.is_set():
                 self._blackout(time.monotonic())
-                for key, _ in self.selector.select(.005):
+                try:
+                    ready = self.selector.select(.005)
+                except ConnectionResetError as exc:
+                    self._note_reset(exc)
+                    continue
+                for key, _ in ready:
                     link, direction = key.data
-                    data, address = key.fileobj.recvfrom(65535)
+                    try:
+                        data, address = key.fileobj.recvfrom(65535)
+                    except ConnectionResetError as exc:
+                        self._note_reset(exc)
+                        continue
                     if direction == 'client_to_host':
                         if link['client'] is not None and link['client'] != address:
                             raise RuntimeError('Unexpected second client on one QA proxy')
@@ -91,22 +109,17 @@ class NetworkProxy:
                     if self._blackout(now):
                         stats['blackout'] += 1
                         continue
-                    if direction == 'client_to_host':
-                        link['back'].send(data)
-                    else:
-                        link['front'].sendto(data, link['client'])
+                    try:
+                        if direction == 'client_to_host':
+                            link['back'].send(data)
+                        else:
+                            link['front'].sendto(data, link['client'])
+                    except ConnectionResetError as exc:
+                        self._note_reset(exc)
+                        continue
                     stats['forwarded'] += 1
                     stats['bytes_forwarded'] += len(data)
                     stats['max_delay_ms'] = round(max(stats['max_delay_ms'], (now - received_at) * 1000), 2)
-        except ConnectionResetError as exc:
-            # Windows reports an ICMP port-unreachable on connected UDP when
-            # the native host closes. Accept it only after every peer has
-            # completed the final QA barrier, with the original detail retained.
-            if self.shutdown_ready():
-                self.events.append(dict(event='udp.endpoint_closed_after_checks',
-                                        monotonic=time.monotonic(), detail=repr(exc)))
-            else:
-                self.errors.append(repr(exc))
         except Exception as exc:
             self.errors.append(repr(exc))
 

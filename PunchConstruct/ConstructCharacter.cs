@@ -18,6 +18,10 @@ public sealed class ConstructCharacter : CustomCharacterModel
     public override string CharacterSelectSfx => CharacterSelectAudio.Cue;
     public override string CharacterTransitionSfx => ModelDb.Character<MegaCrit.Sts2.Core.Models.Characters.Defect>().CharacterTransitionSfx;
     public override CharacterGender Gender => CharacterGender.Neutral;
+    // A failed required bridge means the construct-specific reward, relic or
+    // event rules are incomplete. Hide it from new character selection instead
+    // of starting a run that silently falls back to native behaviour.
+    public override bool HideFromVanillaCharacterSelect => PatchRegistry.RequiredFailure;
     public override Color NameColor => new("9ec9c7");
     public override CardPoolModel CardPool => ModelDb.CardPool<ConstructCardPool>();
     public override RelicPoolModel RelicPool => ModelDb.RelicPool<ConstructRelicPool>();
@@ -68,6 +72,8 @@ public sealed class ConstructCharacter : CustomCharacterModel
     public override string CustomArmScissorsTexturePath => "res://images/ui/hands/multiplayer_hand_defect_scissors.png";
     public override List<(string, string)> Localization => [
         ("title", Loc.Pick("拳击构装体")), ("titleObject", Loc.Pick("拳击构装体")),
+        // Dread's character select drama line reads characters.<id>.shortTitle.
+        ("shortTitle", Loc.Pick("拳击构装体")),
         ("description", Loc.Pick("来自暗港的拳击构装体。\n在每一次严密的防守之后，送还一记重拳。")),
         ("pronounObject", Loc.Pick("它")), ("pronounSubject", Loc.Pick("它")),
         ("pronounPossessive", Loc.Pick("它的")), ("possessiveAdjective", Loc.Pick("它的")),

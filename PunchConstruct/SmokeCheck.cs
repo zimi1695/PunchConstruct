@@ -69,21 +69,21 @@ internal static class SmokeCheck
                     ModelDb.Card<BoxingChampionForm>()];
                 Check(ownCards.All(c => c.Pool == pool), "Four construct designs, retain their own origin");
                 var allCards = pool.AllCards.ToArray();
-                Check(allCards.Length == 82 && allCards.Select(c => c.Id).Distinct().Count() == 82,
-                    "Acquisition pool contains 82 distinct cards including Scorching Iron Wave");
+                Check(allCards.Length == 98 && allCards.Select(c => c.Id).Distinct().Count() == 98,
+                    "Acquisition pool contains 98 distinct cards including Scorching Iron Wave");
                 string? auditList = OS.GetCmdlineArgs().FirstOrDefault(a => a.StartsWith("--punchconstruct-audit-list="));
                 if (auditList != null)
                 {
                     var specification = System.IO.File.ReadAllText(auditList.Split('=', 2)[1]);
-                    var expected = System.Text.RegularExpressions.Regex.Matches(specification, @"^(\d{2})\s+([^\s（：]+)",
+                    var expected = System.Text.RegularExpressions.Regex.Matches(specification, @"^(\d{2})\s+([^：\n]+)：",
                         System.Text.RegularExpressions.RegexOptions.Multiline)
                         .ToDictionary(m => int.Parse(m.Groups[1].Value), m => m.Groups[2].Value);
                     var actual = allCards.Select(c => c.Title).ToArray();
                     string missing = string.Join(", ", expected.Values.Except(actual));
                     string unexpected = string.Join(", ", actual.Except(expected.Values));
                     GD.Print("[PunchConstruct AUDIT] Missing: " + missing + "; Unexpected: " + unexpected);
-                    Check(expected.Count == 82 && actual.Distinct().Count() == 82 && missing.Length == 0 && unexpected.Length == 0,
-                        "Exact card roster matches the independent approved 82-card document");
+                    Check(expected.Count == 98 && actual.Distinct().Count() == 98 && missing.Length == 0 && unexpected.Length == 0,
+                        "Exact card roster matches the independent approved 98-card document");
                     foreach (var (number, title) in expected.OrderBy(e => e.Key))
                     {
                         var card = allCards.Single(c => c.Title == title);
@@ -99,6 +99,21 @@ internal static class SmokeCheck
                     "All imported cards retain original ownership");
                 var unlocks = new UnlockState([], [], 0);
                 var player = Player.CreateForNewRun(construct, unlocks, 9999);
+                Check(!CardAcquisition.Eligible(player, ModelDb.Card<WhistlingArrows>()) &&
+                    !CardAcquisition.Eligible(player, ModelDb.Card<Nail>()) &&
+                    !CardAcquisition.Eligible(player, ModelDb.Card<ChoReady>()) &&
+                    CardAcquisition.Eligible(player, ModelDb.Card<HobblingShot>()) &&
+                    CardAcquisition.Eligible(player, ModelDb.Card<BlossomShot>()),
+                    "Fool group stays locked until Hobbling Shot or Blossom Shot is owned");
+                Check(!CardAcquisition.Eligible(player, ModelDb.Card<Enrapture>()) &&
+                    !CardAcquisition.Eligible(player, ModelDb.Card<CoveringFire>()),
+                    "Multiplayer-only Fool cards never enter singleplayer acquisition");
+                player.Deck.AddInternal(ModelDb.Card<HobblingShot>().ToMutable(), -1, false);
+                Check(CardAcquisition.Eligible(player, ModelDb.Card<WhistlingArrows>()) &&
+                    CardAcquisition.Eligible(player, ModelDb.Card<Nail>()) &&
+                    CardAcquisition.Eligible(player, ModelDb.Card<ChoReady>()) &&
+                    CardAcquisition.Weight(player, ModelDb.Card<WhistlingArrows>()) == CardAcquisition.GroupMultiplier,
+                    "Owning Hobbling Shot unlocks the Fool group and doubles its draw weight");
                 var previousScope = CardFactoryScope.Player;
                 try
                 {
@@ -119,9 +134,11 @@ internal static class SmokeCheck
                 finally { CardFactoryScope.Player = previousScope; }
                 var potions = PotionFactory.GetPotionOptions(player).ToArray();
                 var shared = ModelDb.PotionPool<SharedPotionPool>().GetUnlockedPotions(unlocks).Select(p => p.Id).ToHashSet();
-                Check(construct.PotionPool is ConstructPotionPool && !construct.PotionPool.AllPotions.Any() &&
-                    shared.SetEquals(potions.Select(p => p.Id)) && !potions.OfType<FocusPotion>().Any(),
-                    "Actual potion factory uses shared potions without inherited Defect exclusives");
+                var exclusive = construct.PotionPool.AllPotions.Select(p => p.Id).ToHashSet();
+                Check(construct.PotionPool is ConstructPotionPool && exclusive.Count == 3 &&
+                    exclusive.SetEquals(potions.Select(p => p.Id).Except(shared)) &&
+                    shared.IsSubsetOf(potions.Select(p => p.Id)) && !potions.OfType<FocusPotion>().Any(),
+                    "Actual potion factory uses shared potions plus three construct exclusives without Defect exclusives");
                 Check(ModelDb.Character<Defect>().PotionPool is DefectPotionPool &&
                     ModelDb.Character<Regent>().CardPool is RegentCardPool && ModelDb.Character<Necrobinder>().CardPool is NecrobinderCardPool,
                     "Original character pool assignments remain unchanged");
@@ -134,7 +151,8 @@ internal static class SmokeCheck
                 PowerModel[] powers = [ModelDb.Power<DelayedWavePower>(), ModelDb.Power<IronWaveFormPower>(),
                     ModelDb.Power<ForgeWorkshopPower>(), ModelDb.Power<RoyalBearingPower>(), ModelDb.Power<StrikeWhileHotPower>(),
                     ModelDb.Power<FinalJudgmentPower>(), ModelDb.Power<UnarmToArmsPower>(), ModelDb.Power<NeverBackDownPower>(), ModelDb.Power<BoxingChampionFormPower>(),
-                    ModelDb.Power<GuardStrengthNextTurnPower>()];
+                    ModelDb.Power<GuardStrengthNextTurnPower>(), ModelDb.Power<ClockworkMechanismPower>(),
+                    ModelDb.Power<ConstructDomineeringPower>()];
                 foreach (var power in powers)
                 {
                     var icon = ResourceLoader.Load<Texture2D>(ConstructPowerIcons.Packed(power.GetType()));
@@ -143,14 +161,14 @@ internal static class SmokeCheck
                     using var bigImage = big.GetImage();
                     var used = image.GetUsedRect().Size;
                     var bigUsed = bigImage.GetUsedRect().Size;
-                    int extent = power is GuardStrengthNextTurnPower ? 56 : 62;
+                    int extent = power is GuardStrengthNextTurnPower ? 56 : power is ClockworkMechanismPower ? 60 : 62;
                     Check(power.PackedIconPath == ConstructPowerIcons.Packed(power.GetType()) && icon.GetSize() == new Vector2(64,64) && Math.Max(used.X, used.Y) == extent,
                         "Status icon loads at 64x64 with its fitted visible extent: " + power.GetType().Name);
                     Check(big.GetSize() == new Vector2(256,256) && Math.Max(bigUsed.X, bigUsed.Y) == extent * 4,
                         "Large pixel icon loads at 256x256 with matching visible extent: " + power.GetType().Name);
                 }
-                Check(powers.Select(p => p.PackedIconPath).Distinct().Count() == 10, "Ten powers have distinct adopted icons");
-                GD.Print("[PunchConstruct ICON PASS] 21 resource checks; no run or combat started");
+                Check(powers.Select(p => p.PackedIconPath).Distinct().Count() == 11, "Eleven powers have distinct adopted icons");
+                GD.Print("[PunchConstruct ICON PASS] 23 resource checks; no run or combat started");
                 tree.Quit();
                 return;
             }
@@ -179,7 +197,7 @@ internal static class SmokeCheck
             iron.UpgradeInternal();
             Check(iron.DynamicVars.Damage.BaseValue == 7 && iron.DynamicVars.Block.BaseValue == 7, "Iron Wave upgrades normally to 7 / 7");
             Check(ModelDb.Card<Shockwave>().Pool is not ConstructCardPool, "Vanilla card pool ownership remains unchanged");
-            Check(character.CardPool.AllCards.Count() == 82, "All 82 roster cards are registered, including Scorching Iron Wave");
+            Check(character.CardPool.AllCards.Count() == 98, "All 98 roster cards are registered, including Scorching Iron Wave");
             Check(character.StartingHp == 75 && character.BaseOrbSlotCount == 0, "Confirmed 75 HP and zero starting orb slots");
             foreach (var path in character.AssetPaths.Concat(character.AssetPathsCharacterSelect).Distinct())
                 Check(ResourceLoader.Exists(path), "Resource exists: " + path);

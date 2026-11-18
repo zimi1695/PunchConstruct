@@ -3,6 +3,7 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Entities.Ascension;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Models;
@@ -62,7 +63,7 @@ internal static partial class PlaytestRunner
         await Frames(20);
         var screen = Descendants(menu).OfType<NCustomRunScreen>().Single();
         var button = Descendants(screen).OfType<NCharacterSelectButton>().Single(b => b.Character is ConstructCharacter);
-        screen.SelectCharacter(button, ModelDb.Character<ConstructCharacter>());
+        screen.SelectCharacter(button);
         var list = (NCustomRunModifiersList)AccessTools.Field(typeof(NCustomRunScreen), "_modifiersList").GetValue(screen)!;
         var available = Descendants(list).OfType<NRunModifierTickbox>().Select(t => t.Modifier!).ToArray();
         Check(available.Length >= 18, "Native custom-run screen exposes full challenge catalog");
@@ -74,7 +75,7 @@ internal static partial class PlaytestRunner
         await (Task)AccessTools.Method(typeof(NCustomRunScreen), "StartNewSingleplayerRun").Invoke(screen,
             [seed, new List<ActModel> { ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>() }, screen.Lobby.Modifiers!.ToArray()])!;
         var first = RunManager.Instance.DebugOnlyGetState() ?? throw new InvalidOperationException("UI did not start a run");
-        Check(first.GameMode == GameMode.Custom && first.Rng.StringSeed == seed && first.Modifiers.Any(m => m is Flight),
+        Check(first.GameMode == GameMode.Standard && first.IsCustomGame && first.Rng.StringSeed == seed && first.Modifiers.Any(m => m is Flight),
             "Seeded custom run starts through actual screen with construct and selected challenge");
         await NGame.Instance!.ReturnToMainMenu();
         SaveManager.Instance.DeleteCurrentRun();
@@ -87,9 +88,9 @@ internal static partial class PlaytestRunner
         {
             string label = modifiers.Length == 0 ? "seed-only" : string.Join("+", modifiers.Select(m => m.Title!.GetFormattedText()));
             Diagnostics.Write("info", "qa.mode_case", new { label, seed });
-            var run = await NGame.Instance!.StartNewSingleplayerRun(ModelDb.Character<ConstructCharacter>(), true,
+            var run = await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<ConstructCharacter>()), true,
                 [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], modifiers.Select(m => m.IsMutable ? (ModifierModel)m.MutableClone() : m.ToMutable()).ToArray(), seed,
-                modifiers.Length == 0 ? GameMode.Standard : GameMode.Custom);
+                GameMode.Standard, isCustomGame: modifiers.Length > 0);
             var player = run.Players.Single();
             Check(run.Rng.StringSeed == seed && run.Modifiers.Count == modifiers.Length && player.Character is ConstructCharacter,
                 "Seed, character and modifier count preserved: " + label);
@@ -111,29 +112,75 @@ internal static partial class PlaytestRunner
                 var unselected = ModelDb.GetById<CharacterModel>(foreign.CharacterModel).CardPool.AllCards
                     .Where(c => !player.Character.CardPool.AllCardIds.Contains(c.Id)).Select(c => c.Id).ToHashSet();
                 var options = foreign.ModifyCardRewardCreationOptions(player, CardCreationOptions.ForRoom(player, RoomType.Monster).WithFlags(CardCreationFlags.IsCardReward));
-                int actual = options.GetPossibleCards(player).Count(c => unselected.Contains(c.Id));
+                var possible = options.GetPossibleCards(player).ToArray();
+                int actual = possible.Count(c => unselected.Contains(c.Id));
                 var nativePool = ModelDb.GetById<CharacterModel>(foreign.CharacterModel).CardPool;
                 if (nativePool is not ConstructCardPool)
                 {
-                    Check(unselected.Count > 0 && actual > 0 && nativePool.AllCards.Where(c => c is not IronWave).All(c => CardAcquisition.Eligible(player, c)) &&
-                        !options.GetPossibleCards(player).Any(c => c is IronWave),
+                    // The native multiplayer constraint is a legitimate exclusion the
+                    // mod respects even under a pool challenge: a multiplayer-only card
+                    // must not appear in a singleplayer run. Only require eligibility for
+                    // cards the run mode actually permits, mirroring CardAcquisition.
+                    var runConstraint = player.RunState.CardMultiplayerConstraint;
+                    bool ConstraintAllows(CardModel c) => c.MultiplayerConstraint == CardMultiplayerConstraint.None || c.MultiplayerConstraint == runConstraint;
+                    var constraintExcluded = nativePool.AllCards.Where(c => c is not IronWave && !ConstraintAllows(c)).Select(c => c.Id).ToArray();
+                    var notEligible = nativePool.AllCards.Where(c => c is not IronWave && ConstraintAllows(c) && !CardAcquisition.Eligible(player, c)).Select(c => c.Id).ToArray();
+                    bool ironWaveLeak = possible.Any(c => c is IronWave);
+                    Diagnostics.Write("info", "qa.challenge_pool_policy", new { label, foreignCards = unselected.Count, actualForeignCandidates = actual,
+                        isConstruct = CharacterScope.IsConstruct(player), runConstraint = runConstraint.ToString(), constraintExcluded, notEligible, ironWaveLeak, possibleCount = possible.Length });
+                    Check(unselected.Count > 0 && actual > 0 && notEligible.Length == 0 && !ironWaveLeak,
                         "Selected native character challenge admits its pool while retaining the starter-only Iron Wave exclusion: " + label);
                     var merchant = MegaCrit.Sts2.Core.Entities.Merchant.MerchantInventory.CreateForNormalMerchant(player);
                     Check(merchant.CharacterCardEntries.Count > 0 && merchant.CharacterCardEntries.All(e => e.CreationResult != null), "Full-pool challenge merchant populates without an empty-slot failure: " + label);
                 }
-                Diagnostics.Write("info", "qa.challenge_pool_policy", new { label, foreignCards = unselected.Count, actualForeignCandidates = actual });
+                else Diagnostics.Write("info", "qa.challenge_pool_policy", new { label, foreignCards = unselected.Count, actualForeignCandidates = actual });
             }
             await SaveManager.Instance.SaveRun(run.CurrentRoom);
             var disk = SaveManager.Instance.LoadRunSave();
             Check(disk.Success, "Native disk save loader reads seeded challenge: " + label);
             var restored = RunState.FromSerializable(disk.SaveData!);
             Check(restored.Rng.StringSeed == seed && restored.GameMode == run.GameMode && restored.Modifiers.Count == run.Modifiers.Count &&
-                restored.Modifiers.Zip(run.Modifiers).All(pair => pair.First.IsEquivalent(pair.Second)) && restored.Players.Single().Deck.Cards.Count == player.Deck.Cards.Count,
+                restored.Modifiers.Zip(run.Modifiers).All(pair => pair.Item1.IsEquivalent(pair.Item2)) && restored.Players.Single().Deck.Cards.Count == player.Deck.Cards.Count,
                 "Native reconstruction preserves seed, challenge parameters and deck: " + label);
             await NGame.Instance.ReturnToMainMenu();
             SaveManager.Instance.DeleteCurrentRun();
         }
+
+        // Blitz and Dread are real game modes, not custom-run modifiers. The
+        // construct must start each at that mode's native ascension cap: Blitz
+        // only allows five (the standard ten would throw in AscensionManager),
+        // Dread forces ten and applies a boss dominion. No full runs.
+        foreach (var mode in new[] { GameMode.Blitz, GameMode.Dread })
+        {
+            int cap = ConstructDifficulty.MaximumFor(mode);
+            Check(cap == AscensionManager.GetMaxAllowed(mode) && cap == (mode == GameMode.Blitz ? 5 : 10),
+                "Construct difficulty cap matches the native " + mode + " maximum");
+            string modeSeed = "PUNCHMODE" + mode;
+            Diagnostics.Write("info", "qa.mode_run", new { mode = mode.ToString(), cap, seed = modeSeed });
+            var run = await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<ConstructCharacter>()), true,
+                [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], modeSeed, mode, isCustomGame: false, ascensionLevel: cap);
+            var player = run.Players.Single();
+            Check(run.GameMode == mode && run.AscensionLevel == cap && player.Character is ConstructCharacter,
+                "Construct starts a real " + mode + " run at ascension " + cap);
+            await RunManager.Instance.EnterRoomDebug(RoomType.Event, model: ModelDb.Event<DollRoom>(), showTransition: false);
+            Check(player.Deck.Cards.Count > 0, mode + " initialization leaves a playable deck");
+            if (mode == GameMode.Dread)
+                Check(run.Dominion != null, "Dread applies a boss dominion on the first room");
+            var reward = CardFactory.CreateForReward(player, 3, CardCreationOptions.ForRoom(player, RoomType.Monster)
+                .WithFlags(CardCreationFlags.IsCardReward)).ToArray();
+            Check(reward.Length == 3 && reward.Select(c => c.Card.Id).Distinct().Count() == 3,
+                mode + " card reward has three distinct candidates");
+            await SaveManager.Instance.SaveRun(run.CurrentRoom);
+            var disk = SaveManager.Instance.LoadRunSave();
+            Check(disk.Success, mode + " disk save loader reads the seeded run");
+            var restored = RunState.FromSerializable(disk.SaveData!);
+            Check(restored.GameMode == mode && restored.Rng.StringSeed == modeSeed && restored.AscensionLevel == cap &&
+                restored.Players.Single().Deck.Cards.Count == player.Deck.Cards.Count,
+                mode + " reconstruction preserves mode, seed, ascension and deck");
+            await NGame.Instance.ReturnToMainMenu();
+            SaveManager.Instance.DeleteCurrentRun();
+        }
         await QaStartupPreload.Wait(_tree);
-        GD.Print($"[Construct MODES PASS] {_checks} checks; real seed/checkbox UI, individual challenge initialization, rewards and disk reconstruction; no full runs");
+        GD.Print($"[Construct MODES PASS] {_checks} checks; real seed/checkbox UI, individual challenge initialization, Blitz/Dread mode runs, rewards and disk reconstruction; no full runs");
     }
 }

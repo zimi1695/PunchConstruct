@@ -15,7 +15,7 @@ internal static class ConstructPunchOffText
     ];
     internal static void Apply(EventModel __instance, ref LocString __result)
     {
-        if (__instance is not (PunchOff or SpiralingWhirlpool or Amalgamator or Bugslayer) || !CharacterScope.IsConstruct(__instance)) return;
+        if (__instance is not (PunchOff or SpiralingWhirlpool or Amalgamator or Bugslayer or InfestedAutomaton) || !CharacterScope.IsConstruct(__instance)) return;
         var key = "PUNCHCONSTRUCT_" + __result.LocEntryKey;
         if (LocString.Exists("events", key))
         {

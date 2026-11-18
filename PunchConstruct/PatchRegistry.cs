@@ -24,11 +24,13 @@ internal static class PatchRegistry
     private static readonly List<Result> Results = [];
     private static readonly List<string> Failures = [];
     private static bool appliedOnce;
+    private static bool applying;
     private static int appliedCount;
     private static int failedCount;
 
     internal static int Applied => appliedCount;
     internal static int Failed => failedCount;
+    internal static bool RequiredFailure { get; private set; }
     internal static IReadOnlyList<string> RequiredFailures => Failures;
     internal static IReadOnlyList<string> AppliedNames => Results.Where(r => r.Installed).Select(r => r.Name).ToArray();
     internal static IReadOnlyList<string> FailedNames => Results.Where(r => !r.Installed).Select(r => r.Name).ToArray();
@@ -37,47 +39,115 @@ internal static class PatchRegistry
     {
         // Another loader or a repeated initializer call must not install every
         // Harmony class twice.
-        if (appliedOnce)
+        if (appliedOnce || applying)
         {
-            Diagnostics.Write("warn", "patch.duplicate_apply", new { applied = appliedCount, failed = failedCount });
+            Diagnostics.Write("warn", "patch.duplicate_apply", new
+            {
+                applied = appliedCount,
+                failed = failedCount,
+                applying
+            });
             return;
         }
-        appliedOnce = true;
-        var harmony = new Harmony("IronWave.PunchConstruct");
-        int applied = 0, failed = 0;
-        foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
+        applying = true;
+        try
         {
-            if (!HasPatch(type)) continue;
-            bool required = type.GetCustomAttribute<PatchPolicyAttribute>()?.Required ?? false;
+            Type[] types;
             try
             {
-                harmony.CreateClassProcessor(type).Patch();
-                applied++;
-                Results.Add(new Result(type.Name, required, true, null));
+                types = Assembly.GetExecutingAssembly().GetTypes();
+            }
+            catch (ReflectionTypeLoadException error)
+            {
+                types = error.Types.Where(type => type != null).Cast<Type>().ToArray();
+                Diagnostics.Write("error", "patch.types_partial", new
+                {
+                    error = error.ToString(),
+                    loaded = types.Length
+                });
             }
             catch (Exception error)
             {
-                failed++;
-                if (required) Failures.Add(type.FullName ?? type.Name);
-                Results.Add(new Result(type.Name, required, false, error.GetType().Name + ": " + error.Message));
-                Diagnostics.Write(required ? "error" : "warn", "patch.failed", new
-                {
-                    patch = type.FullName,
-                    required,
-                    error = error.ToString()
-                });
+                Diagnostics.Write("error", "patch.types_failed", new { error = error.ToString() });
+                return;
             }
+
+            // Each class gets its own id so a partially applied class can be
+            // rolled back without touching the other bridges. The audit unions
+            // the methods patched under those ids.
+            var patched = new HashSet<MethodBase>();
+            int applied = 0, failed = 0;
+            foreach (var type in types)
+            {
+                bool hasPatch;
+                try
+                {
+                    hasPatch = HasPatch(type);
+                }
+                catch (Exception error)
+                {
+                    failed++;
+                    Results.Add(new Result(type.Name, false, false, error.GetType().Name + ": " + error.Message));
+                    Diagnostics.Write("warn", "patch.inspect_failed", new
+                    {
+                        patch = type.FullName,
+                        error = error.ToString()
+                    });
+                    continue;
+                }
+                if (!hasPatch) continue;
+
+                bool required = type.GetCustomAttribute<PatchPolicyAttribute>()?.Required ?? false;
+                string id = "IronWave.PunchConstruct." + (type.FullName ?? type.Name);
+                var harmony = new Harmony(id);
+                try
+                {
+                    harmony.CreateClassProcessor(type).Patch();
+                    patched.UnionWith(harmony.GetPatchedMethods());
+                    applied++;
+                    Results.Add(new Result(type.Name, required, true, null));
+                }
+                catch (Exception error)
+                {
+                    failed++;
+                    try
+                    {
+                        harmony.UnpatchAll();
+                    }
+                    catch (Exception rollback)
+                    {
+                        Diagnostics.Write("warn", "patch.rollback_failed", new
+                        {
+                            patch = type.FullName,
+                            error = rollback.ToString()
+                        });
+                    }
+                    if (required) Failures.Add(type.FullName ?? type.Name);
+                    Results.Add(new Result(type.Name, required, false, error.GetType().Name + ": " + error.Message));
+                    Diagnostics.Write(required ? "error" : "warn", "patch.failed", new
+                    {
+                        patch = type.FullName,
+                        required,
+                        error = error.ToString()
+                    });
+                }
+            }
+            appliedCount = applied;
+            failedCount = failed;
+            RequiredFailure = Failures.Count > 0;
+            Audit(patched.Count, applied, failed);
         }
-        appliedCount = applied;
-        failedCount = failed;
-        Audit(harmony, applied, failed);
+        finally
+        {
+            applying = false;
+            appliedOnce = true;
+        }
     }
 
     // Prints one readable line per required hook plus every failure, so a log
     // shows whether the reload/Neow/relic hooks were installed on this machine.
-    private static void Audit(Harmony harmony, int applied, int failed)
+    private static void Audit(int patchedMethods, int applied, int failed)
     {
-        int patchedMethods = harmony.GetPatchedMethods().Count();
         Diagnostics.Write("info", "patch.summary", new
         {
             applied,

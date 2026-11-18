@@ -32,7 +32,13 @@ public sealed class ConstructCardPool : CustomCardPoolModel
         ModelDb.Card<Putrefy>(), ModelDb.Card<Deathbringer>(), ModelDb.Card<Shroud>(), ModelDb.Card<Protector>(),
         ModelDb.Card<GoForTheEyes>(), ModelDb.Card<ColdSnap>(), ModelDb.Card<LightningRod>(), ModelDb.Card<Null>(),
         ModelDb.Card<Glasswork>(), ModelDb.Card<ShadowShield>(), ModelDb.Card<Hailstorm>(), ModelDb.Card<BulkUp>(),
-        ModelDb.Card<IceLance>(), ModelDb.Card<Rainbow>()
+        ModelDb.Card<IceLance>(), ModelDb.Card<Rainbow>(),
+        // Native Fool designs. Their arrow slots, shooting and impale flow are
+        // character-agnostic in the base game, so only the acquisition list and
+        // the group gate in CardAcquisition are mod-side work.
+        ModelDb.Card<ChoBarbs>(), ModelDb.Card<ChoReady>(), ModelDb.Card<WahCho>(), ModelDb.Card<WahChoKi>(),
+        ModelDb.Card<HobblingShot>(), ModelDb.Card<BlossomShot>(), ModelDb.Card<WhistlingArrows>(),
+        ModelDb.Card<Nail>(), ModelDb.Card<Enrapture>(), ModelDb.Card<CoveringFire>()
         // The eight independently implemented observer cards are appended via
         // their [Pool] attributes, alongside the other local designs.
     ];

@@ -40,6 +40,8 @@ internal static partial class PlaytestRunner
         await Inspect<ObserverBlockReturn>(4, enemy, "4", "攻击者", "格挡");
         await Inspect<ObserverColdObservationPower>(3, player.Creature, "3张攻击牌", "每段", "等量格挡");
         await Inspect<ConstructSicEmPower>(7, enemy, "本回合", "7", "召唤");
+        await Inspect<ClockworkMechanismPower>(1, player.Creature, "回合结束", "灼烧", "状态牌", "活力", "格挡");
+        await Inspect<ConstructDomineeringPower>(1, player.Creature, "下回合", "所有敌人", "格挡");
         await Inspect<HelicalDartPower>(3, player.Creature, "3", "敏捷");
         await PowerCmd.Remove<DexterityPower>(player.Creature);
         await Inspect<GuardStrengthNextTurnPower>(11, player.Creature, "下回合", "11", "临时力量");
@@ -58,8 +60,8 @@ internal static partial class PlaytestRunner
         Check(StatusText(never).Contains("1张[gold]拳斗[/gold]") && !StatusText(never).Contains("拳斗+"),
             "Upgraded Never Back Down status also describes the normal fist");
         await Play<NeverBackDown>(player);
-        Check(StatusText(never).Contains("2张[gold]拳斗[/gold]") && StatusText(never).Contains("2张[gold]灼烧[/gold]"),
-            "Mixed Never Back Down status reports combined normal fist and Burn counts");
+        Check(StatusText(never).Contains("2张[gold]拳斗[/gold]") && !StatusText(never).Contains("灼烧"),
+            "Mixed Never Back Down status reports the combined normal fist count without Burn text");
         checkedTypes.Add(typeof(NeverBackDownPower));
         await PowerCmd.Remove(never);
         await Play<TonyWave>(player);

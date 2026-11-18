@@ -25,17 +25,17 @@ internal static class DelayedWaveFacing
         try { await DamageCmd.Attack(damage).FromCard(card, play).TargetingRandomOpponents(combat).Execute(context); }
         finally { Active.Value = previous; }
     }
-    internal static bool Redirect(PlayerChoiceContext choiceContext, IEnumerable<Creature> targets, decimal amount, ValueProp props,
+    internal static bool Redirect(PlayerChoiceContext choiceContext, IEnumerable<DamageTargetData>? targets, decimal amount, ValueProp props,
         Creature? dealer, CardModel? cardSource, CardPlay? cardPlay, ref Task<IEnumerable<DamageResult>> __result)
     {
-        if (cardSource is not TonyWave || Active.Value != cardSource || dealer != cardSource.Owner.Creature ||
+        if (targets == null || cardSource is not TonyWave || Active.Value != cardSource || dealer != cardSource.Owner.Creature ||
             dealer.GetPower<SurroundedPower>() is not { } surrounded) return true;
         var actual = targets.ToArray();
-        if (actual.Length != 1 || !actual[0].HasPower<BackAttackLeftPower>() && !actual[0].HasPower<BackAttackRightPower>()) return true;
+        if (actual.Length != 1 || !actual[0].target.HasPower<BackAttackLeftPower>() && !actual[0].target.HasPower<BackAttackRightPower>()) return true;
         __result = TurnAndDamage(choiceContext, actual, amount, props, dealer, cardSource, cardPlay, surrounded);
         return false;
     }
-    private static async Task<IEnumerable<DamageResult>> TurnAndDamage(PlayerChoiceContext context, Creature[] targets, decimal amount,
+    private static async Task<IEnumerable<DamageResult>> TurnAndDamage(PlayerChoiceContext context, DamageTargetData[] targets, decimal amount,
         ValueProp props, Creature dealer, CardModel card, CardPlay? play, SurroundedPower surrounded)
     {
         var previous = Active.Value;
@@ -44,10 +44,10 @@ internal static class DelayedWaveFacing
         try
         {
             var before = surrounded.Facing;
-            await (Task)UpdateDirection.Invoke(surrounded, [targets[0]])!;
+            await (Task)UpdateDirection.Invoke(surrounded, [targets[0].target])!;
             Diagnostics.Observe(() => Diagnostics.Write("info", "delayed_wave.facing", new {
                 owner = Diagnostics.Slot(card.Owner.NetId), card = card.Id.ToString(), before = before.ToString(),
-                after = surrounded.Facing.ToString(), left = targets[0].HasPower<BackAttackLeftPower>(), right = targets[0].HasPower<BackAttackRightPower>() }));
+                after = surrounded.Facing.ToString(), left = targets[0].target.HasPower<BackAttackLeftPower>(), right = targets[0].target.HasPower<BackAttackRightPower>() }));
             return await CreatureCmd.Damage(context, targets, amount, props, dealer, card, play);
         }
         finally { Active.Value = previous; }

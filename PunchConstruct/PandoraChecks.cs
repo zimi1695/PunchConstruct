@@ -44,8 +44,8 @@ internal static partial class PlaytestRunner
             await NGame.Instance!.ReturnToMainMenu();
             SaveManager.Instance.DeleteCurrentRun();
         }
-        var nativeRun = await NGame.Instance!.StartNewSingleplayerRun(ModelDb.Character<Ironclad>(), true,
-            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "NATIVEPANDORA", GameMode.Standard);
+        var nativeRun = await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<Ironclad>()), true,
+            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "NATIVEPANDORA", GameMode.Standard, isCustomGame: false);
         var nativePlayer = nativeRun.Players.Single();
         var nativeOriginal = nativePlayer.Deck.Cards.ToArray();
         var nativeTargets = nativeOriginal.Where(c => c.IsBasicStrikeOrDefend && c.IsRemovable).ToArray();

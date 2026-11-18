@@ -45,8 +45,8 @@ internal static partial class PlaytestRunner
 
     private static async Task EventRoomControl()
     {
-        var run = await NGame.Instance!.StartNewSingleplayerRun(ModelDb.Character<Ironclad>(), true,
-            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "PHILOSOPHER-ROOM-CONTROL", GameMode.Standard);
+        var run = await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<Ironclad>()), true,
+            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "PHILOSOPHER-ROOM-CONTROL", GameMode.Standard, isCustomGame: false);
         var player = run.Players.Single();
         AccessTools.Field(typeof(Player), "<UnlockState>k__BackingField").SetValue(player,
             AccessTools.Field(typeof(MegaCrit.Sts2.Core.Unlocks.UnlockState), "all").GetValue(null));
@@ -64,8 +64,8 @@ internal static partial class PlaytestRunner
     private static async Task NativeShaderControl()
     {
         bool native = OS.GetCmdlineArgs().Contains("--punchconstruct-shader-native-role");
-        var run = native ? await NGame.Instance!.StartNewSingleplayerRun(ModelDb.Character<Ironclad>(), true,
-            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "DECIMILLIPEDE-SHADER", GameMode.Standard)
+        var run = native ? await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<Ironclad>()), true,
+            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "DECIMILLIPEDE-SHADER", GameMode.Standard, isCustomGame: false)
             : await ReliabilityRun("DECIMILLIPEDE-SHADER");
         var player = run.Players.Single();
         Check(!GraphicsCompatibility.Applies(false, true) && !GraphicsCompatibility.Applies(true, false) &&

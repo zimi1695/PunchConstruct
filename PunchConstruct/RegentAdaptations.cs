@@ -14,8 +14,8 @@ internal static class RegentAdaptations
     internal static bool ReplaceStarCost = true;
     internal static readonly Dictionary<Type, (int Cost, int Damage)> Changes = new()
     {
-        [typeof(FallingStar)] = (1, 0), [typeof(MeteorShower)] = (1, 0), [typeof(GammaBlast)] = (2, 3),
-        [typeof(Reflect)] = (2, 0), [typeof(Resonance)] = (1, 0), [typeof(Comet)] = (3, 6), [typeof(DyingStar)] = (2, 0)
+        [typeof(FallingStar)] = (1, 0), [typeof(MeteorShower)] = (1, 0), [typeof(GammaBlast)] = (2, 0),
+        [typeof(Reflect)] = (2, 0), [typeof(Resonance)] = (1, 0), [typeof(Comet)] = (3, 0), [typeof(DyingStar)] = (2, 0)
     };
     private static readonly SpireField<CardModel, bool> Adapted = new SpireField<CardModel, bool>(() => false).CopyOnClone();
     private static readonly AccessTools.FieldRef<CardModel, Player?> OwnerField = AccessTools.FieldRefAccess<CardModel, Player?>("_owner");

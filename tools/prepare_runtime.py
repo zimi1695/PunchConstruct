@@ -1,5 +1,5 @@
 """Prepare a disposable test copy. Never writes to the installed game or real saves."""
-import hashlib, io, json, shutil, struct
+import argparse, hashlib, io, json, shutil, struct
 from pathlib import Path
 from pck import index
 
@@ -24,17 +24,17 @@ def patch_settings(data):
         raw = name.encode(); result += struct.pack('<I', len(raw)) + raw + struct.pack('<I', len(value)) + value
     return result
 
-if __name__ == '__main__':
-    RUNTIME.mkdir(parents=True, exist_ok=True)
+def prepare(game=GAME, runtime=RUNTIME):
+    runtime.mkdir(parents=True, exist_ok=True)
     for name in ['SlayTheSpire2.exe', 'release_info.json']:
-        if not (RUNTIME/name).exists(): shutil.copy2(GAME/name, RUNTIME/name)
-    for f in GAME.glob('*.dll'):
-        if not (RUNTIME/f.name).exists(): shutil.copy2(f, RUNTIME/f.name)
-    shutil.copytree(GAME/'data_sts2_windows_x86_64', RUNTIME/'data_sts2_windows_x86_64', dirs_exist_ok=True)
-    pack = GAME/'SlayTheSpire2.pck'; entries = index(pack)
+        if not (runtime/name).exists(): shutil.copy2(game/name, runtime/name)
+    for f in game.glob('*.dll'):
+        if not (runtime/f.name).exists(): shutil.copy2(f, runtime/f.name)
+    shutil.copytree(game/'data_sts2_windows_x86_64', runtime/'data_sts2_windows_x86_64', dirs_exist_ok=True)
+    pack = game/'SlayTheSpire2.pck'; entries = index(pack)
     with pack.open('rb') as f:
         offset, size, *_ = entries['project.binary']; f.seek(offset); settings = patch_settings(f.read(size))
-    dest = RUNTIME/'SlayTheSpire2.pck'
+    dest = runtime/'SlayTheSpire2.pck'
     if not dest.exists(): shutil.copyfile(pack, dest)
     with dest.open('r+b') as f:
         f.seek(24); base, = struct.unpack('<Q', f.read(8))
@@ -46,10 +46,17 @@ if __name__ == '__main__':
             f.write(struct.pack('<I', len(raw))); f.write(raw)
             f.write(struct.pack('<QQ', offset-base, size)); f.write(bytes.fromhex(digest)); f.write(struct.pack('<I', flags))
         f.seek(32); f.write(struct.pack('<Q', directory))
-    mods = RUNTIME/'mods'; mods.mkdir(exist_ok=True)
+    mods = runtime/'mods'; mods.mkdir(exist_ok=True)
     shutil.copytree(ROOT/'dist/PunchConstruct', mods/'PunchConstruct', dirs_exist_ok=True)
     base_lib = Path(r'D:\game\steam\steamapps\workshop\content\2868840\3737335127\BaseLib')
     shutil.copytree(base_lib, mods/'BaseLib', dirs_exist_ok=True)
     # Observer cards and their support are implemented by PunchConstruct itself.
-    (RUNTIME/'override.cfg').write_text('[application]\nconfig/use_custom_user_dir=true\nconfig/custom_user_dir_name="PunchConstructTest"\n', encoding='utf-8')
-    print('Prepared isolated runtime:', RUNTIME)
+    (runtime/'override.cfg').write_text('[application]\nconfig/use_custom_user_dir=true\nconfig/custom_user_dir_name="PunchConstructTest"\n', encoding='utf-8')
+    print('Prepared isolated runtime:', runtime)
+
+if __name__ == '__main__':
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--game-dir', type=Path, default=GAME, help='Source game install (default: installed Steam client)')
+    p.add_argument('--runtime-dir', type=Path, default=RUNTIME, help='Disposable runtime to build (default: tools/runtime)')
+    a = p.parse_args()
+    prepare(a.game_dir, a.runtime_dir)

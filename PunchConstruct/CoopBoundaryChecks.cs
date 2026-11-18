@@ -27,7 +27,8 @@ internal static partial class PlaytestRunner
         await CoopBarrier("second-combat-ready");
         Check(run.Players.All(p => !p.Creature.HasPower<DelayedWavePower>() && !p.Creature.HasPower<NeverBackDownPower>() &&
             !p.Creature.HasPower<UnarmToArmsPower>()) &&
-            run.Players.SelectMany(p => p.Relics).Where(r => r is GuardStance or AncientGuardStance).All(r => r.DisplayAmount == 1),
+            run.Players.SelectMany(p => p.Relics).Where(r => r is GuardStance or AncientGuardStance)
+                .All(r => r.DisplayAmount == (r is AncientGuardStance ? 5 : 1)),
             "Consecutive combat clears previous temporary powers and resets every growth counter");
         Check(!CombatRelicState.HelmetUsed[run.Players[0].Relics.OfType<ConstructHelmet>().Single()],
             "Helmet shared allowance resets in the next real combat");

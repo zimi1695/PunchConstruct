@@ -126,6 +126,32 @@ internal static class BridgeConstructAmalgamation
     }
 }
 
+[HarmonyPatch(typeof(InfestedAutomaton), "GenerateInitialOptions")]
+internal static class BridgeConstructInfestedAutomaton
+{
+    [HarmonyPriority(Priority.Last)]
+    private static void Postfix(InfestedAutomaton __instance, ref IReadOnlyList<EventOption> __result)
+    {
+        var options = __result;
+        AdaptationRegistry.Run("event", "ConstructInfestedAutomaton",
+            () => ConstructInfestedAutomaton.Apply(__instance, ref options));
+        __result = options;
+    }
+}
+
+[HarmonyPatch(typeof(EventModel), nameof(EventModel.IsAllowed))]
+internal static class BridgeConstructInfestedAutomatonAllowed
+{
+    [HarmonyPriority(Priority.Last)]
+    private static void Postfix(EventModel __instance, MegaCrit.Sts2.Core.Runs.IRunState runState, ref bool __result)
+    {
+        bool allowed = __result;
+        AdaptationRegistry.Run("event", "ConstructInfestedAutomatonAllowed",
+            () => ConstructInfestedAutomatonAllowed.Apply(__instance, runState, ref allowed));
+        __result = allowed;
+    }
+}
+
 [HarmonyPatch]
 internal static class BridgeConstructFusionReward
 {

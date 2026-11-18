@@ -69,7 +69,7 @@ internal static class AdaptedRelicVariants
         if (!CharacterScope.IsConstruct(player) || !Variants.TryGetValue(relic.GetType(), out var factory)) return;
         if (CalledFromGenericObtain()) return;
         var variant = factory();
-        variant.FloorAddedToDeck = relic.FloorAddedToDeck;
+        CopyState(relic, variant);
         Diagnostics.Write("info", "relic.variant.substitute", new
         {
             player = Diagnostics.Slot(player.NetId),
@@ -77,6 +77,19 @@ internal static class AdaptedRelicVariants
             to = variant.Id.Entry
         });
         relic = variant;
+    }
+
+    // A failed substitution must not hand a native shared relic to a construct
+    // player. Scripted generic obtains are the one intentional native path.
+    internal static bool ShouldFailClosed(RelicModel relic, Player player) =>
+        CharacterScope.IsConstruct(player) && Variants.ContainsKey(relic.GetType()) && !CalledFromGenericObtain();
+
+    private static void CopyState(RelicModel source, RelicModel target)
+    {
+        target.FloorAddedToDeck = source.FloorAddedToDeck;
+        target.IsWax = source.IsWax;
+        target.IsMelted = source.IsMelted;
+        target.Status = source.Status;
     }
 
     // Save files and multiplayer syncs may still contain the native model.
@@ -89,10 +102,13 @@ internal static class AdaptedRelicVariants
     private static RelicModel Swap(RelicModel relic, Func<RelicModel> factory)
     {
         var variant = factory();
-        variant.FloorAddedToDeck = relic.FloorAddedToDeck;
+        CopyState(relic, variant);
         return variant;
     }
 
+    // Scripted RelicCmd.Obtain<T> callers cast the result back to T. Harmony
+    // cannot patch an open generic method, so detect that caller by its stack
+    // frame and leave the native relic type untouched.
     private static bool CalledFromGenericObtain() => new System.Diagnostics.StackTrace()
         .GetFrames().Any(frame => frame.GetMethod() is { } method && method.DeclaringType == typeof(RelicCmd) && method.IsGenericMethod);
 }
@@ -187,11 +203,13 @@ public sealed class ConstructRippleBasin : CustomRelicModel
         "如果你在回合中打出过攻击牌，回合结束时获得4点[gold]格挡[/gold]。", VariantText.Flavor("RIPPLE_BASIN"));
     public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
-        if (!participants.Contains(Owner.Creature) ||
-            !CombatManager.Instance.History.CardPlaysFinished.Any(e => e.HappenedThisTurn(Owner.Creature.CombatState!) &&
+        if (!participants.Contains(Owner.Creature)) return;
+        // Clear the active glow even when no attack was played this turn, so a
+        // skipped turn cannot leave the relic looking ready.
+        Status = RelicStatus.Normal;
+        if (!CombatManager.Instance.History.CardPlaysFinished.Any(e => e.HappenedThisTurn(Owner.Creature.CombatState!) &&
                 e.CardPlay.Player == Owner && e.CardPlay.Card.Type == CardType.Attack)) return;
         Flash();
-        Status = RelicStatus.Normal;
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null);
     }
     public override Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -261,8 +279,10 @@ public sealed class ConstructLeafyPoultice : CustomRelicModel
         VariantText.Flavor("LEAFY_POULTICE"));
     public override async Task AfterObtained()
     {
+        // Pay the max-HP cost before choosing rewards; a relic that removes the
+        // last HP should not first consume transform randomness.
+        await CreatureCmd.LoseMaxHp(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars.MaxHp.BaseValue, null);
         var targets = Owner.Deck.Cards.OfType<SmallWave>().Where(c => c.IsTransformable).Take(2).ToArray();
-        await CreatureCmd.LoseMaxHp(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars.MaxHp.BaseValue, false);
         foreach (var card in targets)
         {
             var replacement = CardFactory.CreateRandomCardForTransform(card, false, Owner.PlayerRng.Transformations);
@@ -348,7 +368,7 @@ public sealed class ConstructLargeCapsule : CustomRelicModel
     {
         for (int i = 0; i < DynamicVars["Relics"].IntValue; i++)
         {
-            var relic = RelicFactory.PullNextRelicFromFront(Owner).ToMutable();
+            var relic = RelicFactory.PullNextRelicForRewardFromFront(Owner).ToMutable();
             await RelicCmd.Obtain(relic, Owner);
         }
         var results = new List<CardPileAddResult>(2);

@@ -20,5 +20,12 @@
   "PUNCHCONSTRUCT_BUGSLAYER.pages.INITIAL.options.GUARD.description": "将一张[gold]格挡[/gold]加入你的牌组。",
   "PUNCHCONSTRUCT_BUGSLAYER.pages.QUICK.description": "一拳。\n\n墙上多了一个拳印，少了几只虫子。",
   "PUNCHCONSTRUCT_BUGSLAYER.pages.COMBINATION.description": "第一拳打散虫群，第二拳紧随其后。\n\n那名战士默默放下了杀虫剂。",
-  "PUNCHCONSTRUCT_BUGSLAYER.pages.GUARD.description": "你架起双臂。\n\n虫群撞上拳套，噼里啪啦落了一地。"
+  "PUNCHCONSTRUCT_BUGSLAYER.pages.GUARD.description": "你架起双臂。\n\n虫群撞上拳套，噼里啪啦落了一地。",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.description": "废料堆深处，一具[gold]构装体[/gold]半跪在地。\n外壳裂开，齿轮锈死，胸口的[blue]核心[/blue]早已熄灭。\n唯一还在动的，是它胸腔里一枚[gold]齿轮工艺品[/gold]。发条还在走，[sine]滴答，滴答[/sine]。",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.REPAIR.title": "修复",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.REPAIR.description": "失去[red]67[/red]金币，获得[gold]齿轮工艺品[/gold]。",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.REPAIR.description": "你买来零件，把锈死齿轮一件件换掉。\n核心没亮。你修不好一台停机的机器。\n你把它胸腔里那还在走动的[gold]齿轮工艺品[/gold]取出。\n发条还在走，[sine]滴答，滴答[/sine]。",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.SEARCH.title": "翻找",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.SEARCH.description": "获得[gold]万能药[/gold]。",
+  "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.SEARCH.description": "你蹲下身，在它的残骸里翻找。\n小瓶从裂开的胸腔滚出。\n你拔开瓶塞，里面是[blue]万能药[/blue]。\n你离开时，它仍保持着原来的姿势。"
 }

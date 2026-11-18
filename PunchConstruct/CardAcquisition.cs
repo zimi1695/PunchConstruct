@@ -32,16 +32,24 @@ internal static class CardAcquisition
         [typeof(Bulwark), typeof(Parry), typeof(ForgeWorkshop), typeof(RoyalBearing), typeof(StrikeWhileHot)],
         [typeof(SicEm), typeof(Bodyguard), typeof(Unleash), typeof(BoneShards), typeof(UnarmToArms), typeof(DoomResonance)],
         [typeof(FinalJudgment), typeof(NegativePulse), typeof(Deathbringer), typeof(Shroud), typeof(DoomResonance)],
-        [typeof(Hailstorm), typeof(ColdSnap), typeof(Rainbow)], [typeof(ObserverProstrate)]
+        [typeof(Hailstorm), typeof(ColdSnap), typeof(Rainbow)], [typeof(ObserverProstrate)],
+        [typeof(HobblingShot), typeof(BlossomShot), typeof(WhistlingArrows), typeof(Nail), typeof(CoveringFire), typeof(ChoReady)]
     ];
     internal static readonly Type[] ShopAncients = [typeof(Suppress), typeof(MeteorShower), typeof(Protector), typeof(Whistle)];
-    internal static bool IsAncient(CardModel card) => ShopAncients.Contains(card.GetType()) || card is BoxingChampionForm;
+    internal static bool IsAncient(CardModel card) => ShopAncients.Contains(card.GetType()) || card is BoxingChampionForm or ConstructDomineering;
     internal static bool IsPhilosopher(Player player) => player.RunState.CurrentRoom is EventRoom room && room.CanonicalEvent is ColorfulPhilosophers;
     internal static bool Eligible(Player player, CardModel card)
     {
         // The ordinary wave is a starter only; Soup keeps its separately defined
         // fixed transformation. Even native-pool challenges must not reoffer it.
         if (card is IronWave || BoxingGeneration.Restricted(card)) return false;
+        // Shop/event-only card. ConstructColorlessShop and the InfestedAutomaton
+        // event build their own offers, so this gate only blocks reward, Splash,
+        // Discovery and random generation channels.
+        if (card is ConstructPanacea) return false;
+        // Callers hand the gate raw pool lists, not only constraint-filtered ones.
+        if (card.MultiplayerConstraint != CardMultiplayerConstraint.None &&
+            card.MultiplayerConstraint != player.RunState.CardMultiplayerConstraint) return false;
         if (SeaGlassSelection) return IsSelectedImport(card);
         if (IsPhilosopher(player)) return IsPhilosopherCard(card);
         if (ChallengeAllows(player, card)) return true;
@@ -53,7 +61,9 @@ internal static class CardAcquisition
             Parry or ForgeWorkshop or RoyalBearing => Group(0),
             Unleash or BoneShards => Own(typeof(Bodyguard)),
             Shroud or FinalJudgment => Group(2),
-            Hailstorm => Group(3), _ => true
+            Hailstorm => Group(3),
+            WhistlingArrows or Nail or CoveringFire or ChoReady => Own(typeof(HobblingShot)) || Own(typeof(BlossomShot)),
+            _ => true
         };
     }
     // Explicit native character-pool challenges override the normal whitelist
@@ -110,7 +120,17 @@ internal static class ConstructCombatCardSources
     internal static void Apply(Player player, ref IEnumerable<CardModel> __1, ref int __2, MethodBase __originalMethod, out Player? __state)
     {
         __state = CardFactoryScope.Player;
-        if (!CharacterScope.IsConstruct(player)) return;
+        if (!CharacterScope.IsConstruct(player))
+        {
+            // Splash enumerates every unlocked character pool, so a native
+            // character with this character unlocked would otherwise be offered
+            // mod attacks. Discovery reads its own pool, but the same filter
+            // keeps any colorless mod card from leaking through pool mapping.
+            // Other mods' cards and all native cards survive.
+            __1 = __1.Where(c => c.GetType().Assembly != typeof(ConstructCharacter).Assembly &&
+                c.Pool is not ConstructCardPool).ToArray();
+            return;
+        }
         CardFactoryScope.Player = player;
         var options = CardAcquisition.IncludeDesignedColorless(player, __1).Where(c => c.Rarity is CardRarity.Event or CardRarity.Token or CardRarity.Status or CardRarity.Curse or CardRarity.Quest ||
             CardAcquisition.Eligible(player, c)).DistinctBy(c => c.Id).ToArray();
@@ -260,7 +280,10 @@ internal static class MerchantCardGates
         {
             bool coloredSlot = __originalMethod.GetParameters().Last().ParameterType == typeof(CardType);
             __1 = CardAcquisition.IncludeDesignedColorless(player, __1)
-                .Where(c => CardAcquisition.Eligible(player, c) && (!coloredSlot || c.Pool is not ColorlessCardPool)).ToArray();
+                // 万能药 is shop/event-only, so Eligible rejects it everywhere
+                // else. This factory is the shop, so let its explicit offer pass.
+                .Where(c => c is ConstructPanacea || CardAcquisition.Eligible(player, c))
+                .Where(c => !coloredSlot || c.Pool is not ColorlessCardPool).ToArray();
         }
     }
 }
@@ -269,19 +292,31 @@ internal static class MerchantCardGates
 
 internal static class ConstructColorlessShop
 {
-    internal static bool Apply(MerchantInventory __instance)
+    internal static bool Apply(Player player, ref List<MerchantCardEntry> entries)
     {
-        var player = __instance.Player;
         if (!CharacterScope.IsConstruct(player)) return true;
         var options = player.Character.CardPool.AllCards.Where(c => c.Pool is ColorlessCardPool && CardAcquisition.Eligible(player, c)).ToArray();
-        var entries = (List<MerchantCardEntry>)AccessTools.Field(typeof(MerchantInventory), "_colorlessCardEntries").GetValue(__instance)!;
-        foreach (var rarity in new[] { CardRarity.Uncommon, CardRarity.Rare })
-        {
-            var entry = new MerchantCardEntry(player, __instance, options, rarity);
-            entry.Populate();
-            entries.Add(entry);
-        }
+        // The native colorless container has exactly two slots. Keep the rare
+        // slot and make the first slot a guaranteed 万能药 offer; a Common card
+        // cannot be rolled from an Uncommon entry.
+        entries =
+        [
+            new MerchantCardEntry(player, [ModelDb.Card<ConstructPanacea>()], CardRarity.Common),
+            new MerchantCardEntry(player, options, CardRarity.Rare)
+        ];
         return false;
+    }
+
+    // The Courier restocks without clearing the sold entry first. A one-card
+    // pool would otherwise blacklist its own Panacea and hand a null card to
+    // RunState.CreateCard.
+    internal static void PrepareRestock(MerchantCardEntry entry)
+    {
+        if (entry.CreationResult?.Card is not ConstructPanacea || !CharacterScope.IsConstruct(entry.Player)) return;
+        if (AccessTools.Field(typeof(MerchantCardEntry), "_cardPool")?.GetValue(entry) is not IEnumerable<CardModel> pool) return;
+        var cards = pool.ToArray();
+        if (cards.Length != 1 || cards[0] is not ConstructPanacea) return;
+        AccessTools.PropertySetter(typeof(MerchantCardEntry), nameof(MerchantCardEntry.CreationResult))?.Invoke(entry, [null]);
     }
 }
 

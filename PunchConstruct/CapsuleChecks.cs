@@ -21,8 +21,8 @@ internal static partial class PlaytestRunner
     {
         bool construct = Godot.OS.GetCmdlineArgs().Contains("--punchconstruct-capsule-construct-control");
         CharacterModel character = construct ? ModelDb.Character<ConstructCharacter>() : ModelDb.Character<Ironclad>();
-        var run = await NGame.Instance!.StartNewSingleplayerRun(character, true,
-            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "CAPSULE-NATIVE-CONTROL", GameMode.Standard);
+        var run = await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(character), true,
+            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "CAPSULE-NATIVE-CONTROL", GameMode.Standard, isCustomGame: false);
         var player = run.Players.Single();
         // Native roles must keep the untouched Sea Glass pool. Capture the real
         // candidate list and prove no mod assembly card leaks into it. Assign the
@@ -32,7 +32,7 @@ internal static partial class PlaytestRunner
             : ModelDb.Relic<SeaGlass>().ToMutable();
         if (!construct) AccessTools.Field(typeof(SeaGlass), "_characterId").SetValue(seaRelic, player.Character.Id);
         var seaSelector = new UpdateSelector();
-        using (CardSelectCmd.UseSelector(seaSelector))
+        using (RunManager.Instance.CardSelectorStack.UseSelector(player, seaSelector))
         {
             await RelicCmd.Obtain(seaRelic, player);
             var sea = seaSelector.Options.Last();
@@ -109,8 +109,8 @@ internal static partial class PlaytestRunner
     // bare Obtain inside an unfinished event room.
     private static async Task NeowCapsuleChecks()
     {
-        var run = await NGame.Instance!.StartNewSingleplayerRun(ModelDb.Character<ConstructCharacter>(), true,
-            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "NEOWCAPSULE", GameMode.Standard);
+        var run = await NGame.Instance!.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<ConstructCharacter>()), true,
+            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "NEOWCAPSULE", GameMode.Standard, isCustomGame: false);
         var player = run.Players.Single();
         await RunManager.Instance.EnterRoomDebug(RoomType.Event, model: ModelDb.Event<Neow>(), showTransition: false);
         var neow = (Neow)((EventRoom)run.CurrentRoom!).LocalMutableEvent!;

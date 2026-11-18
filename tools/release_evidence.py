@@ -33,7 +33,7 @@ def collect(build, archive=None):
         passed &= bool(logs) and all(not qa_issues(p.read_text(encoding='utf-8-sig', errors='replace')) for p in logs)
         if row['scenario'] == 'coop':
             versions = {match.group(1) for log in logs for match in re.finditer(
-                r'\[PunchConstruct\] v(\d+\.\d+\.\d+) loaded', log.read_text(encoding='utf-8-sig', errors='replace'))}
+                r'\[PunchConstruct\] v(\d+\.\d+\.\d+)(?:\.\d+)? loaded', log.read_text(encoding='utf-8-sig', errors='replace'))}
             phases = {'combat', 'marks', 'divinity', 'turn', 'temporary-strength-expired',
                       'choices', 'rewards', 'concurrent', 'survivor'}
             if len(versions) == 1 and tuple(map(int, next(iter(versions)).split('.'))) >= (0, 4, 20):

@@ -25,4 +25,7 @@ internal static class Loc
 
     internal static RelicLoc Relic(string title, string description, string flavor, params (string, string)[] extra) =>
         new(Pick(title), Pick(description), Pick(flavor), extra.Select(entry => (entry.Item1, Pick(entry.Item2))).ToArray());
+
+    internal static PotionLoc Potion(string title, string description, params (string, string)[] extra) =>
+        new(Pick(title), Pick(description), extra.Select(entry => (entry.Item1, Pick(entry.Item2))).ToArray());
 }

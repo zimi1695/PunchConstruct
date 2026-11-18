@@ -4,6 +4,7 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Combat.History;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -70,11 +71,14 @@ public sealed class ObserverSashWhip() : ObserverCard(1, CardType.Attack, CardRa
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(8, ValueProp.Move), new DynamicVar("Weak", 1)];
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<WeakPower>()];
-    public override List<(string, string)> Localization => Loc.Card("腰带抽打", "造成{Damage:diff()}点伤害。\n如果这场战斗中打出的上一张牌是攻击牌，给予{Weak:diff()}层[gold]虚弱[/gold]。");
+    public override List<(string, string)> Localization => Loc.Card("腰带抽打", "造成{Damage:diff()}点伤害。\n如果本回合打出的上一张牌是攻击牌，给予{Weak:diff()}层[gold]虚弱[/gold]。");
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {
-        // Skip this play entry rather than all occurrences of the same card.
-        var previous = CombatManager.Instance.History.CardPlaysStarted.Where(e => e.CardPlay.Player == Owner).Reverse().Skip(1).FirstOrDefault();
+        // Match the Watcher original: only this turn's history counts. Skip the
+        // current play entry rather than all occurrences of the same card.
+        var previous = CombatManager.Instance.History.CardPlaysStarted
+            .Where(e => e.CardPlay.Player == Owner && e.HappenedThisTurn(Owner.Creature.CombatState))
+            .Reverse().Skip(1).FirstOrDefault();
         bool applyWeak = previous?.CardPlay.Card.Type == CardType.Attack;
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, play).Targeting(play.Target!).Execute(context);
         if (applyWeak && play.Target!.IsAlive) await PowerCmd.Apply<WeakPower>(context, play.Target, DynamicVars["Weak"].BaseValue, Owner.Creature, this);

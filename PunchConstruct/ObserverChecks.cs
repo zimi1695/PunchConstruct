@@ -166,12 +166,12 @@ internal static partial class PlaytestRunner
         await CardPileCmd.AddGeneratedCardToCombat(state.CreateCard<SmallShockwave>(player), PileType.Draw, player, CardPilePosition.Top);
         var beforeDraw = draw.Cards.ToArray(); var selector = new ScrySelector(1);
         block = owner.Block; hp = target.CurrentHp;
-        using (CardSelectCmd.UseSelector(selector)) await Play<ObserverJustLucky>(player, target, upgraded: true);
+        using (RunManager.Instance.CardSelectorStack.UseSelector(player, selector)) await Play<ObserverJustLucky>(player, target, upgraded: true);
         Check(selector.Offered.SequenceEqual(beforeDraw.Take(2)) && selector.Offered[0].Pile?.Type == PileType.Discard &&
             draw.Cards.SequenceEqual(beforeDraw.Skip(1)) && owner.Block == block + 3 && hp - target.CurrentHp == 4,
             "Lucky+ scries top two before block and damage; chosen card discarded, unchosen order retained");
         selector = new ScrySelector(0); beforeDraw = draw.Cards.ToArray();
-        using (CardSelectCmd.UseSelector(selector)) await Play<ObserverJustLucky>(player, target);
+        using (RunManager.Instance.CardSelectorStack.UseSelector(player, selector)) await Play<ObserverJustLucky>(player, target);
         Check(draw.Cards.SequenceEqual(beforeDraw) && selector.Offered.Length == Math.Min(1, beforeDraw.Length),
             "Scry permits keeping every card without shuffling or drawing");
 
@@ -200,7 +200,7 @@ internal static partial class PlaytestRunner
         Check(owner.GetPower<ObserverColdObservationPower>()?.Amount == 2, "Cold Observation+ applies two attack uses");
         block = owner.Block; hp = target.CurrentHp;
         await Play<FightMe>(player, target);
-        Check(owner.Block - block == 12 && hp - target.CurrentHp == 12 && owner.GetPower<ObserverColdObservationPower>()?.Amount == 1,
+        Check(owner.Block - block == 10 && hp - target.CurrentHp == 10 && owner.GetPower<ObserverColdObservationPower>()?.Amount == 1,
             "Cold Observation covers both hits of Fight Me and consumes one use");
         var attack = player.PlayerCombatState.DiscardPile.Cards.Last(c => c is FightMe);
         await CardPileCmd.Add(attack, PileType.Hand);
@@ -208,7 +208,7 @@ internal static partial class PlaytestRunner
         await PlayerCmd.SetEnergy(20, player);
         Check(attack.TryManualPlay(target), "The same physical attack card can be played again");
         await Until(() => attack.Pile?.Type == PileType.Discard, "Repeated physical card resolution"); await Frames(15);
-        Check(owner.Block - block == 12 && !owner.HasPower<ObserverColdObservationPower>(),
+        Check(owner.Block - block == 10 && !owner.HasPower<ObserverColdObservationPower>(),
             "Replaying the same physical card consumes the final Cold Observation use and covers all hits");
         await PowerCmd.Remove(owner.GetPower<DexterityPower>()!);
 

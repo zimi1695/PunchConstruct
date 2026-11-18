@@ -122,13 +122,26 @@ internal static class BridgeMerchantCardGates
     }
 }
 
-[HarmonyPatch(typeof(MerchantInventory), "PopulateColorlessCardEntries")]
+[HarmonyPatch(typeof(MerchantInventory), "GetDefaultColorlessCardEntries")]
 [PatchPolicy(true)]
 internal static class BridgeConstructColorlessShop
 {
     [HarmonyPriority(Priority.First)]
-    private static bool Prefix(MerchantInventory __instance) =>
-        AdaptationRegistry.Guard("reward", "ConstructColorlessShop", () => ConstructColorlessShop.Apply(__instance));
+    private static bool Prefix(Player player, ref List<MerchantCardEntry> __result)
+    {
+        var entries = __result;
+        var runNative = AdaptationRegistry.Guard("reward", "ConstructColorlessShop",
+            () => ConstructColorlessShop.Apply(player, ref entries));
+        __result = entries;
+        return runNative;
+    }
+}
+
+[HarmonyPatch(typeof(MerchantCardEntry), "RestockAfterPurchase")]
+internal static class BridgeConstructPanaceaRestock
+{
+    private static void Prefix(MerchantCardEntry __instance) =>
+        AdaptationRegistry.Run("reward", "PanaceaRestock", () => ConstructColorlessShop.PrepareRestock(__instance));
 }
 
 [HarmonyPatch(typeof(ColorfulPhilosophers), "GenerateInitialOptions")]
@@ -226,7 +239,7 @@ internal static class BridgeTransformAffinity
     }
 }
 
-[HarmonyPatch(typeof(MerchantInventory), "PopulateCharacterCardEntries")]
+[HarmonyPatch(typeof(MerchantInventory), nameof(MerchantInventory.Setup))]
 internal static class BridgeAncientShopCards
 {
     private static void Postfix(MerchantInventory __instance) =>

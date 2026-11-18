@@ -113,11 +113,12 @@ public static class RecoveryProbe
             // Like the native lobby transition, leave message dispatch before
             // replacing lobby handlers. Skipping visuals must not skip this.
             await Frames(1);
-            return await NGame.Instance!.StartNewMultiplayerRun(Lobby, true, acts, modifiers, seed, Lobby.Ascension);
+            var players = Lobby.GeneratePlayers(seed);
+            return await NGame.Instance!.StartNewMultiplayerRun(players, Lobby, true, acts, modifiers, seed, Lobby.Ascension);
         }
         public void PlayerConnected(StartRunLobbyPlayer player) { }
-        public void PlayerChanged(StartRunLobbyPlayer player, bool random) { }
-        public void AscensionChanged() { } public void SeedChanged() { } public void ModifiersChanged() { } public void MaxAscensionChanged() { }
+        public void PlayerChanged(StartRunLobbyPlayer player) { }
+        public void AscensionChanged() { } public void SeedChanged() { } public void ModifiersChanged() { } public void GameModeChanged() { } public void MaxAscensionChanged() { }
         public void RemotePlayerDisconnected(StartRunLobbyPlayer player) { }
         public void LocalPlayerDisconnected(NetErrorInfo info) { }
     }
@@ -162,8 +163,8 @@ public static class RecoveryProbe
         var listener = new NewListener(); StartRunLobby lobby;
         if (Role == "host")
         {
-            lobby = new StartRunLobby(GameMode.Standard, Host(port), listener, Players); listener.Lobby = lobby;
-            lobby.AddLocalHostPlayer(new UnlockState(SaveManager.Instance.Progress), 0);
+            lobby = new StartRunLobby(GameMode.Standard, false, Host(port), listener, Players); listener.Lobby = lobby;
+            lobby.AddLocalHostPlayer(new UnlockState(SaveManager.Instance.Progress), 0, 0);
             lobby.SetLocalCharacter(Character(PeerIndex));
             lobby.SetSeed("RECOVERY2026"); Mark("listening");
         }
@@ -172,10 +173,10 @@ public static class RecoveryProbe
             await Wait(() => File.Exists(FileAt("listening-host")), "seed host listening");
             if (PeerIndex > 1) await Wait(() => File.Exists(FileAt("joined-" + (PeerIndex - 1))), "previous guest joined");
             var client = new NetClientGameService(PeerVersionInfo.LocalDefault());
-            var joined = await new JoinFlow(client).Begin(new ENetClientConnectionInitializer((ulong)(PeerIndex + 1), "127.0.0.1", port), Tree);
+            var joined = await new JoinFlow(client, new ENetClientConnectionInitializer((ulong)(PeerIndex + 1), "127.0.0.1", port)).Begin(Tree);
             Check(joined.joinResponse != null, "New-run native join response received"); Net = client;
             await Frames(1); // JoinFlow may complete inside join-response dispatch.
-            lobby = new StartRunLobby(GameMode.Standard, client, listener, Players); listener.Lobby = lobby;
+            lobby = new StartRunLobby(GameMode.Standard, false, client, listener, Players); listener.Lobby = lobby;
             lobby.InitializeFromMessage(joined.joinResponse!.Value);
             lobby.SetLocalCharacter(Character(PeerIndex));
             File.WriteAllText(FileAt("joined-" + PeerIndex), "ready");
@@ -313,7 +314,7 @@ public static class RecoveryProbe
             if (previous > 0 && previous < Players)
                 await Wait(() => File.Exists(FileAt("joined-" + previous)), "previous saved guest joined");
             var client = new NetClientGameService(PeerVersionInfo.LocalDefault());
-            var joined = await new JoinFlow(client).Begin(new ENetClientConnectionInitializer((ulong)(PeerIndex + 1), "127.0.0.1", port), Tree);
+            var joined = await new JoinFlow(client, new ENetClientConnectionInitializer((ulong)(PeerIndex + 1), "127.0.0.1", port)).Begin(Tree);
             Check(joined.loadJoinResponse != null, "Returning player receives native load-lobby response"); Net = client;
             await Frames(1); // Register lobby handlers only after dispatch returns.
             lobby = new LoadRunLobby(client, listener, joined.loadJoinResponse!.Value); listener.Lobby = lobby;
@@ -348,11 +349,11 @@ public static class RecoveryProbe
         {
 #if !NATIVE_ONLY
             if (p.Character is not ConstructCharacter) continue;
-            Check(p.Relics.OfType<AncientGuardStance>().Single().DisplayAmount == 1, "Recovered ancient growth begins its new combat at one");
+            Check(p.Relics.OfType<AncientGuardStance>().Single().DisplayAmount == 5, "Recovered ancient growth begins its new combat at five");
             await CreatureCmd.GainBlock(p.Creature, 20, ValueProp.Unpowered, null);
             await CreatureCmd.Damage(Context, p.Creature, 1, ValueProp.Unpowered, p.Creature.CombatState!.HittableEnemies.First());
-            Check(p.Creature.GetPowerAmount<GuardStrengthNextTurnPower>() == 1 && p.Relics.OfType<AncientGuardStance>().Single().DisplayAmount == 2,
-                "Recovered ancient relic actually queues one Strength and advances its own next grant");
+            Check(p.Creature.GetPowerAmount<VigorPower>() == 5 && p.Relics.OfType<AncientGuardStance>().Single().DisplayAmount == 6,
+                "Recovered ancient relic actually grants five Vigor and advances its own next grant");
 #endif
         }
         var actor = run.Players[0]; var card = actor.PlayerCombatState!.Hand.Cards.First(c => c.Type == CardType.Attack);

@@ -1,4 +1,85 @@
-﻿拳击构装体：当前问题与验证（2026-11-10，0.4.28）
+﻿拳击构装体：当前问题与验证（2026-11-17，0.5.1）
+
+0.5.1 已合入左勾拳削弱、录像命令 `pcdeck`（含药水与 `mod` 原创展示）、10 张愚者搬运牌与啾组门槛、先古药水／浑浊机油图标修正、pcdeck 遗物图标可见性修复，以及任务清单改动（机械飞升改 3 费、霸无敌重写为下回合能量＋抽牌、能量文字改用能量图标、卸甲成军／厄运共鸣／霸无敌换用交接新美术并按先古卡规格裁剪）。最终 DLL `702f587a…`（PCK `d67662e5…`、277 份资源）已通过全量 QA：本地 35/35、联机 4/4（含 4p 弱网）、断线恢复 4/4，`full_local_verification=true`、不变量 16/16，`workshop.py --verify` 全 PASS；content 已同步、归档与 ZIP 已重建，0.113.1 隔离预检复核通过。旧候选及旧私有测试上传已作废；私密测试条目 3835179658 待按最终 DLL 重传（本次 Steam 未运行，暂缓、暂存就绪）。0.4.28 已发布并冻结，不重建、不重传。
+
+0.5.1 审查项与处理（2026-11-10 审查，2026-11-15 更新）
+
+实现原则：新功能优先做进游戏本体模型（CustomRelicModel／CustomCardModel 等），不为可模型化的功能新增 Harmony 补丁；补丁只用于无法模型化的原生缺口，必须是薄桥、按 adapter:hook 隔离、失败不阻断。共享遗物适配优先做本角色变体，不改原生类和 SharedRelicGrabBag。
+
+1. [P2] 权重流不持久化（RelicAcquisition.cs:52-54、71、103）
+   ConditionalWeakTable<Player,Rng> 不序列化，读档/重连后权重计数器归零，后续加权遗物选择与不读档不同；CurrentRng 只被设置/恢复和 QA 空值断言使用，生产路径未消费，注释“synchronized chest RNG”不成立。0.5.1 不改 RNG 架构；在兼容性台账记录已知限制，补“存档→读档→连续加权抽取”对比 QA；持久化方案单独设计。
+
+2. [P3，已修] 涟漪盆高亮遗留（AdaptedRelicVariants.cs:188-207）
+   BeforeSideTurnEnd 无攻击时直接 return，未恢复 RelicStatus.Normal，敌方回合和下个玩家回合继续脉冲。early return 前设 Status = Normal。
+
+3. [P3，已修] 古 shop 价格多推进一次（AncientShop.cs:15-33）
+   5% 和槽位选择用副本 RNG，但 entry.CalcCost() 内部读 _player.PlayerRng.Shops；替换条目此前已 Populate/CalcCost，相对原生多一次推进，注释“native counter stays untouched”不成立。0.5.1 只改注释承认一次推进，不临时更换 RNG 架构。
+
+4. [P3，已修] 叶敷顺序（AdaptedRelicVariants.cs:262-270）
+   当前先取 targets 再 LoseMaxHp；原生顺序相反。若最大生命损失钩子改牌组，targets 可能过期。把 LoseMaxHp 移到 targets 之前。
+
+5. [P3，已修] SicEm 对任意宠物触发（SicEmAdaptation.cs:95-101）
+   dealer.PetOwner == player 允许任意宠物；原生只认 Osty。当前 Osty 是唯一宠物，行为暂等于文本；未来新增宠物会过度触发。加 dealer.Monster is Osty。
+
+6. [文字/设计，已修] ObserverSashWhip（ObserverCards.cs:73-80）
+   文本“这场战斗中”与代码全战斗历史一致，但与 Watcher 原版“本回合”不同。先确认设计意图；若是本回合，改 HappenedThisTurn 并同步文本。
+
+7. [文字，已修] ConstructHelmet（RelicAdaptations.cs:68）
+   中文“每场战斗首次……整场共触发一次”重复、歧义；英文 once per combat 与代码一致。改为“每场战斗一次”。
+
+8. [已撤回] TransformDeckGates Ancient 空选项崩溃
+   复核 ColorlessCardPool.GenerateAllCards 后，Fisticuffs/Shockwave 同时在无色池和构造池且 Eligible 通过，不会空集或 CreateCard(null) NRE。该条不再作为崩溃修复；对 Rarity.Ancient 跳过只是与 ConstructTransformPool 对齐的整洁性改动。
+
+9. [部分完成] 发布链与结构问题
+   P0-3、P1-1、P1-2、P1-3、P1-4、P1-6 已完成：证据链改由候选 verification.json 推导；Required 失败隐藏角色并回退 Circlet；PatchRegistry 逐类隔离与回滚；共享池清理纳入隔离；CharacterScope 反射失败降级；诊断补齐异常类型/消息/堆栈。P1-3 的 CalledFromGenericObtain 仍保留 StackTrace 兜底，因为 Harmony 无法补 open generic。P2（真实 RitsuLib／RandomForeseer、QA 程序集分离、构建路径、联机版本一致性、ASSETS.md）仍在队列。0.4.28 保持冻结，不重传。
+
+0.5.1 本轮修复与验收（2026-11-15）
+
+1. 新内容与既有改动已全部落地：发条机关、机械飞升、燃尽、霸无敌、核心电涌、万能药六张牌，齿轮工艺品遗物，三种构造专属药水，被寄生的自动机械事件改版，以及古牙映射、获取限制、先古架势／古铜之拳、与我一斗、不倒不休、伽马爆破／彗星、应急油壶等 §5.1 改动。
+2. 审查遗留项：P0-3 证据链、P1-1 Required fail-closed、P1-2 PatchRegistry 逐类隔离、P1-4 CharacterScope 反射降级、P1-6 诊断信息、P1-3 共享池隔离与 FloorAddedToDeck 复制均已完成；P1-3 的脚本化 Obtain 桥已移除，只保留 StackTrace 兜底。P3 的涟漪盆状态、先古商店 RNG 注释、叶敷顺序、紧追不放仅认 Osty 已修；Sash Whip 改为本回合，ConstructHelmet 文案精简，FightMe 加显式命名空间 ID，万能药补货不再把自身加入黑名单。
+3. 兼容性修复：BridgeWaveFacing 的参数名与新原生 `DamageTargetData` 重载一致，补丁恢复安装；0.113 原生新增 `CARD.FIGHT_ME`，本模组 FightMe 使用 `PUNCHCONSTRUCT-FIGHT_ME` 避免启动重复模型崩溃。
+4. [旧候选，已作废] 构建 0 警告、0 错误；旧 0.5.1 候选三文件 DLL `d22fa5b4…`、PCK `cd09d231…`、清单 `030ce557…`，277 份资源。`check_local.py --package-dir` 本地 35/35、联机 4/4（含 4p 弱网）、断线恢复 4/4 全部通过；`full_local_verification=true`、`full_invariant_verification=true`（16/16）。`workshop.py --verify` 为 PASS，`targeted_package_checks=PASS`、`network_multiplayer=PASS_LOCAL_ENET`、`upload_status=NOT_UPLOADED`。证据收集脚本已兼容四段版本号 `v0.5.1.0`，复用同一候选三文件的联机／恢复日志。已归档 `dist/releases/0.5.1/` 与 `dist/releases/PunchConstruct-0.5.1.zip`（49,980,789 B，SHA256 `47883127…`）；0.4.28 三文件哈希复核不变。2026-11-15 17:28 按作者授权上传私密测试条目 3835179658，远端元数据与回下载哈希均通过；公开条目 3826907330 仍为 0.4.28，未上传 0.5.1。
+5. 私密测试上传（2026-11-15）：临时工作区保留测试条目标题「拳击构装体(测试)」并强制 `visibility=private`，避免 `dist/SteamWorkshop/workshop.json` 的 public 可见性影响测试条目；上传后远端标题／简介／依赖匹配，Steam 回下载三文件哈希与候选一致，证据见 `tools/runtime/test-workshop-0.5.1.json`。当前 Steam 客户端 `release_info.json` 为 0.113.1，QA 隔离环境仍为 0.113.0；0.5.1 最低版本写 0.113.0，公开前需作者在 0.113.1 实机确认。
+6. 0.113.1 隔离预检（2026-11-15）：复制正式 0.113.1 游戏文件到临时目录，只修改副本 PCK 的用户目录设置，加载当前候选三文件与 BaseLib 3.4.8；startup、smoke、additions、pool 均 PASS，startup 日志为 `[PunchConstruct] v0.5.1.0 loaded (game v0.113.1 / BaseLib 3.4.8.0; per-hook patches + relic variants)`，无 `[ERROR]`／缺失方法。证据 `tools/runtime/{startup,smoke,additions,pool}-0.113.1-preview.json` 与同名日志。正式游戏目录、存档和 0.113.0 QA 环境均未改动；官方 35/35 仍以 0.113.0 为准，作者 0.113.1 实机试玩仍待完成。
+
+0.5.1 左勾拳与录像脚本（2026-11-16）
+
+1. 左勾拳削弱：`LeftHook` 基础版关键词改为 `[Exhaust]`，去掉 `Retain`；`OnUpgrade()` 增加 `Retain`。基础/升级伤害与格挡都保持 6／4，升级仍生成右勾拳+；右勾拳定义未变。`BoxingChecks` 断言基础版无保留、升级版有保留，且右勾拳生成跟随升级状态。
+2. 录像调试命令：`ShowcaseConsoleCmd` 提供 `pcdeck all` 与 `pcdeck changes`。`all` 使用构装体卡池／遗物池的 `DistinctBy(Id)`，结果为 88 张卡与 22 件遗物；`changes` 为 12 张 0.4.28→0.5.1 改动/新增卡牌与 7 件遗物（数量已被同日愚者搬运轮更新为 all 98/22/3、changes 22/7/3，见下节）。命令拒绝在战斗中执行，直接清空并重建牌组／遗物，跳过 `AfterObtained`，因此潘多拉、巨大扭蛋、树叶药膏、尼奥护符等不会改变展示集合。`ShowcaseChecks` 还构造 `DevConsole` 并执行 `help pcdeck`，确认命令确实注册在游戏控制台。
+3. 录像脚本：`资料/录像脚本/README.md`、`01-全部内容.txt`、`02-0.5.1改动.txt`。两个脚本分别只有 `pcdeck all` 与 `pcdeck changes` 一行命令；说明中写清开始一局、完成涅奥祝福、停留地图、战斗外执行与数量核对。
+4. 最终构建 0 警告／0 错误；DLL `e3819999…`、PCK `cd09d231…`、清单 `030ce557…`，277 份资源。`additions` 125 项 PASS（含控制台注册、`changes` 12/7、`all` 88/22、无获取升级与无尼奥护符升级），证据 `tools/runtime/qa/additions-20261116-091546-105060800`。旧候选 DLL `d22fa5b4…` 的 35/35、4/4、4/4、旧归档、旧 ZIP 与旧私有测试上传均已作废；该 DLL 已被同日愚者搬运轮、遗物可见性修复与 pcdeck mod 原创展示取代（当前 `0c404043…`），全量重跑、归档、ZIP、`workshop.py --verify` 与私有测试重传按新 DLL 待完成。
+5. 原生遗物古牙（ArchaicTooth）的适配改动不在 `pcdeck changes` 中：古牙不属于构装体遗物池，脚本只覆盖构装体池的 7 件改动/新增遗物；需要展示古牙时走正常获取或原生遗物命令。
+
+0.5.1 愚者搬运、药水图标与 pcdeck 药水（2026-11-16）
+
+1. 10 张愚者搬运牌做进 mod 本体：`ConstructCardPool` 追加啾 尖刺／啾 就绪／哇 啾／蹒跚射击／绽放射击／呼哨箭矢／哇 啾 叽／钉住／欣喜若狂／火力掩护，`NativeCardOwnership` 按 Id 自动归属原生愚者池；箭矢槽、发射、扎穿与瞄准沿用原版通用机制，未新增任何 Harmony 补丁。欣喜若狂／火力掩护保留原生 MultiplayerOnly 约束，单人获取渠道排除。愚者遗物与药水不搬运。
+2. 啾组门槛与加权：`CardAcquisition.Groups` 增加 [蹒跚射击、绽放射击、呼哨箭矢、钉住、火力掩护、啾就绪]；呼哨箭矢／钉住／火力掩护／啾就绪在牌组没有蹒跚射击或绽放射击前不可获取；组内任一卡进入牌组后整组权重 ×2。GroupCardGates／MerchantCardGates／ConstructCombatCardSources 统一生效，尊重 NoCardPoolModifications／NoModifyHooks。海玻璃与色彩哲学家候选不含愚者搬运牌。
+3. 药水图标：先古药水小图改用交接图 `资料/交接/瓶中船与人工制品/先古药水.png`（256→70，不调色），大图沿用交接图；浑浊机油小图／大图取自原生痊愈药水并灰化内容物（gray_liquid，无 180° 色相修正）；拳手炖汤保持士兵炖汤灰化＋色相修正。修复 `prepare_art.py` 在 rotate=False 时跳过 tint 的缺陷。导出 86 份纹理、57 份源图（52 份采用＋交接先古药水图）。
+4. pcdeck 加入药水：all／changes 均替换全部药水为 3 种构造专属药水（先古药水、浑浊机油、拳手炖汤），跳过获得时效果。all 现为 98 张卡＋22 件遗物＋3 瓶药水；changes 为 22 张卡（12 改动/新增＋10 愚者搬运）＋7 件遗物＋3 瓶药水。录像脚本与 README 同步更新，并注明私密条目旧包不含这两项。
+5. 简单测试（按作者要求，不做全量 QA）：构建 0 警告／0 错误，DLL `0c40404389334417a74c1ac617aab6d832ea682fb5f622374aba9549fe27550b`（1,135,104 B）。smoke PASS（`qa/smoke-20261116-213153-424177900`）；pool PASS，98/98 名单逐条核对无缺失无多余，啾组门槛三条断言通过（`qa/pool-20261116-213203-738668900`）；additions 138 项 PASS，含 pcdeck changes 22/7/3、all 98/22/3、mod 26/9/3、药水归属、无获取升级与遗物图标可见性（`qa/additions-20261116-213009-182241000`）；`check_documents.py` 全部 PASS。构建链：`0bd0f236…`（additions 127）→ 第 8 条遗物可见性修复 `4228d6fe…`（128）→ 第 9 条 pcdeck mod 原创展示 `0c404043…`（138）；旧 DLL 的简单测试证据只对应各自构建，不再作为当前证据。
+6. 该轮未做与待办（已由 2026-11-17 任务清单轮完成，见下节）：本地 35/35、联机 4/4、恢复 4/4、0.113.1 隔离预检复核、content 同步、归档／ZIP 重建、`workshop.py --verify` 在该简单测试轮未执行；其时 `dist/SteamWorkshop/content` 与 `content-current.json` 仍为旧候选 `e3819999…`（88 种卡牌）。0.4.28 保持冻结。
+7. 文档同步：卡牌清单（98 种、愚者 89—98、啾组规则）、角色设计、README、tools/README、美术素材 README、workshop.json／发布说明、文案清单、录像脚本、发布审查与发布前清单已更新；根目录散落的 `PunchConstruct-Logs.zip` 与 `mod-uploader.log` 移入 `资料/历史/记录/`。交接文件夹未动。
+8. pcdeck 遗物图标发黑修复（作者实机反馈）：`AddRelicInternal(silent:false)` 触发 `RelicObtained`，原生遗物栏 `NRelicInventory.Add(animate:false)` 会把新图标 `Modulate` 透明度设 0、等待拾取动画淡入；`pcdeck` 不播拾取动画，于是 all／changes 的全部遗物图标停在透明（看起来发黑）。修复在 `ShowcaseConsoleCmd.Replace` 加完遗物后，对本地玩家（`LocalContext.IsMe`）遗物栏逐件把图标 `Modulate.A` 恢复为 1——只恢复透明度，位置／缩放未经动画时保持默认；不改原生类、不新增补丁。`ShowcaseChecks` 增加断言：all 后活体遗物栏件数等于 22 且每件图标 `Modulate.A≥1`（修复前该断言失败）。additions 由 127 增至 128 项，DLL 由 `0bd0f236…` 变为 `4228d6fe…`。
+9. pcdeck mod 原创展示（作者口径）：新增 `pcdeck mod`，只展示模组真正原创内容——26 张原创卡（23 张原创设计 62—84 ＋ 灼热铁斩波、小斩波、东尼斩波）、9 件遗物（7 件原创：架势、古铜之拳、自旋螺丝、开口扳手、备用指节、应急油壶、齿轮工艺品 ＋ 损毁头盔、螺线飞镖两件银色换色）、3 种构造药水。筛选做进 mod 本体、不新增补丁：卡牌取 `CustomCardModel.CustomPortraitPath` 在 `res://PunchConstruct/art/` 下者并排除核心电涌／万能药；遗物取 `PackedIconPath` 在 `art/` 下者并显式加入 `ConstructHelmet`／`ConstructDart`（`RelicIcons` 仅对这两件做银色换色）。按作者明确口径排除铁斩波（原版牌换原创卡面）、核心电涌／万能药（一代素材复用原版牌）、震荡（原版卡面）、观者／愚者／其余搬运牌与其余共享遗物变体。`ShowcaseChecks` 增 10 条断言（mod 26/9/3、遗物为原创或两件换色、含原创遗物与头盔/飞镖、排除其他变体、含小斩波/灼热铁斩波/左勾拳、排除铁斩波/核心电涌/万能药/原版卡面/观者/愚者、owned 卡面全为 art/、药水归属、无获取升级）。additions 由 128 增至 138 项，DLL 由 `4228d6fe…` 变为 `0c404043…`。录像脚本新增 `03-原创内容.txt`，README 改为三个脚本。
+
+0.5.1 任务清单轮与全量验收（2026-11-17）
+
+1. 任务清单（`新建 文本文档.txt`）七项全部落地：机械飞升费用 1→3；霸无敌重写为 1 费先古卡（保留），下回合开始获得 1 能量、抽 1 牌、对所有敌人造成 15 伤害并获得 15 格挡，升级后 0 费、2 能量／2 抽牌（伤害／格挡仍 15）；能量文字改用游戏能量图标（霸无敌与应急油壶），不再写「(能量)」二字；卸甲成军、厄运共鸣、霸无敌换用交接文档新美术，旧图归档、在用图进 `资料/美术素材`、交接目录尽量清空；霸无敌卡面按先古卡 606×852 肖像框裁剪而非拉伸。
+2. QA 侧修正：modes 断言在池挑战下尊重原生 MultiplayerConstraint 排除（ConstraintAllows），不再把原生排除误判为失败；`tools/network_proxy.py` 容忍加入期一次性 Windows ICMP 10054 重置（connected UDP 发往无监听端口触发），不再终结代理线程，游戏错误判定不变。
+3. 最终构建 0 警告／0 错误；DLL `702f587aa5149f086cc99833beba4ea24912b07642fa50785dc884e80e873792`、PCK `d67662e5ddaad39799e179d357d2cff72817cffaf45a13f93d7bbf430c8dee08`、清单 `030ce557094f662bb5331d41386971fd2d703de833b19e9ff33c6dbd2f2dbc83`，277 份资源。构建链：`0c404043…`（additions 138 简单测试）→ 任务清单改动 `702f587a…`（全量）。
+4. 全量 QA 在最终 DLL 上重跑全通过：本地 35/35（4979 条断言，含 compat／english／locale／localezh）、联机 4/4（2p 构装体、3p 死灵、4p 构装体、4p 弱网）、断线恢复 4/4（菜单 2p、强制 2p、进程丢失 4p 倒序、主机丢失 3p 混组倒序）；`full_local_verification=true`、`full_invariant_verification=true`（16/16），missing_checks／missing_multiplayer／missing_recovery 均空。证据 `tools/runtime/current-verification.json` 与 `tools/runtime/qa/` 各场景目录（含构建指纹与日志 SHA256）。
+5. 发布链：`dist/SteamWorkshop/content` 与 `content-current.json` 已同步最终候选；`dist/releases/0.5.1/` 与 `PunchConstruct-0.5.1.zip`（51,343,686 B，SHA256 `0c36fc7d7ddb298800f51df39c19804ad65627cf90107dffef38cb5028c0134f`，三文件位于根目录、与 content 逐字节一致）已重建；`workshop.py --verify` 全 PASS（`targeted_package_checks=PASS`、`network_multiplayer=PASS_LOCAL_ENET`、`upload_status=NOT_UPLOADED`），验收日志快照已写入 `dist/SteamWorkshop/验收日志/`。旧归档与 ZIP（49,980,789 B，SHA256 `47883127…`）作废。
+6. 0.113.1 隔离预检在最终 DLL 复核：startup、smoke、additions 140、pool 均 PASS，startup 日志 `[PunchConstruct] v0.5.1.0 loaded (game v0.113.1 / BaseLib 3.4.8.0; per-hook patches + relic variants)`，无错误、无缺失方法。证据 `tools/runtime/{startup,smoke,additions,pool}-0.113.1-preview.json`。官方 35/35 仍以 0.113.0 为准，作者 0.113.1 实机试玩仍待完成。
+7. 待办：私密测试条目 3835179658 需按最终 DLL 重传并核对回下载哈希——本次 Steam 未运行，作者指示先做文档，重传暂缓、暂存就绪（临时工作区保留测试条目标题与 `visibility=private`，命令 `ModUploader.exe upload -w <临时工作区> -i 3835179658`）。公开条目 3826907330 仍为 0.4.28，待作者明确同意后再更新；0.4.28 三文件哈希复核不变，保持冻结。
+8. 文档同步：根 README、tools/README、卡牌清单、角色设计、兼容性台账、发布前清单、发布审查、dist/README、待办与实现任务书、安装说明均已更新到最终 DLL／效果／计数；历史段落保留原样并标注「已被取代」，不因工具补字段而视作重测。
+
+0.5.1 作者实机反馈待修（2026-11-17，最终候选 DLL 858f76de）
+
+作者在私密测试条目 3835179658（已按最终 DLL 858f76de 重传并校验通过）实机试玩 0.5.1，反馈两处问题，先记录入待办（任务 #27／#28），暂不改代码；任何 .cs 改动须与下一批合并重建并重跑全量 QA＋重传私有测试＋workshop --verify＋更新归档/指纹。
+
+1. [待修，任务 #27] 被寄生的自动机械（InfestedAutomaton）第二选项「SEARCH／搜索」预览显示敲过（升级）的万能药，但实际获得未升级基础版，预览与获得不一致，应显示未升级。根因：WaveEvents.cs:181 用 HoverTipFactory.FromCard<ConstructPanacea>(true)（bool 为 upgrade，已反编译确认 FromCard<T>(bool upgrade=false) 语义），而 Search()（WaveEvents.cs:192-197）只 CreateCard 后 CardPileCmd.Add、无 CardCmd.Upgrade，获得基础版。修复方向：预览改 (false) 与获得一致。注意 WaveEvents.cs:99 的 FromCard<ScorchingIronWave>(true) 是 Amalgamator 合并打击（Receive 确实按 upgrades 数 CardCmd.Upgrade，WaveEvents.cs:27-29），非本 bug，勿误改。建议 QA 补「SEARCH 预览未升级且获得基础版」断言。
+
+2. [待修，任务 #28] 构装体牌组持有其他「有先古卡版本」的原版初始卡（如中和 Neutralize）时，古老牙齿／古牙（ArchaicTooth）预览显示「获得压制（Suppress）」，显然错误。根因（已反编译原生 ArchaicTooth）：原生 TranscendenceUpgrades 含 Bash→Break、Neutralize→Suppress、Unleash→Protector、FallingStar→MeteorShower、Dualcast→Quadcast、FoolishShot→DivineShot，GetTranscendenceStarterCard 取牌组首张命中任一 key 的卡；mod 的 AncientWaveMapping.Apply（AncientAdaptations.cs:69-76）在 ConstructSetup 时只 new Dictionary(__result){[TonyWave]=ConstructDomineering}，保留全部原版映射仅追加东尼斩波→霸无敌，故构装体持中和时被转成原版压制；ScopedAncientToothTransformation（AncientAdaptations.cs:59-67）也只重定向 TonyWave。修复方向：构装体场景把映射限制为构装体有效条目（仅 TonyWave→ConstructDomineering，剔除原版六项）。需作者决策：构装体只持原版起始卡而无东尼斩波时古牙如何表现（原生 SetupForPlayer 会因无有效起始卡返回 false／不生效）。建议 QA 补「构装体持中和时古牙不显示/不给予压制」断言。
 
 0.4.26 本轮变更（2026-11-07）
 

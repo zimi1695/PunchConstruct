@@ -14,6 +14,8 @@ internal static class ConstructPowerIcons
         [typeof(NeverBackDownPower)] = "never_back_down",
         [typeof(BoxingChampionFormPower)] = "boxing_champion_form",
         [typeof(GuardStrengthNextTurnPower)] = "brass_nut",
+        [typeof(ClockworkMechanismPower)] = "clockwork_mechanism",
+        [typeof(ConstructDomineeringPower)] = "delayed_wave",
     };
 
     internal static string Packed(Type power) => $"res://PunchConstruct/art/power_{Names[power]}.ctex";

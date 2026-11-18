@@ -63,7 +63,7 @@ internal static partial class PlaytestRunner
                 Check(restored.DynamicVars.Block.BaseValue == 59, "Ninth upgrade after clone/load is +10");
             }
             var selector = new UpdateSelector();
-            using (CardSelectCmd.UseSelector(selector))
+            using (RunManager.Instance.CardSelectorStack.UseSelector(player, selector))
             {
                 var soupOffer = ConstructSoupOffer.Predicate;
                 var closure = soupOffer.DeclaringType!.GetField("<>9", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!.GetValue(null);
@@ -112,22 +112,23 @@ internal static partial class PlaytestRunner
                     "Missing ordinary Iron Wave locks only the second option");
                 foreach (var c in player.Deck.Cards.OfType<SmallWave>()) c.AddKeyword(CardKeyword.Eternal);
                 Check(!ModelDb.Event<Amalgamator>().IsAllowed(run), "Fusion is excluded when neither ingredient set is available");
-                var toothSource = run.CreateCard<IronWave>(player);
+                foreach (var extra in player.Deck.Cards.OfType<TonyWave>().ToArray()) await CardPileCmd.RemoveFromDeck(extra, false);
+                var toothSource = run.CreateCard<TonyWave>(player);
                 CardCmd.Upgrade(toothSource);
-                CardCmd.Enchant<Momentum>(toothSource, 5);
+                CardCmd.Enchant<Nimble>(toothSource, 5);
                 await CardPileCmd.Add(toothSource, PileType.Deck, skipVisuals: true);
                 var tooth = (ArchaicTooth)ModelDb.Relic<ArchaicTooth>().ToMutable();
-                Check(tooth.SetupForPlayer(player) && tooth.AncientCard!.Id == ModelDb.GetId<ScorchingIronWave>(),
-                    "Native Tooth setup previews Scorching Iron Wave");
+                Check(tooth.SetupForPlayer(player) && tooth.AncientCard!.Id == ModelDb.GetId<ConstructDomineering>(),
+                    "Native Tooth setup previews Domineering for the construct");
                 var preview = run.LoadCard(tooth.AncientCard!, player);
-                Check(preview.CurrentUpgradeLevel == 3 && preview.DynamicVars.Block.BaseValue == 14 && preview.Enchantment is Momentum { Amount: 5 },
-                    "Tooth preview is exactly three upgrades, not three plus the removed starter's upgrade");
+                Check(preview.CurrentUpgradeLevel == 1 && preview.EnergyCost.GetWithModifiers(CostModifiers.None) == 0 && preview.Enchantment is Nimble { Amount: 5 },
+                    "Tooth preview preserves the Tony Wave upgrade and enchantment without adding extra upgrades");
                 await RelicCmd.Obtain(tooth, player);
-                Check(!player.Deck.Cards.Contains(toothSource) && player.Deck.Cards.OfType<ScorchingIronWave>()
-                    .Any(c => c.CurrentUpgradeLevel == 3 && c.DynamicVars.Block.BaseValue == 14 && c.Enchantment is Momentum { Amount: 5 }),
-                    "Actually obtaining Tooth applies the same three-upgrade replacement as its preview");
-                Check(tooth.DynamicDescription.GetFormattedText().Contains("强化") && tooth.DynamicDescription.GetFormattedText().Contains("3次") &&
-                    !tooth.DynamicDescription.GetFormattedText().Contains("巨大"), "Tooth's acquired tooltip agrees with its actual replacement");
+                Check(!player.Deck.Cards.Contains(toothSource) && player.Deck.Cards.OfType<ConstructDomineering>()
+                    .Any(c => c.CurrentUpgradeLevel == 1 && c.EnergyCost.GetWithModifiers(CostModifiers.None) == 0 && c.Enchantment is Nimble { Amount: 5 }),
+                    "Actually obtaining Tooth applies the same Domineering replacement as its preview");
+                Check(tooth.DynamicDescription.GetFormattedText().Contains("东尼斩波") && tooth.DynamicDescription.GetFormattedText().Contains("霸无敌") &&
+                    !tooth.DynamicDescription.GetFormattedText().Contains("强化"), "Tooth's acquired tooltip agrees with its actual replacement");
             }
             var nativeStrike = run.CreateCard<StrikeIronclad>(native);
             var deletedId = new ModelId("CARD", "PUNCHCONSTRUCT-GIANT_IRON_WAVE");
@@ -166,7 +167,7 @@ internal static partial class PlaytestRunner
             await PowerCmd.Apply<NeverBackDownPower>(Context, player.Creature, 1, player.Creature, neverPlus);
             var neverPower = player.Creature.GetPower<NeverBackDownPower>()!;
             Check(StatusText(neverPower).Contains("2张[gold]拳斗[/gold]") && !StatusText(neverPower).Contains("拳斗+") &&
-                StatusText(neverPower).Contains("2张[gold]灼烧[/gold]"), "Stacked bottom status matches the two ordinary generated fists and Burns");
+                !StatusText(neverPower).Contains("灼烧"), "Stacked bottom status matches the two ordinary generated fists without Burn text");
             await NGame.Instance!.ReturnToMainMenu();
             SaveManager.Instance.DeleteCurrentRun();
         }

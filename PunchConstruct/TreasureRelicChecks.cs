@@ -32,20 +32,28 @@ internal static partial class PlaytestRunner
         }
         int nativeOrichalcum = 0, mixedNativeOrichalcum = 0;
         bool singleAllowed = true, mixedAllowed = true, deterministic = true;
+        var singleFailures = new List<string>();
+        var mixedFailures = new List<string>();
         for (ulong seed = 0; seed < 64; ++seed)
         {
             var solo = Generate(seed, native: false);
             var native = Generate(seed, native: true);
             var mixed = Generate(seed, native: false, mixed: true);
-            singleAllowed &= solo.Length == 1 && solo.All(id => id is not ("ORICHALCUM" or "CHEMICAL_X"));
-            mixedAllowed &= mixed.Length == 2 && mixed[0] is not ("ORICHALCUM" or "CHEMICAL_X");
+            bool soloOk = solo.Length == 1 && solo.All(id => id is not ("ORICHALCUM" or "CHEMICAL_X"));
+            bool mixedOk = mixed.Length == 2 && mixed[0] is not ("ORICHALCUM" or "CHEMICAL_X");
+            singleAllowed &= soloOk;
+            mixedAllowed &= mixedOk;
+            if (!soloOk) singleFailures.Add(seed + ":" + string.Join(",", solo));
+            if (!mixedOk) mixedFailures.Add(seed + ":" + string.Join(",", mixed));
             if (native.Contains("ORICHALCUM")) ++nativeOrichalcum;
             if (mixed.Length == 2 && mixed[1] == "ORICHALCUM") ++mixedNativeOrichalcum;
             deterministic &= solo.SequenceEqual(Generate(seed, native: false))
                 && mixed.SequenceEqual(Generate(seed, native: false, mixed: true));
         }
-        Check(singleAllowed, "Native shared treasure generation excludes Orichalcum for the construct across 64 seeds");
-        Check(mixedAllowed, "The construct's treasure contribution is filtered in mixed-character parties");
+        Check(singleAllowed, "Native shared treasure generation excludes Orichalcum for the construct across 64 seeds: " +
+            string.Join("; ", singleFailures.Take(5)));
+        Check(mixedAllowed, "The construct's treasure contribution is filtered in mixed-character parties: " +
+            string.Join("; ", mixedFailures.Take(5)));
         Check(nativeOrichalcum > 0 && mixedNativeOrichalcum > 0,
             "Native-only runs and native teammates retain their original Orichalcum treasure access");
         Check(deterministic, "Identical shared treasure seeds produce identical solo and mixed-party results");

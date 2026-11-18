@@ -168,11 +168,11 @@ def prepare():
             '尖塔的本质，是一个巨大的铁斩波。\n\n'
             '一个围绕“边打边防”设计的角色：完全格挡敌人的伤害，积累活力，寻找反击与成长的机会。\n\n'
             '[h2]内容[/h2]\n'
-            '74种卡牌，包含原版搬运牌与原创牌；锻造、召唤、灾厄等方向，以及角色专属遗物和事件适配。'
+            '98种卡牌，包含原版搬运牌与原创牌；锻造、召唤、灾厄等方向，以及角色专属遗物和事件适配。'
             '卡牌保留各自角色归属，同体系卡牌会随牌组构筑提高出现概率。\n\n'
             '[h2]安装与版本[/h2]\n'
-            '需要 BaseLib（已验证3.4.7）；无需安装观者／Watcher。订阅后在游戏模组管理中启用本模组与BaseLib。\n'
-            '当前验证环境：Windows、游戏0.111.0、中文。尚未验证其他游戏版本、系统及网络联机。\n\n'
+            '需要 BaseLib（已验证3.4.8）；无需安装观者／Watcher。订阅后在游戏模组管理中启用本模组与BaseLib。\n'
+            '当前验证环境：Windows、游戏0.113.0、中文。尚未验证其他游戏版本、系统及网络联机。\n\n'
             '[h2]制作与素材来源[/h2]\n'
             '设计与制作：铁斩波。部分原创美术采用AI辅助生成。\n'
             '《杀戮尖塔》系列的原版角色、卡牌与素材归Mega Crit所有。'
@@ -193,7 +193,7 @@ def verify(require_checks):
     from PIL import Image
     manifest = json.loads((CONTENT / 'PunchConstruct.json').read_text(encoding='utf-8-sig'))
     assert {p.name for p in CONTENT.iterdir()} == set(NAMES), 'Only three mod files belong in content'
-    assert manifest['dependencies'] == [{'id': 'BaseLib', 'min_version': '3.4.7'}]
+    assert manifest['dependencies'] == [{'id': 'BaseLib', 'min_version': '3.4.8'}]
     assert (CONTENT / 'PunchConstruct.json').read_bytes() == (ROOT / 'PunchConstruct/PunchConstruct.json').read_bytes()
     assert sha(CONTENT / 'PunchConstruct.dll') == sha(ROOT / 'PunchConstruct/bin/Release/net9.0/PunchConstruct.dll')
     entries = index(CONTENT / 'PunchConstruct.pck')
@@ -205,7 +205,7 @@ def verify(require_checks):
             pack.seek(offset)
             data = pack.read(length)
             assert flags == 0 and hashlib.md5(data).hexdigest() == digest and data == source_assets[name].read_bytes(), name
-    config = json.loads((WORKSHOP / 'workshop.json').read_text(encoding='utf-8'))
+    config = json.loads((WORKSHOP / 'workshop.json').read_text(encoding='utf-8-sig'))
     assert config['dependencies'] == [3737335127]
     assert config['visibility'] in ('private', 'public', 'unlisted', 'friends_only')
     assert len(config['description'].encode('utf-8')) < 8000
@@ -260,7 +260,7 @@ def verify(require_checks):
         if sync.get('uploaded') and sync.get('workshop_item') == item_id and sync.get('build') == digests:
             upload_state = 'UPLOADED_PRIVATE' if sync.get('workshop_visibility') == 'private' else 'UPLOADED_PUBLIC'
     report = dict(version=manifest['version'], generated_utc=datetime.now(timezone.utc).isoformat(),
-                  package_files=digests, resources=len(entries), game='0.111.0', baselib='3.4.7', watcher_required=False,
+                  package_files=digests, resources=len(entries), game='0.113.0', baselib='3.4.8', watcher_required=False,
                   static_package='PASS', targeted_package_checks='PASS' if not missing else 'INCOMPLETE',
                   evidence=evidence, existing_local_play_files_unchanged=True,
                   qa_error_gate='Unknown Godot errors, script/loading exceptions and unclassified game errors reject a check, including after its PASS marker',

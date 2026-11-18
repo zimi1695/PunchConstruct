@@ -61,8 +61,9 @@ public static class Probe
             if (AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "PunchConstruct"))
                 throw new InvalidOperationException("Character mod must not be loaded in the independent control");
             GD.Print("[NativeProbe ISOLATION] PunchConstruct not loaded; native rules and assets");
-            var run = await NGame.Instance.StartNewSingleplayerRun(ModelDb.Character<Ironclad>(), true,
-                [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "EVENTROUTES", GameMode.Standard);
+            var newPlayer = Player.CreateForNewRun(ModelDb.Character<Ironclad>(), new UnlockState([], [], 0), 1);
+            var run = await NGame.Instance.StartNewSingleplayerRun(newPlayer, true,
+                [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "EVENTROUTES", GameMode.Standard, false);
             var player = run.Players.Single();
             AccessTools.Field(typeof(Player), "<UnlockState>k__BackingField").SetValue(player,
                 AccessTools.Field(typeof(UnlockState), "all").GetValue(null));

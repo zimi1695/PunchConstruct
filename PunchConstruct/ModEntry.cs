@@ -16,6 +16,21 @@ public static class ModEntry
         Diagnostics.Initialize();
         CombatRelicState.Initialize();
         PatchRegistry.ApplyAll();
-        Godot.GD.Print("[PunchConstruct] v0.4.28 loaded (game 0.111.0 / BaseLib 3.4.7; per-hook patches + relic variants)");
+        if (PatchRegistry.RequiredFailure)
+        {
+            // Fail closed without aborting the mod: the character stays hidden
+            // from new runs, while native characters and the rest of the game
+            // keep working with the bridges that did install.
+            Diagnostics.Write("error", "patch.required_failure", new
+            {
+                failures = PatchRegistry.RequiredFailures
+            });
+            Godot.GD.PushError("[PunchConstruct] required bridge patches failed; the construct character is hidden for new runs: " +
+                string.Join(", ", PatchRegistry.RequiredFailures));
+        }
+        string gameVersion = MegaCrit.Sts2.Core.Debug.ReleaseInfoManager.Instance.ReleaseInfo?.Version
+            ?? typeof(MegaCrit.Sts2.Core.Runs.RunManager).Assembly.GetName().Version?.ToString() ?? "unknown";
+        string baseLibVersion = typeof(BaseLib.Abstracts.CustomRelicModel).Assembly.GetName().Version?.ToString() ?? "unknown";
+        Godot.GD.Print($"[PunchConstruct] v{typeof(ModEntry).Assembly.GetName().Version} loaded (game {gameVersion} / BaseLib {baseLibVersion}; per-hook patches + relic variants)");
     }
 }

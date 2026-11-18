@@ -193,6 +193,11 @@ internal static class CompatibilityChecks
         var validId = valid.Id;
         ObserverSaveMigration.Apply(valid);
         Check(valid.Id == validId, "a current card id is left untouched");
+
+        // 0.113 added a native Ironclad card also named FightMe. Keep this
+        // construct-only adaptation on its original namespaced id.
+        Check(ModelDb.GetId<FightMe>().Entry == "PUNCHCONSTRUCT-FIGHT_ME",
+            "Fight Me keeps its namespaced id instead of colliding with the native 0.113 card");
     }
 
     private static void NullScope()

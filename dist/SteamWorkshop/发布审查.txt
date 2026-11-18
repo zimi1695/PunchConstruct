@@ -1,6 +1,27 @@
-﻿拳击构装体：本地交付与发布审查（2026-10-26，2026-11-10更新）
+﻿拳击构装体：本地交付与发布审查（2026-10-26，2026-11-17更新）
 
-content现为0.4.28，三个模组文件与当前Release构建一致；237份资源（含 14 个语言镜像）、82种卡牌。0.4.28 删除 OnPlayWrapper IL 改写、补丁安装审计、AdaptationRegistry 按 hook 熔断、15 个共享遗物变体，已通过全量验收并上传。Steam 条目3826907330 已更新为 0.4.28；0.4.25 起保留归档但只发最新版。
+【长期护栏·每次工坊上传必做】附加宣传图空壳已多次复发（0.4.24／0.4.28／0.5.1）：ModUploader 对后端已存在的同名附加预览只保留条目、不重传图片内容，URL 全空时页面表现为宣传图"消失"，单传封面修不了。每次 upload 后必须跑 `python tools/verify_previews.py <条目>` 确认封面＋6 张附加预览 URL 全非空（退出码 0）；若为空壳，按"先清空 previews/ 上传删除空壳 → 放回 6 张再上传重传内容"两步修复，再复核。完整规程见 tools/README.md「附加宣传图空壳护栏」。此操作只动预览，不影响 mod 本体三文件哈希。
+
+content现为0.5.1最终候选（DLL `702f587a…`、PCK `d67662e5…`、清单 `030ce557…`，98种卡牌、277份资源）；已合入10张愚者搬运牌、先古药水／浑浊机油图标修正、pcdeck药水展示与遗物图标可见性修复及 `pcdeck mod` 原创展示，以及任务清单改动（机械飞升改3费、霸无敌重写为下回合能量＋抽牌、能量文字改用能量图标、卸甲成军／厄运共鸣／霸无敌换用交接新美术并按先古卡规格裁剪）。本地35/35、联机4/4（含4p弱网）、恢复4/4与 `workshop.py --verify` 全通过，`full_local_verification=true`、不变量16/16；content已同步、归档与ZIP已重建。0.5.1 适配游戏0.113.0／BaseLib 3.4.8，新增6张卡牌、齿轮工艺品遗物、3种构造专属药水并改写被寄生的自动机械事件；左勾拳削弱与录像命令 `pcdeck` 已合入。公开条目`upload_status=NOT_UPLOADED`；0.113.1隔离预检已在最终DLL复核PASS，官方验收仍以0.113.0为准。旧0.5.1曾上传私密测试条目3835179658（对应已作废的 `d22fa5b4…`），需按最终DLL重传（本次Steam未运行，暂缓、暂存就绪）；公开条目3826907330仍为0.4.28；0.4.28保持冻结，不重建、不重传。
+
+0.5.1（2026-11-15，2026-11-16修订）
+
+[已完成] 适配游戏 0.113.0 与 BaseLib 3.4.8；启动日志动态读取版本，当前为 `v0.5.1.0 loaded (game v0.113.0 / BaseLib 3.4.8.0)`。
+[已完成] 新增发条机关、机械飞升、燃尽、霸无敌、核心电涌、万能药 6 张卡牌；齿轮工艺品遗物；先古药水、浑浊机油、拳手炖汤 3 种构造专属药水；改写被寄生的自动机械事件并补齐获取限制。
+[已完成] 古牙映射、古铜之拳活力成长、与我一斗、不倒不休、伽马爆破／彗星费用、应急油壶全体易伤／虚弱等 §5.1 改动落地；Sash Whip 本回合、ConstructHelmet 文案、FightMe 显式 ID、万能药补货修复。
+[已完成] 审查遗留项 P0-3、P1-1、P1-2、P1-3、P1-4、P1-6 与 P3 项完成；P2 仍在队列。
+[已完成] 左勾拳削弱：基础版仍为 6 伤害／4 格挡但去掉保留（仍为消耗），升级版仍为 6 伤害／4 格挡并获得保留；右勾拳不变。`BoxingChecks` 断言基础/升级差异与右勾拳生成。
+[已完成] 录像调试命令 `pcdeck all|changes|mod`：`all` 为 98 张构装体池卡牌 + 22 件遗物 + 3 瓶构造药水，`changes` 为 22 张卡（12 张改动/新增 + 10 张愚者搬运）+ 7 件遗物 + 3 瓶药水，`mod` 只含原创——26 张原创卡（23 张原创设计 + 灼热铁斩波／小斩波／东尼斩波）+ 9 件遗物（7 原创 + 损毁头盔／螺线飞镖换色）+ 3 瓶药水，按美术路径 `res://PunchConstruct/art/` 筛选并排除核心电涌／万能药／铁斩波与其余共享遗物变体；跳过获得时效果，战斗外可用。`ShowcaseChecks` 覆盖控制台注册、三组数量、药水归属、无获取升级与无尼奥护符升级；脚本在 `资料/录像脚本/`（含 `03-原创内容.txt`）。
+[已完成] 10 张愚者搬运牌做进 mod 本体：卡池追加 + NativeCardOwnership 按 Id 自动归属愚者池，箭矢机制沿用原版，零新增补丁；啾组门槛（呼哨箭矢／钉住／火力掩护／啾就绪须先有蹒跚射击或绽放射击）与组内加权 ×2；欣喜若狂／火力掩护仅多人联机。pool 审计 98/98 与门槛断言 PASS。愚者遗物与药水不搬运。
+[已完成] 先古药水小图改用交接图（256→70 不调色），浑浊机油取自痊愈药水灰化内容物；修复 prepare_art.py 在 rotate=False 时跳过 tint 的缺陷；86 份纹理、57 份源图。
+[已被取代] 旧 0.5.1 候选三文件 DLL `d22fa5b4…`、PCK `cd09d231…`、清单 `030ce557…` 的本地 35/35、联机 4/4（含 4p 弱网）、断线恢复 4/4、`full_local_verification=true`、`full_invariant_verification=true`（16/16）只对应旧 DLL；左勾拳削弱与 `pcdeck` 合入后作废。
+[已被取代] 0.5.1 候选 DLL `e3819999…`（PCK `cd09d231…`、清单 `030ce557…`，277 份资源）的 `additions` 125 项 PASS（证据 `tools/runtime/qa/additions-20261116-091546-105060800`）只对该 DLL 有效；愚者搬运、药水图标与 pcdeck 药水合入后作废。
+[已被取代] 中间构建 DLL `0c40404389334417a74c1ac617aab6d832ea682fb5f622374aba9549fe27550b`（1,135,104 B）的简单测试：smoke PASS（`qa/smoke-20261116-213153-424177900`）、pool PASS 98/98 名单与啾组门槛（`qa/pool-20261116-213203-738668900`）、additions 138 项 PASS 含 pcdeck mod 26/9/3、changes 22/7/3、all 98/22/3 与遗物图标可见性断言（`qa/additions-20261116-213009-182241000`）、`check_documents.py` 全部 PASS；任务清单改动合入后由最终 DLL `702f587a…` 取代。此前 `4228d6fe…` 的 additions 128 项（`qa/additions-20261116-205356-814210300`）只对应更旧 DLL。
+[已完成] 最终 DLL `702f587a…`（PCK `d67662e5…`、清单 `030ce557…`，277 份资源）本地 35/35（4979 条断言）、联机 4/4（含 4p 弱网）、恢复 4/4 全通过，`full_local_verification=true`、不变量 16/16；0.113.1 隔离预检复核 startup/smoke/additions 140/pool 全 PASS。已同步 `dist/SteamWorkshop/content`、重建 `dist/releases/0.5.1/` 与 ZIP、重跑 `workshop.py --verify` 全 PASS。私密测试条目 3835179658 重传暂缓（Steam 未运行，暂存就绪）。
+[已完成] 最终 `workshop.py --verify` PASS（`targeted_package_checks=PASS`、`network_multiplayer=PASS_LOCAL_ENET`、`upload_status=NOT_UPLOADED`）；最终归档 `dist/releases/0.5.1/` 与 `PunchConstruct-0.5.1.zip`（51,343,686 B，SHA256 `0c36fc7d…`，三文件位于根目录、与 content 逐字节一致）已按 `702f587a…` 重建。旧归档与 ZIP（49,980,789 B，SHA256 `47883127…`）、旧私密测试上传均对应旧 DLL `d22fa5b4…`，已作废。
+[已完成] 0.113.1 隔离预检已在最终 DLL 上复核：用正式 0.113.1 游戏文件做临时副本（不改正式目录与存档），加载最终候选与 BaseLib 3.4.8；startup、smoke、additions 140、pool 均 PASS，startup 日志为 `v0.5.1.0 loaded (game v0.113.1 / BaseLib 3.4.8.0; per-hook patches + relic variants)`，无错误、无缺失方法。证据 `tools/runtime/{startup,smoke,additions,pool}-0.113.1-preview.json` 及同名日志。官方 35/35 仍以 0.113.0 QA 环境为准。
+[待作者] 公开条目 3826907330 的 0.5.1 上传仍需作者明确同意；当前正式 Steam 启动日志未加载 PunchConstruct（0.113.1 隔离预检已通过，但不替代实机），Steam 启动实机核对由作者开启模组后进行。实机核对时只启用测试条目 3835179658 的 0.5.1，保持公开条目 3826907330 的 0.4.28 禁用，避免两个同 ID 模组同时加载；测试条目目前仍是旧 0.5.1（对应已作废的 `d22fa5b4…`），实机核对前需先按最终 DLL `702f587a…` 重传（暂缓、暂存就绪）。0.4.28 三文件哈希复核不变，保持冻结。
+[待核对] 当前 Steam 客户端 `release_info.json` 为 0.113.1（2026-11-14 更新），QA 隔离环境仍为 0.113.0；公开前需作者在 0.113.1 实机确认。
 
 0.4.28（2026-11-09）
 
@@ -49,6 +70,17 @@ Steam条目3826907330已于2026-10-27上传0.4.23，当时private、未公开：
 发布文案保留作者行文，只更新卡牌／原创数量、实际验证范围及变更说明；封面与预览已按作者 2026-11-04 提供的新图更新。作者审查并明确允许后才继续操作工坊。
 
 害虫杀手后续正文已获作者确认并同步；相对上述声音专项，只有两份事件文本资源变化，DLL与清单未变，本次静态核对而未重复游戏测试。
+
+0.5.1 最终候选 SHA256（2026-11-17，与当前 verification.json／content-current.json 一致；content 与 dist/releases/0.5.1 已同步）
+PunchConstruct.dll  702f587aa5149f086cc99833beba4ea24912b07642fa50785dc884e80e873792
+PunchConstruct.pck  d67662e5ddaad39799e179d357d2cff72817cffaf45a13f93d7bbf430c8dee08
+PunchConstruct.json 030ce557094f662bb5331d41386971fd2d703de833b19e9ff33c6dbd2f2dbc83
+PunchConstruct-0.5.1.zip  0c36fc7d7ddb298800f51df39c19804ad65627cf90107dffef38cb5028c0134f（51,343,686 B，三文件位于根目录）
+
+0.5.1 旧候选 SHA256（2026-11-15，与旧 verification.json 一致；已被最终 DLL 取代）
+PunchConstruct.dll  d22fa5b4b3700267e921e854a06af41df95390001e2480a43f52d9908ae0a7bf
+PunchConstruct.pck  cd09d231a875de320bf4bc24bcde8c824450a7c36772c8f228f04e2bada2d610
+PunchConstruct.json 030ce557094f662bb5331d41386971fd2d703de833b19e9ff33c6dbd2f2dbc83
 
 0.4.28 content SHA256（2026-11-10 复核，与 verification.json 一致）
 PunchConstruct.dll  0bdff6758f95706952d85e4ed42253b7d09ba1e56eba952cb1a3b0b85ddad728

@@ -82,7 +82,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 79
+    "card_title": "小斩波",
+    "card_number": 85
   },
   {
     "source": "资料/美术素材/卡牌/铁斩波形态.png",
@@ -97,7 +98,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 66
+    "card_title": "铁斩波形态",
+    "card_number": 68
   },
   {
     "source": "资料/美术素材/卡牌/与我一斗.png",
@@ -112,7 +114,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 69
+    "card_title": "与我一斗",
+    "card_number": 71
   },
   {
     "source": "资料/美术素材/卡牌/愈战愈勇.png",
@@ -127,7 +130,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 70
+    "card_title": "愈战愈勇",
+    "card_number": 72
   },
   {
     "source": "资料/美术素材/卡牌/东尼斩波.jpg",
@@ -142,7 +146,8 @@
       760
     ],
     "conversion": "contain without crop, black side padding",
-    "card_number": 80
+    "card_title": "东尼斩波",
+    "card_number": 86
   },
   {
     "source": "资料/美术素材/卡牌/铁斩波.png",
@@ -157,7 +162,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 82
+    "card_title": "铁斩波",
+    "card_number": 88
   },
   {
     "source": "资料/美术素材/卡牌/灼热铁斩波.png",
@@ -172,6 +178,7 @@
       760
     ],
     "conversion": "resize without crop",
+    "card_title": "灼热铁斩波",
     "card_number": 2
   },
   {
@@ -187,7 +194,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 60
+    "card_title": "锻造车间",
+    "card_number": 62
   },
   {
     "source": "资料/美术素材/卡牌/王者风范.jpg",
@@ -202,7 +210,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 61
+    "card_title": "王者风范",
+    "card_number": 63
   },
   {
     "source": "资料/美术素材/卡牌/趁热打铁.jpg",
@@ -217,7 +226,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 62
+    "card_title": "趁热打铁",
+    "card_number": 64
   },
   {
     "source": "资料/美术素材/卡牌/终局裁定.jpg",
@@ -232,14 +242,15 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 63
+    "card_title": "终局裁定",
+    "card_number": 65
   },
   {
-    "source": "资料/美术素材/卡牌/卸甲成军.jpg",
-    "source_sha256": "d4fe4106804f7c74d572721e4bf93e1e11ed3352e43ddd67e737e9e02c44b8a4",
+    "source": "资料/美术素材/卡牌/卸甲成军.png",
+    "source_sha256": "976a055c4db0f879056b3f2a333dcea719f81e33174c824bc1cbd90b608739f8",
     "source_size": [
-      2560,
-      1946
+      1439,
+      1093
     ],
     "output": "PunchConstruct/assets/art/unarm_to_arms.ctex",
     "size": [
@@ -247,14 +258,15 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 64
+    "card_title": "卸甲成军",
+    "card_number": 66
   },
   {
-    "source": "资料/美术素材/卡牌/厄运共鸣.jpg",
-    "source_sha256": "286a6722016e807ba742fd2ce0b40d750fb477bf71826243729d0cbd81140dc2",
+    "source": "资料/美术素材/卡牌/厄运共鸣.png",
+    "source_sha256": "6881e6713f9d83aab63662d2950d9645823560585dba5482fb336166de12ae7e",
     "source_size": [
-      2560,
-      1946
+      1439,
+      1093
     ],
     "output": "PunchConstruct/assets/art/doom_resonance.ctex",
     "size": [
@@ -262,7 +274,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 65
+    "card_title": "厄运共鸣",
+    "card_number": 67
   },
   {
     "source": "资料/美术素材/卡牌/不倒不休.jpg",
@@ -277,7 +290,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 67
+    "card_title": "不倒不休",
+    "card_number": 69
   },
   {
     "source": "资料/美术素材/卡牌/拳王形态.jpg",
@@ -292,7 +306,8 @@
       852
     ],
     "conversion": "resize without crop",
-    "card_number": 68
+    "card_title": "拳王形态",
+    "card_number": 70
   },
   {
     "source": "资料/美术素材/卡牌/披荆斩棘.png",
@@ -307,7 +322,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 71
+    "card_title": "披荆斩棘",
+    "card_number": 73
   },
   {
     "source": "资料/美术素材/卡牌/左勾拳.png",
@@ -322,7 +338,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 72
+    "card_title": "左勾拳",
+    "card_number": 74
   },
   {
     "source": "资料/美术素材/卡牌/右勾拳.png",
@@ -337,7 +354,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 73
+    "card_title": "右勾拳",
+    "card_number": 75
   },
   {
     "source": "资料/美术素材/卡牌/格斗流程.png",
@@ -352,7 +370,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 74
+    "card_title": "格斗流程",
+    "card_number": 76
   },
   {
     "source": "资料/美术素材/卡牌/快速拳.png",
@@ -367,7 +386,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 75
+    "card_title": "快速拳",
+    "card_number": 77
   },
   {
     "source": "资料/美术素材/卡牌/连环拳.png",
@@ -382,7 +402,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 76
+    "card_title": "连环拳",
+    "card_number": 78
   },
   {
     "source": "资料/美术素材/卡牌/格挡.png",
@@ -397,7 +418,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 77
+    "card_title": "格挡",
+    "card_number": 79
   },
   {
     "source": "资料/美术素材/卡牌/过载.png",
@@ -412,7 +434,8 @@
       760
     ],
     "conversion": "resize without crop",
-    "card_number": 78
+    "card_title": "过载",
+    "card_number": 80
   },
   {
     "source": "资料/美术素材/遗物/架势.png",
@@ -847,6 +870,206 @@
     ]
   },
   {
+    "source": "资料/美术素材/卡牌/发条机关.jpg",
+    "source_sha256": "a8e57bc7113af187d1e871b40938a23ecad9744902904b9fdcc0f61c7e44ae65",
+    "source_size": [
+      2240,
+      1680
+    ],
+    "output": "PunchConstruct/assets/art/clockwork_mechanism.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "centre crop at (0.50, 0.50), Lanczos resize",
+    "card_title": "发条机关",
+    "card_number": 81
+  },
+  {
+    "source": "资料/美术素材/卡牌/机械飞升.png",
+    "source_sha256": "e24652f3e9490f384e784e4a0a96c4c3b04e22dc7758e629c8ccc85251c6fe08",
+    "source_size": [
+      1439,
+      1093
+    ],
+    "output": "PunchConstruct/assets/art/mechanical_ascension.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "resize without crop",
+    "card_title": "机械飞升",
+    "card_number": 82
+  },
+  {
+    "source": "资料/美术素材/卡牌/燃尽.png",
+    "source_sha256": "5e3e2c2872b20cdbd503d3bb0a827dac00a806e5fe9d3a78722c20892186ea80",
+    "source_size": [
+      1448,
+      1086
+    ],
+    "output": "PunchConstruct/assets/art/burn_out.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "centre crop at (0.50, 0.50), Lanczos resize",
+    "card_title": "燃尽",
+    "card_number": 83
+  },
+  {
+    "source": "资料/美术素材/卡牌/霸无敌.png",
+    "source_sha256": "f6daa3a2f918f5918ed3860e761967609999844824b8ddb79fb9a44d470bd551",
+    "source_size": [
+      1065,
+      1477
+    ],
+    "output": "PunchConstruct/assets/art/domineering.ctex",
+    "size": [
+      606,
+      852
+    ],
+    "conversion": "centre crop at (0.50, 0.50), Lanczos resize",
+    "card_title": "霸无敌",
+    "card_number": 84
+  },
+  {
+    "source": "资料/美术素材/一代素材/核心电涌_CoreSurge_1024.png",
+    "source_sha256": "ea6ea177950c2e7c6336e7cdac816599533aaab94973ce775bcb39cf9b76439c",
+    "source_size": [
+      500,
+      380
+    ],
+    "output": "PunchConstruct/assets/art/core_surge.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "transparent corners flattened to sampled edge colour, resize without crop",
+    "card_title": "核心电涌",
+    "card_number": 48
+  },
+  {
+    "source": "资料/美术素材/一代素材/万能药_Panacea_1024.png",
+    "source_sha256": "8a661db370497460ef56a045387f78dd4e414e2a677eaf0dca03b7aeb18c5b79",
+    "source_size": [
+      500,
+      380
+    ],
+    "output": "PunchConstruct/assets/art/panacea.ctex",
+    "size": [
+      1000,
+      760
+    ],
+    "conversion": "transparent corners flattened to sampled edge colour, resize without crop",
+    "card_title": "万能药",
+    "card_number": 53
+  },
+  {
+    "source": "资料/美术素材/一代素材/齿轮工艺品_ClockworkSouvenir_large.png",
+    "source_sha256": "724029e4e3e38ca9b773550ab3afd8b21c54ee7a2c71bea4c7c1c05cf544e1d3",
+    "source_size": [
+      256,
+      256
+    ],
+    "output": "PunchConstruct/assets/art/clockwork_souvenir.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.9, transparent padding",
+    "visible_bounds": [
+      6,
+      12,
+      121,
+      116
+    ],
+    "visible_size": [
+      115,
+      104
+    ]
+  },
+  {
+    "source": "资料/美术素材/一代素材/齿轮工艺品_ClockworkSouvenir_large.png",
+    "source_sha256": "724029e4e3e38ca9b773550ab3afd8b21c54ee7a2c71bea4c7c1c05cf544e1d3",
+    "source_size": [
+      256,
+      256
+    ],
+    "output": "PunchConstruct/assets/art/clockwork_souvenir_outline.ctex",
+    "size": [
+      128,
+      128
+    ],
+    "conversion": "white silhouette using the matching icon alpha",
+    "visible_bounds": [
+      6,
+      12,
+      121,
+      116
+    ],
+    "visible_size": [
+      115,
+      104
+    ]
+  },
+  {
+    "source": "资料/美术素材/一代素材/齿轮工艺品_ClockworkSouvenir_large.png",
+    "source_sha256": "724029e4e3e38ca9b773550ab3afd8b21c54ee7a2c71bea4c7c1c05cf544e1d3",
+    "source_size": [
+      256,
+      256
+    ],
+    "output": "PunchConstruct/assets/art/clockwork_souvenir_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "visible alpha>8 crop, per-asset silhouette fit 0.9, transparent padding",
+    "visible_bounds": [
+      13,
+      24,
+      243,
+      231
+    ],
+    "visible_size": [
+      230,
+      207
+    ]
+  },
+  {
+    "source": "资料/历史/旧稿/复位弹簧.png",
+    "source_sha256": "7ac93219c0ea3bd260ab33ea080ea46dee4b145e87efd4c8089def6268f8e095",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/power_clockwork_mechanism.ctex",
+    "size": [
+      64,
+      64
+    ],
+    "conversion": "visible alpha>8 crop, silhouette fit 0.9375, nearest resize",
+    "card_title": "发条机关",
+    "card_number": 81
+  },
+  {
+    "source": "资料/历史/旧稿/复位弹簧.png",
+    "source_sha256": "7ac93219c0ea3bd260ab33ea080ea46dee4b145e87efd4c8089def6268f8e095",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "output": "PunchConstruct/assets/art/power_clockwork_mechanism_big.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "visible alpha>8 crop, silhouette fit 0.9375, nearest resize",
+    "card_title": "发条机关",
+    "card_number": 81
+  },
+  {
     "source": "资料/美术素材/状态图标/东尼斩波.png",
     "source_sha256": "fcd25935fe12b39f309d9a5dc4f977d1fd9fcf9209888b2f0a1386852d810a62",
     "source_size": [
@@ -859,7 +1082,8 @@
       64
     ],
     "conversion": "nearest resize",
-    "card_number": 80
+    "card_title": "东尼斩波",
+    "card_number": 86
   },
   {
     "source": "资料/美术素材/状态图标/东尼斩波.png",
@@ -874,7 +1098,8 @@
       256
     ],
     "conversion": "nearest resize",
-    "card_number": 80
+    "card_title": "东尼斩波",
+    "card_number": 86
   },
   {
     "source": "资料/美术素材/状态图标/铁斩波形态.png",
@@ -889,7 +1114,8 @@
       64
     ],
     "conversion": "nearest resize",
-    "card_number": 66
+    "card_title": "铁斩波形态",
+    "card_number": 68
   },
   {
     "source": "资料/美术素材/状态图标/铁斩波形态.png",
@@ -904,7 +1130,8 @@
       256
     ],
     "conversion": "nearest resize",
-    "card_number": 66
+    "card_title": "铁斩波形态",
+    "card_number": 68
   },
   {
     "source": "资料/美术素材/状态图标/锻造车间.png",
@@ -919,7 +1146,8 @@
       64
     ],
     "conversion": "nearest resize",
-    "card_number": 60
+    "card_title": "锻造车间",
+    "card_number": 62
   },
   {
     "source": "资料/美术素材/状态图标/锻造车间.png",
@@ -934,7 +1162,8 @@
       256
     ],
     "conversion": "nearest resize",
-    "card_number": 60
+    "card_title": "锻造车间",
+    "card_number": 62
   },
   {
     "source": "资料/美术素材/状态图标/王者风范.png",
@@ -949,7 +1178,8 @@
       64
     ],
     "conversion": "nearest resize",
-    "card_number": 61
+    "card_title": "王者风范",
+    "card_number": 63
   },
   {
     "source": "资料/美术素材/状态图标/王者风范.png",
@@ -964,7 +1194,8 @@
       256
     ],
     "conversion": "nearest resize",
-    "card_number": 61
+    "card_title": "王者风范",
+    "card_number": 63
   },
   {
     "source": "资料/美术素材/状态图标/趁热打铁.png",
@@ -979,7 +1210,8 @@
       64
     ],
     "conversion": "nearest resize",
-    "card_number": 62
+    "card_title": "趁热打铁",
+    "card_number": 64
   },
   {
     "source": "资料/美术素材/状态图标/趁热打铁.png",
@@ -994,7 +1226,8 @@
       256
     ],
     "conversion": "nearest resize",
-    "card_number": 62
+    "card_title": "趁热打铁",
+    "card_number": 64
   },
   {
     "source": "资料/美术素材/状态图标/终局裁定.png",
@@ -1009,7 +1242,8 @@
       64
     ],
     "conversion": "nearest resize",
-    "card_number": 63
+    "card_title": "终局裁定",
+    "card_number": 65
   },
   {
     "source": "资料/美术素材/状态图标/终局裁定.png",
@@ -1024,7 +1258,8 @@
       256
     ],
     "conversion": "nearest resize",
-    "card_number": 63
+    "card_title": "终局裁定",
+    "card_number": 65
   },
   {
     "source": "资料/美术素材/状态图标/卸甲成军.png",
@@ -1039,7 +1274,8 @@
       64
     ],
     "conversion": "nearest resize",
-    "card_number": 64
+    "card_title": "卸甲成军",
+    "card_number": 66
   },
   {
     "source": "资料/美术素材/状态图标/卸甲成军.png",
@@ -1054,7 +1290,8 @@
       256
     ],
     "conversion": "nearest resize",
-    "card_number": 64
+    "card_title": "卸甲成军",
+    "card_number": 66
   },
   {
     "source": "资料/美术素材/状态图标/不倒不休.png",
@@ -1069,7 +1306,8 @@
       64
     ],
     "conversion": "nearest resize",
-    "card_number": 67
+    "card_title": "不倒不休",
+    "card_number": 69
   },
   {
     "source": "资料/美术素材/状态图标/不倒不休.png",
@@ -1084,7 +1322,8 @@
       256
     ],
     "conversion": "nearest resize",
-    "card_number": 67
+    "card_title": "不倒不休",
+    "card_number": 69
   },
   {
     "source": "资料/美术素材/状态图标/拳王形态.png",
@@ -1099,7 +1338,8 @@
       64
     ],
     "conversion": "nearest resize",
-    "card_number": 68
+    "card_title": "拳王形态",
+    "card_number": 70
   },
   {
     "source": "资料/美术素材/状态图标/拳王形态.png",
@@ -1114,7 +1354,8 @@
       256
     ],
     "conversion": "nearest resize",
-    "card_number": 68
+    "card_title": "拳王形态",
+    "card_number": 70
   },
   {
     "source": "资料/美术素材/状态图标/黄铜螺帽.png",
@@ -1143,5 +1384,149 @@
       256
     ],
     "conversion": "nearest resize"
+  },
+  {
+    "source": "资料/美术素材/药水/先古药水.png",
+    "source_sha256": "f2b55913b7b981042e469824159830d3d413ff48ed5f41a0cd887680c32968fe",
+    "source_size": [
+      256,
+      256
+    ],
+    "output": "PunchConstruct/assets/art/potion_ancient.ctex",
+    "size": [
+      70,
+      70
+    ],
+    "conversion": "256x256 sheet downscaled to 70x70, no tint",
+    "potion": "先古药水",
+    "tint": null
+  },
+  {
+    "source": "资料/美术素材/药水/先古药水.png",
+    "source_sha256": "f2b55913b7b981042e469824159830d3d413ff48ed5f41a0cd887680c32968fe",
+    "source_size": [
+      256,
+      256
+    ],
+    "output": "PunchConstruct/assets/art/potion_ancient_outline.ctex",
+    "size": [
+      70,
+      70
+    ],
+    "conversion": "white silhouette using the matching potion alpha",
+    "potion": "先古药水",
+    "tint": null
+  },
+  {
+    "source": "资料/美术素材/药水/先古药水.png",
+    "source_sha256": "f2b55913b7b981042e469824159830d3d413ff48ed5f41a0cd887680c32968fe",
+    "source_size": [
+      256,
+      256
+    ],
+    "output": "PunchConstruct/assets/art/potion_ancient_large.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "sheet as-is, 256x256",
+    "potion": "先古药水",
+    "tint": null
+  },
+  {
+    "source": "资料/美术素材/药水/痊愈药水_图标.png",
+    "source_sha256": "3a70fedde958f5a728a50d1b43b53fa1c9e41e726a50c8aaa490cc370efc7453",
+    "source_size": [
+      78,
+      75
+    ],
+    "output": "PunchConstruct/assets/art/potion_murky_oil.ctex",
+    "size": [
+      78,
+      75
+    ],
+    "conversion": "native-size RGBA icon, tint gray_liquid",
+    "potion": "浑浊机油",
+    "tint": "gray_liquid"
+  },
+  {
+    "source": "资料/美术素材/药水/痊愈药水_图标.png",
+    "source_sha256": "3a70fedde958f5a728a50d1b43b53fa1c9e41e726a50c8aaa490cc370efc7453",
+    "source_size": [
+      78,
+      75
+    ],
+    "output": "PunchConstruct/assets/art/potion_murky_oil_outline.ctex",
+    "size": [
+      78,
+      75
+    ],
+    "conversion": "white silhouette using the matching potion alpha",
+    "potion": "浑浊机油",
+    "tint": "gray_liquid"
+  },
+  {
+    "source": "资料/美术素材/药水/痊愈药水_大图.png",
+    "source_sha256": "e07a8f54542002b553cec4188930b9b39243daa0116e82ca0a9bcfb28183c00c",
+    "source_size": [
+      256,
+      256
+    ],
+    "output": "PunchConstruct/assets/art/potion_murky_oil_large.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "tint gray_liquid, 256x256",
+    "potion": "浑浊机油",
+    "tint": "gray_liquid"
+  },
+  {
+    "source": "资料/美术素材/药水/士兵炖汤_图标.png",
+    "source_sha256": "236b30557d42ceeb229957428b9b3e9810c490e3e183ea96f40a4e68fba550db",
+    "source_size": [
+      76,
+      73
+    ],
+    "output": "PunchConstruct/assets/art/potion_fighters_stew.ctex",
+    "size": [
+      76,
+      73
+    ],
+    "conversion": "native-size RGBA icon, tint gray_all",
+    "potion": "拳手炖汤",
+    "tint": "gray_all"
+  },
+  {
+    "source": "资料/美术素材/药水/士兵炖汤_图标.png",
+    "source_sha256": "236b30557d42ceeb229957428b9b3e9810c490e3e183ea96f40a4e68fba550db",
+    "source_size": [
+      76,
+      73
+    ],
+    "output": "PunchConstruct/assets/art/potion_fighters_stew_outline.ctex",
+    "size": [
+      76,
+      73
+    ],
+    "conversion": "white silhouette using the matching potion alpha",
+    "potion": "拳手炖汤",
+    "tint": "gray_all"
+  },
+  {
+    "source": "资料/美术素材/药水/士兵炖汤_大图.png",
+    "source_sha256": "9658589c608610fcd457743b7bbf1343d811760effd1951bd77b946cdccc1493",
+    "source_size": [
+      256,
+      256
+    ],
+    "output": "PunchConstruct/assets/art/potion_fighters_stew_large.ctex",
+    "size": [
+      256,
+      256
+    ],
+    "conversion": "180-degree hue correction, tint gray_all, 256x256",
+    "potion": "拳手炖汤",
+    "tint": "gray_all"
   }
 ]

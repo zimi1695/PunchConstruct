@@ -80,21 +80,54 @@ internal static class ConstructTreasureRelics
     {
         var pull = AccessTools.Method(typeof(RelicGrabBag), nameof(RelicGrabBag.PullFromFront), [typeof(RelicRarity), typeof(IRunState)]);
         var rng = AccessTools.Field(typeof(TreasureRoomRelicSynchronizer), "_rng");
-        return IlBridge.ReplaceCall(original, pull, call =>
-            new CodeInstruction[]
+        var rewritten = new List<CodeInstruction>(original.Count);
+        int replaced = 0;
+        foreach (var instruction in original)
+        {
+            if (!instruction.Calls(pull))
             {
-                // The native loop's player local identifies whose contribution is
-                // being generated. The shared bag has no owner and bypasses RelicFactory.
-                IlBridge.Inherit(call, new CodeInstruction(OpCodes.Ldloc_1)),
-                new CodeInstruction(OpCodes.Ldarg_0),
-                new CodeInstruction(OpCodes.Ldfld, rng),
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ConstructTreasureRelics), nameof(Pull)))
-            },
-            "treasure shared relic");
+                rewritten.Add(instruction);
+                continue;
+            }
+            // 0.113 has two shared-bag call sites: the per-player contribution
+            // loop (player local 1) and the extra shared pulls for the chest
+            // game mode. Only the first is attributable to a single player.
+            var call = instruction;
+            var replacement = replaced == 0
+                ? new CodeInstruction[]
+                {
+                    // The native loop's player local identifies whose contribution is
+                    // being generated. The shared bag has no owner and bypasses RelicFactory.
+                    IlBridge.Inherit(call, new CodeInstruction(OpCodes.Ldloc_1)),
+                    new CodeInstruction(OpCodes.Ldarg_0),
+                    new CodeInstruction(OpCodes.Ldfld, rng),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ConstructTreasureRelics), nameof(Pull)))
+                }
+                : new CodeInstruction[]
+                {
+                    // The extra shared pulls have no player local; Pull resolves an
+                    // owner only when every player is a construct.
+                    IlBridge.Inherit(call, new CodeInstruction(OpCodes.Ldnull)),
+                    new CodeInstruction(OpCodes.Ldarg_0),
+                    new CodeInstruction(OpCodes.Ldfld, rng),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ConstructTreasureRelics), nameof(Pull)))
+                };
+            rewritten.AddRange(replacement);
+            replaced++;
+        }
+        if (replaced is 1 or 2) return rewritten;
+        Diagnostics.Write("warn", "transpiler.skipped", new { site = "treasure shared relic", expected = "1-2", replaced });
+        return original;
     }
 
-    internal static RelicModel? Pull(RelicGrabBag bag, RelicRarity rarity, IRunState run, Player player, Rng rng)
+    internal static RelicModel? Pull(RelicGrabBag bag, RelicRarity rarity, IRunState run, Player? player, Rng rng)
     {
+        // Extra shared pulls are not owned by a player. Filter them only when
+        // the whole party is construct; a mixed party keeps native access.
+        player ??= run.Players.Count == 1 || run.Players.All(CharacterScope.IsConstruct)
+            ? run.Players.FirstOrDefault()
+            : null;
+        if (player is null) return bag.PullFromFront(rarity, run);
         var previousPlayer = RelicFactoryScope.CurrentPlayer;
         var previousRng = RelicFactoryScope.CurrentRng;
         try

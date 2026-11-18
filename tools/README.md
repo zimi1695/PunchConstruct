@@ -1,12 +1,12 @@
 # 开发工具
 
-`python tools/check_current.py boxing --rendered`检查八张无色新牌、获取限制、所有单位荆棘、左右勾拳顺序、格斗流程当回合生成、过载与满手牌计数。联机从0.4.20起增加boxing-generated／boxing-resolved两阶段快照。当前0.4.28候选完整功能验收要求35项；本轮content已同步为0.4.28（删除OnPlayWrapper IL改写、补丁安装审计、按hook熔断、15个共享遗物变体），公开条目3826907330与私密测试条目3835179658均已上传0.4.28。
+`python tools/check_current.py boxing --rendered`检查八张无色新牌、获取限制、所有单位荆棘、左右勾拳顺序、格斗流程当回合生成、过载与满手牌计数。联机从0.4.20起增加boxing-generated／boxing-resolved两阶段快照。当前源码为0.5.1候选（游戏0.113.0／BaseLib 3.4.8），新增6张卡牌、1件遗物、3种药水与被寄生的自动机械事件；左勾拳削弱、录像命令 `pcdeck`（三个脚本 all/changes/mod，含药水与原创展示）、10张愚者搬运牌与啾组门槛、先古药水／浑浊机油图标修正、pcdeck遗物图标可见性修复已合入；本轮最终构建 DLL `858f76de…`（PCK `d67662e5…`、277 份资源）已通过全量 QA：本地 35/35、联机 4/4（含 4p 弱网）、断线恢复 4/4，`full_local_verification=true`、不变量 16/16，`workshop.py --verify` 全 PASS；机械飞升改 3 费、霸无敌重写（下回合能量＋抽牌、升级 0 费）、能量文字改能量图标、卸甲成军／厄运共鸣／霸无敌换交接新美术并按先古规格裁剪、极速（Blitz）／恐惧（Dread）模式适配（难度上限按模式感知：Blitz 5、Dread 10，大厅上限同步，构装体补 shortTitle）均已合入。QA 侧修正 modes 断言（池挑战下尊重原生 MultiplayerConstraint 排除），`network_proxy.py` 容忍加入期一次性 ICMP 10054 不再终结代理线程。本轮另修正 modes 存档夹具（揭示 NEOW_EPOCH，避免全新存档未揭示尼奥纪元致 Overgrowth 先古池为空、原生 BlitzActMap 抛 RoomSet.Ancient not set），`check_current.py` 增 `--runtime-dir`、`prepare_runtime.py` 参数化并修复 ECFG 写入顺序、新增 `preview_latest.py` 封装 0.113.1 预检。0.4.28 仍是已发布冻结版本，公开条目 3826907330 仍为 0.4.28；私密测试条目 3835179658 已按最终 DLL 重传并校验通过（2026-11-17，远端元数据＋回下载哈希＋清单）。官方验收环境为游戏 0.113.0，另用正式 0.113.1 游戏文件完成隔离预检（startup、smoke、additions、pool、modes、selection 6/6 均 PASS，已复核最终 DLL）。
 
 ## 本地使用
 
 `run_all_checks.ps1` 一次串行执行本地 35 项（含 `compat`、`english`、`locale`、`localezh`）、联机 4 项、断线恢复 4 项，最后调用 `report_local.py` 汇总；`check_local.py` 对长批跑后偶发失败的 `shadernative` 会隔离重跑一次。
 
-`launch.ps1`启动工作区离线试玩，`-PrepareOnly`仅同步最新DLL、清单与资源；运行中的本地试玩会阻止同步。用户存档在runtime/play-userdata，不被QA覆盖。`sync_runtime_art.py`校对资源，不写dist。手动分发content为0.4.28，已同步含按hook隔离的Native Bridge、共享遗物变体与英文本地化的当前Release构建。已有试玩窗口须退出后由启动器同步；只依赖BaseLib。
+`launch.ps1`启动工作区离线试玩，`-PrepareOnly`仅同步最新DLL、清单与资源；运行中的本地试玩会阻止同步。用户存档在runtime/play-userdata，不被QA覆盖。`sync_runtime_art.py`校对资源，不写dist。手动分发content为0.5.1最终候选（DLL `858f76de…`、PCK `d67662e5…`，98种卡牌、277份资源），已通过全量QA与`workshop.py --verify`并同步；私密测试条目3835179658已按最终DLL重传并校验通过；公开条目仍为0.4.28（已发布冻结）；已有试玩窗口须退出后由启动器同步；只依赖BaseLib。
 
 仅编译：
 
@@ -20,7 +20,7 @@ dotnet build PunchConstruct/PunchConstruct.csproj -c Release --no-restore
 ## 文档与素材
 
 - `check_observer_art.py`：只读比对13张采用观者纹理与本机Watcher包的导入记录及真实纹理，`--record`仅更新现有来源表的路径核对记录。
-- `check_documents.py`：只读核对82张牌的连续编号、名称／类型／品质统计、源码成员、素材来源／编号／导出覆盖、当前文档链接和关键规则，不启动游戏。
+- `check_documents.py`：只读核对98张牌的连续编号、名称／类型／品质统计、源码成员、素材来源／编号／导出覆盖、当前文档链接和关键规则，不启动游戏。
 - `prepare_art.py`：按已采用素材导出纹理并更新素材清单。卡面和状态图标的审阅编号从主卡牌清单读取，轮廓图也计入清单，源图不改。
 - `prepare_text.py`：由角色对白正文生成已接入对白；文件头的草稿状态不参与导出。
 - `preview_icons.py`：根据状态图标清单生成全部已采用图标总览。
@@ -46,12 +46,12 @@ dotnet build PunchConstruct/PunchConstruct.csproj -c Release --no-restore
 | regentvisual | 菜单实际卡牌控件检查七张能量替代星费牌、升级／降级／费用刷新、原角色隔离及真正0星牌 |
 | relicvisual | 使用实际渲染器检查遗物栏小图／轮廓、预览大图、刷新和角色隔离；仅菜单，不开局 |
 | architect | 直接跳转建筑师，检查首遇／重逢对白、逐句点击、原版结尾及通关结算 |
-| additions | 愈战愈勇1张灼烧／5动量普通拳斗、基础消耗／强化去消耗、升降级关键词、空手自动变牌、满手溢出、动画与弃牌计数；不倒不休金卡2／1费、均生成普通拳斗及灼烧、混合叠加；自旋螺丝与对应素材 |
-| focus | 震荡、架势递增活力、先古替换、古铜之拳下回合临时力量累计／生效／消退／永久力量保留及跨战斗重置；黄铜螺帽图标／悬浮说明；跨回合实际NPower控件实例连续保留；原版和遗物触发的能力获得耗时 |
+| additions | 愈战愈勇1张灼烧／5动量普通拳斗、基础消耗／强化去消耗、升降级关键词、空手自动变牌、满手溢出、动画与弃牌计数；不倒不休金卡2／1费、均生成普通拳斗及灼烧、混合叠加；自旋螺丝与对应素材；另含pcdeck all（98/22/3）、changes（22/7/3）、mod（26/9/3）展示、药水归属与遗物图标可见性断言 |
+| focus | 震荡、架势递增活力、先古替换、古铜之拳每次完全格挡获得递增活力（首段5，之后+1）及跨战斗重置；黄铜螺帽图标／悬浮说明；跨回合实际NPower控件实例连续保留；原版和遗物触发的能力获得耗时 |
 | soup | 自动筛选小斩波可合法附加的原版附魔，核对普通／升级及已有永恒的附魔小斩波全部跳过，原牌与附魔不变；未附魔小斩波保留强化后变为0费永恒铁斩波，已有铁斩波／灼热铁斩波不变；包含克隆和序列化；仅直接事件房间 |
 | persist | 建立营养汤／魔典／储君费用存档，关闭进程，再启动全新进程从主菜单继续；另留seed日志 |
 | update | 无色来源、镇纸、海玻璃、树叶药膏及近期卡牌 |
-| edge | 商店补货、体系门槛与权重、锻造／召唤／灾厄；全部17种自定义状态的实际HoverTips及飞镖状态，覆盖数值、条件、叠加、剩余次数与隐藏内部状态 |
+| edge | 商店补货、体系门槛与权重、锻造／召唤／灾厄；全部19种自定义状态的实际HoverTips及飞镖状态，覆盖数值、条件、叠加、剩余次数与隐藏内部状态 |
 | boundary | 头盔跨战斗重置、重复／跨组权重、能力联动 |
 | relics | 宝箱／普通奖励／商店获取排除及角色隔离，木偶、种子、水盆、飞镖与延迟结算；另测灼热铁斩波连续8次升级、复制／还原／降级及两种木偶单独／叠加的实际出牌 |
 | treasure | 单独复现原生宝箱共享池抽取；64组种子、混组角色隔离、同种子结果一致、玩家及随机数作用域恢复 |
@@ -171,6 +171,33 @@ content已同步0.4.26（Native Bridge + 五域适配器、英文本地化与 14
 创意工坊标题、正文、可见性和BaseLib工坊ID位于`dist/SteamWorkshop/workshop.json`。仅`content`上传；验证报告及本地存档校验值不在上传目录。未取得作者明确同意前，不运行上传、创建条目或公开发布。观者素材已注明Boninall及来源页面，用户确认没有该作者授权；来源标注不能当作许可结论。
 
 官方上传工具v0.2.0已放在`tools/ModUploader`，下载包SHA256与官方发布一致；`--help`与`upload --help`已验证。获得作者最后上传许可后，才在工作区根目录运行`.\tools\ModUploader\ModUploader.exe upload -w .\dist\SteamWorkshop`。帮助命令不初始化Steam；此前0.4.15私密上传已验证当时账号权限与协议状态；再次上传须重新核对当前状态并取得作者许可。
+
+0.5.1 私密测试上传使用临时工作区（保留测试条目标题、`visibility=private`），命令为 `.\tools\ModUploader\ModUploader.exe upload -w <临时工作区> -i 3835179658`；不要直接用 `dist/SteamWorkshop`，因为 `mod_id.txt` 指向公开条目且 `workshop.json` 为 `public`。上传后回下载核对脚本与证据见 `tools/runtime/test-workshop-0.5.1.json`。
+
+### 附加宣传图空壳护栏（每次上传必查，长期有效）
+
+**反复出现的故障**：ModUploader 上传后，创意工坊页面的附加宣传图（`previews/preview-1..6.jpg`）"消失"。0.4.24、0.4.28、0.5.1 均复发过。
+
+**根因**：ModUploader 对"后端已存在的同名附加预览"只保留条目、**不重传图片内容**。一旦这些条目的图片内容缺失（后端 URL 全为空），就只剩空壳，页面看起来像图被删了。只重传封面 `image.png` 修不了附加预览——封面走 `GetQueryUGCPreviewURL`，附加预览走 `GetQueryUGCAdditionalPreview`，是两条独立通路。
+
+**每次上传后必做核验**（只读，不改条目）：
+
+```powershell
+python tools/verify_previews.py            # 默认公开条目 3826907330
+python tools/verify_previews.py 3835179658 # 或指定私密测试条目
+```
+
+脚本用 `SetReturnAdditionalPreviews(true)` + `GetQueryUGCNumAdditionalPreviews` + `GetQueryUGCAdditionalPreview` 读封面与全部附加预览 URL，`all_urls_nonempty=true` 且退出码 0 才算通过；任一 URL 为空即退出码 1。必要时再 `curl -r 0-0 <url>` 确认 HTTP 200/206 真实可访问。脚本以 `os._exit` 结束，避免 `SteamAPI_Shutdown` 在本地禁用条目上挂起。
+
+**空壳修复（两步，保留 `preview-N.jpg` 文件名）**：
+
+1. 把 `dist/SteamWorkshop/previews/` 的 6 张图临时移到别处（**目录留空但必须存在**），运行 `ModUploader.exe upload -w .\dist\SteamWorkshop -i <条目>`。ModUploader 按"缺失即删除"清掉 6 个空壳，日志出现 `Removing preview file: preview-1..6.jpg` ×6。
+2. 把 6 张图放回 `previews/`，再运行同一 upload。此时后端无同名条目，ModUploader 按新文件真正上传图片内容，日志出现 `Adding new preview file: …\preview-1..6.jpg` ×6 + `Successfully uploaded`。
+3. 重跑 `python tools/verify_previews.py <条目>` 确认 6 个 URL 全部非空且 HTTP live。
+
+**关键区别**：`previews/` 目录**不存在**→附加预览保持不变；目录**存在但为空**→删除全部后端附加预览；目录有同名文件→只保留条目、不重传内容（空壳不会被修）。每张附加预览须 <1MB。此操作只动预览，**不影响 mod 本体三文件哈希**。
+
+历史成功证据：`资料/历史/记录/上传日志-0.4.28-恢复预览.log`（后端 0 条目时重传，`Adding new preview file` ×6）；本次 0.5.1 修复日志 `tools/runtime/preview-restore-0.5.1.log`。
 
 
 ## 选人动画专项

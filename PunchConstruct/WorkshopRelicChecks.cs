@@ -52,20 +52,17 @@ internal static partial class PlaytestRunner
         Check(RngState() == randomBefore && enemies.All(e => !e.HasPower<WeakPower>() && !e.HasPower<VulnerablePower>()),
             "Oil Can does nothing and consumes no RNG at zero energy");
         run.Rng.CombatTargets.LoadFromSerializable(new Rng(42).ToSerializable());
-        var forecast = new Rng(42);
-        var selected = forecast.NextItem(enemies)!;
+        randomBefore = RngState();
         await PlayerCmd.SetEnergy(4, player);
         await oil.BeforeSideTurnEnd(Context, CombatSide.Player, [player.Creature]);
-        Check(selected.GetPowerAmount<WeakPower>() == 1 && selected.GetPowerAmount<VulnerablePower>() == 1 &&
-            enemies.Where(e => e != selected).All(e => !e.HasPower<WeakPower>() && !e.HasPower<VulnerablePower>()) && player.PlayerCombatState!.Energy == 4,
-            "Any positive energy applies exactly one Weak and Vulnerable to the same single enemy without spending energy");
-        Check(RngState() == JsonSerializer.Serialize(forecast.ToSerializable()), "Oil Can uses exactly one native combat-target RNG draw");
-        randomBefore = RngState();
+        Check(enemies.All(e => e.GetPowerAmount<WeakPower>() == 1 && e.GetPowerAmount<VulnerablePower>() == 1) && player.PlayerCombatState!.Energy == 4,
+            "Any positive energy applies exactly one Weak and Vulnerable to every enemy without spending energy");
+        Check(RngState() == randomBefore, "Oil Can applies to all enemies without consuming combat-target RNG");
         await oil.BeforeSideTurnEnd(Context, CombatSide.Enemy, enemies);
         await oil.BeforeSideTurnEnd(Context, CombatSide.Player, []);
-        Check(RngState() == randomBefore && selected.GetPowerAmount<WeakPower>() == 1,
+        Check(RngState() == randomBefore && enemies.All(e => e.GetPowerAmount<WeakPower>() == 1),
             "Oil Can ignores enemy turns and turns without its owner");
-        await PowerCmd.Remove<WeakPower>(selected); await PowerCmd.Remove<VulnerablePower>(selected);
+        foreach (var e in enemies) { await PowerCmd.Remove<WeakPower>(e); await PowerCmd.Remove<VulnerablePower>(e); }
 
         var wrench = await RelicCmd.Obtain<OpenEndWrench>(player);
         var knuckles = await RelicCmd.Obtain<SpareKnuckles>(player);
@@ -78,8 +75,8 @@ internal static partial class PlaytestRunner
         Check(player.Creature.CurrentHp == 51 && player.Gold == gold + 5 && player.Creature.Block == 16,
             "A real enemy death grants Wrench healing/gold and exactly 16 Knuckles block, unaffected by Dexterity");
         var block = player.Creature.Block;
-        await knuckles.AfterDeath(Context, player.Creature, false, 0);
-        await knuckles.AfterDeath(Context, enemies[0], true, 0);
+        await knuckles.AfterDeath(Context, player.Creature, null, false, 0);
+        await knuckles.AfterDeath(Context, enemies[0], null, true, 0);
         Check(player.Creature.Block == block, "Player deaths and prevented enemy deaths cannot trigger Knuckles");
         await PowerCmd.Remove<DexterityPower>(player.Creature);
 

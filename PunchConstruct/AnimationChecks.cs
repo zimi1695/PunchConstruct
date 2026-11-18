@@ -74,7 +74,7 @@ internal static partial class PlaytestRunner
                 string.Join(", ", AnimationProbe.Motions.Select(m => m.Trigger + "->" + m.Animation)));
             Check(AnimationProbe.Sounds.SequenceEqual(new[] { sound }), typeof(T).Name + " plays exactly one matching original monster sound");
             if (typeof(T) == typeof(SmallWave)) Check(target.CurrentHp == hp - 3, "Double-punch presentation leaves a single-hit Small Wave at 3 damage");
-            if (typeof(T) == typeof(FightMe)) Check(target.CurrentHp == hp - 12, "Multi-hit Fight Me retains two 6-damage hits");
+            if (typeof(T) == typeof(FightMe)) Check(target.CurrentHp == hp - 10, "Multi-hit Fight Me retains two 5-damage hits");
         }
 
         await Verify<SmallWave>("Attack");
@@ -113,8 +113,8 @@ internal static partial class PlaytestRunner
 
         await NGame.Instance!.ReturnToMainMenu();
         SaveManager.Instance.DeleteCurrentRun();
-        var native = await NGame.Instance.StartNewSingleplayerRun(ModelDb.Character<Ironclad>(), true,
-            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "ANIMATIONISOLATION", GameMode.Standard);
+        var native = await NGame.Instance.StartNewSingleplayerRun(QaNewRunPlayer(ModelDb.Character<Ironclad>()), true,
+            [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], "ANIMATIONISOLATION", GameMode.Standard, isCustomGame: false);
         var other = native.Players.Single();
         await RunManager.Instance.EnterRoomDebug(RoomType.Monster, model: ModelDb.Encounter<SlimesWeak>().ToMutable(), showTransition: false);
         await Until(() => other.PlayerCombatState?.Phase == PlayerTurnPhase.Play && !CombatManager.Instance.PlayerActionsDisabled, "Native isolation fixture ready");

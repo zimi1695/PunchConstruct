@@ -74,7 +74,8 @@ internal static class Diagnostics
             Write("info", "session.start", new {
                 mod = assembly.GetName().Version?.ToString(),
                 dllSha256 = Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(assembly.Location))),
-                game = typeof(RunManager).Assembly.GetName().Version?.ToString(), baseline = "0.111.0",
+                game = MegaCrit.Sts2.Core.Debug.ReleaseInfoManager.Instance.ReleaseInfo?.Version
+                    ?? typeof(RunManager).Assembly.GetName().Version?.ToString(), baseline = "0.113.0",
                 baseLib = typeof(BaseLib.Abstracts.CustomRelicModel).Assembly.GetName().Version?.ToString(),
                 qa = OS.GetCmdlineArgs().Any(a => a.StartsWith("--punchconstruct-")),
                 schema = 1, maxFileBytes = 2 * 1024 * 1024, retainedFiles = 12 });

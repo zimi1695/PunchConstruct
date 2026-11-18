@@ -130,14 +130,34 @@ internal static class BridgeConstructRelicVariants
     {
         var original = relic;
         var value = relic;
-        AdaptationRegistry.Run("relic", "ConstructRelicVariants",
-            () => AdaptedRelicVariants.Substitute(ref value, player));
+        bool applied = AdaptationRegistry.Guard("relic", "ConstructRelicVariants", () =>
+        {
+            AdaptedRelicVariants.Substitute(ref value, player);
+            return true;
+        }, fallback: false);
+        if (!applied && AdaptedRelicVariants.ShouldFailClosed(original, player))
+        {
+            // Never leak the unadapted native relic to a construct player when
+            // the replacement hook is unavailable. Circlet is the native
+            // no-effect fallback used when a relic pool is exhausted.
+            value = ModelDb.Relic<Circlet>().ToMutable();
+            Diagnostics.Write("error", "relic.variant.fail_closed", new
+            {
+                player = Diagnostics.Slot(player.NetId),
+                from = original.Id.Entry,
+                to = value.Id.Entry
+            });
+        }
         relic = value;
         if (ReferenceEquals(original, relic)) return;
         // The native bag entries are the shared relic; remove them so the roll
-        // cannot offer it again while this player owns the variant.
-        player.RelicGrabBag.Remove(original);
-        player.RunState.SharedRelicGrabBag.Remove(original);
+        // cannot offer it again while this player owns the variant. Cleanup is
+        // isolated so a bag conflict cannot abort the native obtain call.
+        AdaptationRegistry.Run("relic", "ConstructRelicVariantsCleanup", () =>
+        {
+            player.RelicGrabBag.Remove(original);
+            player.RunState.SharedRelicGrabBag.Remove(original);
+        });
     }
 }
 
@@ -145,6 +165,7 @@ internal static class BridgeConstructRelicVariants
 // shared relic. Convert them silently while the inventory loads; AfterObtained
 // must not run again.
 [HarmonyPatch(typeof(Player), "PopulateRelics")]
+[PatchPolicy(true)]
 internal static class BridgeConstructRelicMigration
 {
     private static void Prefix(Player __instance, ref IEnumerable<RelicModel> relics)

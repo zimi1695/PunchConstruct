@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -96,7 +97,7 @@ public sealed class ConstructSicEmPower : CustomPowerModel
     {
         var player = Applier?.Player;
         if (player == null || target != Owner || dealer == null ||
-            (dealer != player.Creature && dealer.PetOwner != player)) return;
+            (dealer != player.Creature && (dealer.PetOwner != player || dealer.Monster is not Osty))) return;
         await OstyCmd.Summon(context, player, Amount, this);
     }
     public override async Task AfterSideTurnEnd(PlayerChoiceContext context, CombatSide side, IEnumerable<Creature> participants)

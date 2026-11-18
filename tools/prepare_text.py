@@ -51,9 +51,19 @@ events.update({
     'PUNCHCONSTRUCT_BUGSLAYER.pages.GUARD.description': '你架起双臂。\n\n虫群撞上拳套，噼里啪啦落了一地。',
 })
 
+events.update({
+    'PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.description': '废料堆深处，一具[gold]构装体[/gold]半跪在地。\n外壳裂开，齿轮锈死，胸口的[blue]核心[/blue]早已熄灭。\n唯一还在动的，是它胸腔里一枚[gold]齿轮工艺品[/gold]。发条还在走，[sine]滴答，滴答[/sine]。',
+    'PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.REPAIR.title': '修复',
+    'PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.REPAIR.description': '失去[red]67[/red]金币，获得[gold]齿轮工艺品[/gold]。',
+    'PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.REPAIR.description': '你买来零件，把锈死齿轮一件件换掉。\n核心没亮。你修不好一台停机的机器。\n你把它胸腔里那还在走动的[gold]齿轮工艺品[/gold]取出。\n发条还在走，[sine]滴答，滴答[/sine]。',
+    'PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.SEARCH.title': '翻找',
+    'PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.SEARCH.description': '获得[gold]万能药[/gold]。',
+    'PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.SEARCH.description': '你蹲下身，在它的残骸里翻找。\n小瓶从裂开的胸腔滚出。\n你拔开瓶塞，里面是[blue]万能药[/blue]。\n你离开时，它仍保持着原来的姿势。',
+})
+
 relic_descriptions = {
-    'PUNCHCONSTRUCT_ADAPTED_RUINED_HELMET.description': '每场战斗首次获得[gold]力量[/gold]或[gold]敏捷[/gold]时，获得等量的另一项属性。整场共触发一次。',
-    'PUNCHCONSTRUCT_ADAPTED_ARCHAIC_TOOTH.description': '将一张[gold]铁斩波[/gold][gold]变化[/gold]为[gold]灼热铁斩波[/gold]并[gold]强化[/gold]3次。',
+    'PUNCHCONSTRUCT_ADAPTED_RUINED_HELMET.description': '每场战斗第一次获得[gold]力量[/gold]或[gold]敏捷[/gold]时，获得等量的另一项属性。',
+    'PUNCHCONSTRUCT_ADAPTED_ARCHAIC_TOOTH.description': '将一张[gold]东尼斩波[/gold][gold]变化[/gold]为[gold]霸无敌[/gold]。',
     'PUNCHCONSTRUCT_ADAPTED_NEOWS_TALISMAN.description': '[gold]强化[/gold]两张[gold]小斩波[/gold]。',
     'PUNCHCONSTRUCT_ADAPTED_NUTRITIOUS_SOUP.description': '拾起时，将你[gold]牌组[/gold]中的所有[gold]小斩波[/gold][gold]变化[/gold]为[gold]铁斩波[/gold]，并赋予[gold]永恒[/gold]。',
     'PUNCHCONSTRUCT_ADAPTED_PANDORAS_BOX.description': '拾起时，将所有可变化的[gold]小斩波[/gold]、[gold]打击[/gold]和[gold]防御[/gold][gold]变化[/gold]为其他牌。',

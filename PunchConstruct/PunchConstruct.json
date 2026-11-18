@@ -3,14 +3,14 @@
   "name": "拳击构装体",
   "author": "铁斩波",
   "description": "以边打边防为主题的拳击构装体角色模组。",
-  "version": "0.4.28",
-  "min_game_version": "0.111.0",
+  "version": "0.5.1",
+  "min_game_version": "0.113.0",
   "has_pck": true,
   "has_dll": true,
   "dependencies": [
     {
       "id": "BaseLib",
-      "min_version": "3.4.7"
+      "min_version": "3.4.8"
     }
   ],
   "affects_gameplay": true

@@ -23,20 +23,20 @@ public sealed class AncientGuardStance : CustomRelicModel
     public override int DisplayAmount => NextAmount;
     public override Task BeforeCombatStart() { ResetGrowth(); return Task.CompletedTask; }
     public override Task AfterCombatEnd(MegaCrit.Sts2.Core.Rooms.CombatRoom room) { ResetGrowth(); return Task.CompletedTask; }
-    private void ResetGrowth() { NextAmount = 1; InvokeDisplayAmountChanged(); }
+    private void ResetGrowth() { NextAmount = 5; InvokeDisplayAmountChanged(); }
     protected override string IconBaseName => "anchor";
     public override RelicRarity Rarity => RelicRarity.Ancient;
     public override string PackedIconPath => "res://PunchConstruct/art/ancient_guard_stance.ctex";
     protected override string PackedIconOutlinePath => "res://PunchConstruct/art/ancient_guard_stance_outline.ctex";
     protected override string BigIconPath => "res://PunchConstruct/art/ancient_guard_stance_big.ctex";
-    public override List<(string, string)> Localization => Loc.Relic("古铜之拳", "每次完全格挡伤害，下回合获得1点[gold]临时力量[/gold]。此效果本场战斗中每次触发后+1。", "这拳头有力气");
+    public override List<(string, string)> Localization => Loc.Relic("古铜之拳", "每次完全格挡伤害，获得5点[gold]活力[/gold]。此效果本场战斗中每次触发后+1。", "这拳头有力气");
     public override async Task AfterDamageReceived(PlayerChoiceContext context, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? card)
     {
         if (target != Owner.Creature || !result.WasFullyBlocked) return;
         int amount = NextAmount++;
         InvokeDisplayAmountChanged();
         Flash();
-        await GuardStancePowerGain.Apply<GuardStrengthNextTurnPower>(context, Owner.Creature, amount);
+        await GuardStancePowerGain.Apply<VigorPower>(context, Owner.Creature, amount);
     }
 }
 
@@ -60,8 +60,8 @@ internal static class ScopedAncientToothTransformation
 {
     internal static bool Apply(ArchaicTooth __instance, CardModel __0, ref CardModel __result)
     {
-        if (__0 is not IronWave || !RegentAdaptations.Owns(__0)) return true;
-        __result = WaveEventRules.ScorchingReplacement(__0, 3);
+        if (__0 is not TonyWave || !RegentAdaptations.Owns(__0)) return true;
+        __result = WaveEventRules.DomineeringReplacement(__0);
         return false;
     }
 }
@@ -71,6 +71,6 @@ internal static class AncientWaveMapping
     internal static void Apply(ref Dictionary<ModelId, CardModel> __result)
     {
         if (ScopedAncientTooth.ConstructSetup)
-            __result = new Dictionary<ModelId, CardModel>(__result) { [ModelDb.GetId<IronWave>()] = ModelDb.Card<ScorchingIronWave>() };
+            __result = new Dictionary<ModelId, CardModel>(__result) { [ModelDb.GetId<TonyWave>()] = ModelDb.Card<ConstructDomineering>() };
     }
 }

@@ -8,7 +8,7 @@ namespace PunchConstruct;
 internal static class CombatRelicState
 {
     internal static readonly SavedSpireField<GuardStance, int> GuardNext = new(() => 1, "PunchConstruct_NextGrant");
-    internal static readonly SavedSpireField<AncientGuardStance, int> AncientNext = new(() => 1, "PunchConstruct_NextGrant");
+    internal static readonly SavedSpireField<AncientGuardStance, int> AncientNext = new(() => 5, "PunchConstruct_NextGrant");
     internal static readonly SavedSpireField<ConstructHelmet, bool> HelmetUsed = new(() => false, "PunchConstruct_Used");
     internal static readonly SavedSpireField<RuinedHelmet, bool> NativeHelmetUsed = new(() => false, "PunchConstruct_Used");
     internal static readonly SavedSpireField<SpinningScrew, bool> ScrewDamageGiven = new(() => false, "PunchConstruct_DamageGiven");

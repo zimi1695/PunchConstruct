@@ -131,7 +131,12 @@ def main():
                         choices=('zhs', 'zht', 'eng', 'deu', 'esp', 'fra', 'ind', 'ita',
                                  'jpn', 'kor', 'pol', 'ptb', 'rus', 'spa', 'tha', 'tur'),
                         help='Initial game language for the disposable fixture profile')
+    parser.add_argument('--runtime-dir', type=Path, default=None,
+                        help='Isolated game runtime to test against (default: tools/runtime, the frozen 0.113.0 QA baseline)')
     args = parser.parse_args()
+    global RUNTIME
+    if args.runtime_dir:
+        RUNTIME = args.runtime_dir.resolve()
     if args.mode in ('poster', 'selection') and not args.rendered:
         parser.error('poster and selection require --rendered to verify native UI and actual output')
     # A locale mode starts the game in that language: model metadata and table
@@ -214,6 +219,19 @@ def main():
                 discovered_events=[], discovered_potions=[], discovered_relics=['RELIC.BURNING_BLOOD'],
                 enable_ftues=True, encounter_stats=[], enemy_stats=[], epochs=[], floors_climbed=0,
                 ftue_completed=['ascension_singleplayer_ftue'], max_multiplayer_ascension=0,
+                pending_character_unlock='NONE.NONE', preferred_multiplayer_ascension=0, schema_version=24,
+                test_subject_kills=0, total_playtime=0, total_unlocks=0, unique_id='PUNCHQA',
+                unlocked_achievements=[], wongo_points=0)), encoding='utf-8')
+        elif args.mode == 'modes':
+            # Blitz requires the act-1 Ancient; reveal NeowEpoch like a real progressed profile (fresh profile -> empty pool -> BlitzActMap throws).
+            progress = appdata / 'PunchConstructTest/default/1/modded/profile1/saves/progress.save'
+            progress.parent.mkdir(parents=True, exist_ok=True)
+            progress.write_text(json.dumps(dict(
+                ancient_stats=[], architect_damage=0, card_stats=[], character_stats=[], current_score=0,
+                discovered_acts=[], discovered_cards=[], discovered_events=[], discovered_potions=[], discovered_relics=[],
+                enable_ftues=True, encounter_stats=[], enemy_stats=[],
+                epochs=[dict(id='NEOW_EPOCH', obtain_date=1788568328, state='revealed')],
+                floors_climbed=0, ftue_completed=['ascension_singleplayer_ftue'], max_multiplayer_ascension=0,
                 pending_character_unlock='NONE.NONE', preferred_multiplayer_ascension=0, schema_version=24,
                 test_subject_kills=0, total_playtime=0, total_unlocks=0, unique_id='PUNCHQA',
                 unlocked_achievements=[], wongo_points=0)), encoding='utf-8')
@@ -333,8 +351,8 @@ def main():
                 shutil.copy2(screenshot, RUNTIME / screenshot.name)
         if args.mode == 'regentvisual' and (stage / 'qa-regent-costs.png').exists():
             shutil.copy2(stage / 'qa-regent-costs.png', RUNTIME / 'qa-regent-costs.png')
-        if args.mode == 'additions' and (stage / 'qa-never-burn-preview.png').exists():
-            shutil.copy2(stage / 'qa-never-burn-preview.png', RUNTIME / 'qa-never-burn-preview.png')
+        if args.mode == 'additions' and (stage / 'qa-never-fisticuffs.png').exists():
+            shutil.copy2(stage / 'qa-never-fisticuffs.png', RUNTIME / 'qa-never-fisticuffs.png')
         if args.mode == 'observer' and (stage / 'qa-independent-observer.png').exists():
             shutil.copy2(stage / 'qa-independent-observer.png', RUNTIME / 'qa-independent-observer.png')
         if args.mode == 'observer' and (stage / 'qa-observer-divinity.png').exists():

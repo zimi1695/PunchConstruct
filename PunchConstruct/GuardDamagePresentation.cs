@@ -16,8 +16,11 @@ internal static class GuardDamagePresentation
     internal static MethodBase Target()
     {
         var method = typeof(CreatureCmd).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Single(m => m.Name == nameof(CreatureCmd.Damage) && m.GetParameters().Length == 7 &&
-                m.GetParameters()[1].ParameterType == typeof(IEnumerable<Creature>) && m.GetParameters()[2].ParameterType == typeof(decimal));
+            .Single(m => m.Name == nameof(CreatureCmd.Damage) && m.GetParameters().Length == 8 &&
+                m.GetCustomAttribute<AsyncStateMachineAttribute>() != null &&
+                m.GetParameters()[1].ParameterType.IsGenericType &&
+                m.GetParameters()[1].ParameterType.GetGenericTypeDefinition() == typeof(IEnumerable<>) &&
+                m.GetParameters()[2].ParameterType == typeof(decimal));
         return AccessTools.Method(method.GetCustomAttribute<AsyncStateMachineAttribute>()!.StateMachineType, "MoveNext");
     }
     internal static List<CodeInstruction> Transpile(List<CodeInstruction> original, MethodBase __originalMethod)

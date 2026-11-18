@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Nodes.Audio;
 using MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect;
 using MegaCrit.Sts2.Core.Nodes.Screens.CustomRun;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
 
 namespace PunchConstruct;
@@ -133,11 +134,19 @@ internal static partial class PlaytestRunner
         Check(lobby.MaxAscension == 10 && lobby.Ascension == 10, "Switching back keeps Construct's selected difficulty");
         Check(progress.MaxMultiplayerAscension == globalMax, "Account-wide multiplayer progression remains unchanged");
 
-        StartRunLobbyPlayer Construct(int slot) => new() { id = (ulong)(slot + 1), slotId = slot, character = ModelDb.Character<ConstructCharacter>(), maxMultiplayerAscensionUnlocked = 0 };
+        StartRunLobbyPlayer Construct(int slot) => new() { id = (ulong)(slot + 1), slotId = slot, character = ModelDb.Character<ConstructCharacter>(), maxStandardAscension = 0, maxBlitzAscension = 0 };
         var group = new[] { Construct(0), Construct(1) };
         Check(ConstructDifficulty.LobbyMaximum(group) == 10, "Fresh Construct party has all difficulties without account multiplayer progress");
-        group[1].character = ModelDb.Character<Ironclad>(); group[1].maxMultiplayerAscensionUnlocked = 3;
+        group[1].character = ModelDb.Character<Ironclad>(); group[1].maxStandardAscension = 3; group[1].maxBlitzAscension = 3;
         Check(ConstructDifficulty.LobbyMaximum(group) == 3, "Mixed party retains native teammate's difficulty limit");
+        Check(ConstructDifficulty.MaximumFor(GameMode.Blitz) == 5 && ConstructDifficulty.MaximumFor(GameMode.Dread) == 10,
+            "Blitz caps at five and Dread at ten, matching the native mode maxima");
+        var blitzGroup = new[] { Construct(0), Construct(1) };
+        Check(ConstructDifficulty.LobbyMaximum(blitzGroup, GameMode.Blitz) == 5,
+            "Fresh Construct party unlocks the full Blitz ladder without exceeding its five-level cap");
+        blitzGroup[1].character = ModelDb.Character<Ironclad>(); blitzGroup[1].maxBlitzAscension = 2;
+        Check(ConstructDifficulty.LobbyMaximum(blitzGroup, GameMode.Blitz) == 2,
+            "Mixed Blitz party retains the native teammate's shared Blitz limit");
 
         Descendants(menu).OfType<NSubmenuStack>().Single().Pop();
         await Frames(20);

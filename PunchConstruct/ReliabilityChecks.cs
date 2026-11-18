@@ -48,8 +48,8 @@ internal static partial class PlaytestRunner
             "Punch Off Nab resolves its actual native relic reward and Injury");
     }
     private static async Task<RunState> ReliabilityRun(string seed) => await NGame.Instance!.StartNewSingleplayerRun(
-        ModelDb.Character<ConstructCharacter>(), true,
-        [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], seed, GameMode.Standard);
+        QaNewRunPlayer(ModelDb.Character<ConstructCharacter>()), true,
+        [ModelDb.Act<Overgrowth>(), ModelDb.Act<Hive>(), ModelDb.Act<Glory>()], [], seed, GameMode.Standard, isCustomGame: false);
 
     private static async Task PersistenceSeed()
     {
@@ -181,12 +181,12 @@ internal static partial class PlaytestRunner
             var shop = MerchantInventory.CreateForNormalMerchant(player);
             Check(shop.CharacterCardEntries.All(e => e.CreationResult?.Card is { } c && c.Pool is not ColorlessCardPool &&
                     (CardAcquisition.Eligible(player, c) || CardAcquisition.ShopAncients.Contains(c.GetType()) && c is not Protector)) &&
-                shop.ColorlessCardEntries.Count == 2 && shop.ColorlessCardEntries.All(e => e.CreationResult?.Card is { } c && c.Pool is ColorlessCardPool && CardAcquisition.Eligible(player, c)),
+                shop.ColorlessCardEntries.Count == 2 && shop.ColorlessCardEntries.All(e => e.CreationResult?.Card is { } c && c.Pool is ColorlessCardPool && (c is ConstructPanacea || CardAcquisition.Eligible(player, c))),
                 "Native merchant population keeps colored and colorless slots valid: " + i);
             foreach (var entry in shop.ColorlessCardEntries)
             {
                 AccessTools.Method(typeof(MerchantCardEntry), "RestockAfterPurchase").Invoke(entry, [shop]);
-                Check(entry.CreationResult?.Card is { } c && c.Pool is ColorlessCardPool && CardAcquisition.Eligible(player, c),
+                Check(entry.CreationResult?.Card is { } c && c.Pool is ColorlessCardPool && (c is ConstructPanacea || CardAcquisition.Eligible(player, c)),
                     "Native colorless restock remains in selected pool: " + i);
             }
         }

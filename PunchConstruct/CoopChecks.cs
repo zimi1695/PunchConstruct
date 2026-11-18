@@ -49,9 +49,10 @@ internal static partial class PlaytestRunner
         internal StartRunLobby Lobby = null!;
         internal Task<RunState>? Started;
         public void BeginRun(string seed, List<ActModel> acts, IReadOnlyList<ModifierModel> modifiers)
-            => Started = NGame.Instance!.StartNewMultiplayerRun(Lobby, false, acts, modifiers, seed, Lobby.Ascension);
+            => Started = NGame.Instance!.StartNewMultiplayerRun(Lobby.GeneratePlayers(seed), Lobby, false, acts, modifiers, seed, Lobby.Ascension);
         public void PlayerConnected(StartRunLobbyPlayer player) { }
-        public void PlayerChanged(StartRunLobbyPlayer player, bool isRandomCharacterResolution) { }
+        public void PlayerChanged(StartRunLobbyPlayer player) { }
+        public void GameModeChanged() { }
         public void AscensionChanged() { }
         public void SeedChanged() { }
         public void ModifiersChanged() { }
@@ -179,10 +180,10 @@ internal static partial class PlaytestRunner
         foreach (var player in run.Players) await PowerCmd.Remove<VigorPower>(player.Creature);
         await RelicCmd.Replace(p0.Relics.OfType<GuardStance>().Single(), ModelDb.Relic<AncientGuardStance>().ToMutable());
         await CreatureCmd.Damage(Context, p0.Creature, 1, ValueProp.Unpowered, enemy);
-        Check(p0.Creature.GetPowerAmount<StrengthPower>() == 0 && p0.Creature.GetPowerAmount<GuardStrengthNextTurnPower>() == 1 &&
-            p1.Creature.GetPowerAmount<GuardStrengthNextTurnPower>() == 0 &&
-            p0.Relics.OfType<AncientGuardStance>().Single().Title.GetFormattedText() == "古铜之拳", "Ancient replacement queues temporary Strength only for its owner");
-        await PowerCmd.Remove<GuardStrengthNextTurnPower>(p0.Creature);
+        Check(p0.Creature.GetPowerAmount<VigorPower>() == 5 && p1.Creature.GetPowerAmount<VigorPower>() == 0 &&
+            p0.Relics.OfType<AncientGuardStance>().Single().Title.GetFormattedText() == "古铜之拳",
+            "Ancient replacement grants five Vigor only to its owner");
+        await PowerCmd.Remove<VigorPower>(p0.Creature);
         await CoopBarrier("fixture-ready");
         await CoopPlay<SicEm>(run, 0, "host-mark");
         if (p1.Character is not Ironclad) await CoopPlay<SicEm>(run, 1, "guest-mark", upgraded: true);
@@ -238,11 +239,17 @@ internal static partial class PlaytestRunner
             "Network Protector+ scales by maximum pet HP and owner Strength rather than pet Strength");
         await PowerCmd.Remove<StrengthPower>(p0.Creature);
         await PowerCmd.Remove<StrengthPower>(p0.Osty);
+        var ancient = p0.Relics.OfType<AncientGuardStance>().Single();
+        await ancient.BeforeCombatStart();
         await CreatureCmd.GainBlock(p0.Creature, 10, ValueProp.Unpowered, null);
         await CreatureCmd.Damage(Context, p0.Creature, 1, ValueProp.Unpowered, enemy);
         await CreatureCmd.Damage(Context, p0.Creature, 1, ValueProp.Unpowered, enemy);
-        Check(p0.Creature.GetPowerAmount<GuardStrengthNextTurnPower>() == 5 && !p0.Creature.HasPower<StrengthPower>(),
-            "Two blocked hits stack the next-turn queue at two plus three, without immediate Strength");
+        Check(p0.Creature.GetPowerAmount<VigorPower>() == 11 && !p0.Creature.HasPower<StrengthPower>(),
+            "Two blocked ancient hits grant five then six Vigor without immediate Strength");
+        // The relic now grants Vigor. Exercise the retained next-turn
+        // temporary-Strength model directly so multiplayer activation and
+        // expiry stay covered.
+        await PowerCmd.Apply<GuardStrengthNextTurnPower>(Context, p0.Creature, 5, p0.Creature, null);
         await CoopSnapshot(run, "marks");
 
         await CoopPlay<NeverBackDown>(run, 0, "host-never", targetsEnemy: false);
@@ -272,13 +279,13 @@ internal static partial class PlaytestRunner
         }
         finally { HoldEnemyActions = false; }
         var hostGenerated = p0.PlayerCombatState!.AllCards.Except(previous[0]).ToArray();
-        Check(hostGenerated.OfType<Fisticuffs>().Count() == 1 && hostGenerated.OfType<Fisticuffs>().All(c => !c.IsUpgraded) && hostGenerated.OfType<Burn>().Count() == 1,
-            "Host normal Never Back Down creates only its normal Fisticuffs and Burn");
+        Check(hostGenerated.OfType<Fisticuffs>().Count() == 1 && hostGenerated.OfType<Fisticuffs>().All(c => !c.IsUpgraded) && !hostGenerated.OfType<Burn>().Any(),
+            "Host normal Never Back Down creates only its normal Fisticuffs without Burn");
         if (p1.Character is ConstructCharacter)
         {
             var generated = p1.PlayerCombatState!.AllCards.Except(previous[1]).ToArray();
-            Check(generated.OfType<Fisticuffs>().Count() == 1 && generated.OfType<Fisticuffs>().All(c => !c.IsUpgraded) && generated.OfType<Burn>().Count() == 1,
-                "Guest upgraded Never Back Down keeps its upgraded generation separate");
+            Check(generated.OfType<Fisticuffs>().Count() == 1 && generated.OfType<Fisticuffs>().All(c => !c.IsUpgraded) && !generated.OfType<Burn>().Any(),
+                "Guest upgraded Never Back Down keeps its upgraded generation separate without Burn");
         }
         Check(!p0.Creature.HasPower<DelayedWavePower>() && !p1.Creature.HasPower<DelayedWavePower>() &&
             !enemy.HasPower<ConstructSicEmPower>(), "Both delayed random attacks resolve and temporary enemy marks expire");
@@ -343,8 +350,9 @@ internal static partial class PlaytestRunner
         foreach (var foe in state.HittableEnemies) await CreatureCmd.SetCurrentHp(foe, 1);
         await CoopPlay<MegaCrit.Sts2.Core.Models.Cards.Thunderclap>(run, 0, "finish-prepared-combat", targetsEnemy: false);
         await CoopWait(() => !CombatManager.Instance.IsInProgress, "Targeted native multiplayer victory");
-        Check(run.Players.SelectMany(p => p.Relics).Where(r => r is GuardStance or AncientGuardStance).All(r => r.DisplayAmount == 1),
-            "Native victory resets both players' growing relics before entering the next room");
+        Check(run.Players.SelectMany(p => p.Relics).Where(r => r is GuardStance or AncientGuardStance)
+                .All(r => r.DisplayAmount == (r is AncientGuardStance ? 5 : 1)),
+            "Native victory resets each growing relic to its own starting grant");
 
         // Debug room changes bypass the normal reward/map interaction delay.
         // Native exhaust VFX owns a two-second delayed card return; unloading
@@ -379,7 +387,7 @@ internal static partial class PlaytestRunner
             var added = player.Deck.Cards.Except(previousDecks[index]).ToArray();
             Check(added.Length == 2 && added.All(CardAcquisition.IsSelectedImport), "Sea Glass synchronizes the selected two cards only into its owner's permanent deck: " + player.NetId);
         }
-        Check(CardSelectCmd.Selector == null && !CardAcquisition.SeaGlassSelection && CardFactoryScope.Player == null,
+        Check(run.Players.All(p => RunManager.Instance.CardSelectorStack.GetSelector(p) == null) && !CardAcquisition.SeaGlassSelection && CardFactoryScope.Player == null,
             "Parallel owners' relic selections restore all acquisition scopes");
         if (p1.Character is ConstructCharacter || _coopRole == "client")
             Check(remoteChoices > choicesBeforeRelics, "Sea Glass used real remote reward-choice messages");
@@ -427,9 +435,9 @@ internal static partial class PlaytestRunner
             var error = host.StartENetHost(port, _coopPlayers - 1);
             if (error != null) throw new InvalidOperationException("ENet host failed: " + error);
             _coopNet = host;
-            lobby = new StartRunLobby(GameMode.Standard, host, listener, _coopPlayers);
+            lobby = new StartRunLobby(GameMode.Standard, false, host, listener, _coopPlayers);
             listener.Lobby = lobby;
-            lobby.AddLocalHostPlayer(new UnlockState(SaveManager.Instance.Progress), 0);
+            lobby.AddLocalHostPlayer(new UnlockState(SaveManager.Instance.Progress), 0, 0);
             lobby.SetLocalCharacter(ModelDb.Character<ConstructCharacter>());
             System.IO.File.WriteAllText(System.IO.Path.Combine(_coopDir, "host-listening"), port.ToString());
         }
@@ -439,13 +447,13 @@ internal static partial class PlaytestRunner
             int index = _coopRole == "client" ? 1 : int.Parse(_coopRole[6..]);
             if (index > 1) await CoopWait(() => System.IO.File.Exists(System.IO.Path.Combine(_coopDir, "joined-" + (index - 1))), "Previous peer joined");
             var client = new NetClientGameService(PeerVersionInfo.LocalDefault());
-            var joined = await new JoinFlow(client).Begin(new ENetClientConnectionInitializer((ulong)(index + 1), "127.0.0.1", port), _tree);
+            var joined = await new JoinFlow(client, new ENetClientConnectionInitializer((ulong)(index + 1), "127.0.0.1", port)).Begin(_tree);
             if (joined.joinResponse == null) throw new InvalidOperationException("No lobby join response: " + joined.sessionState);
             // A response may complete inline inside native message dispatch.
             // Replace fixture listeners only after that enumeration returns.
             await Frames(2);
             _coopNet = client;
-            lobby = new StartRunLobby(GameMode.Standard, client, listener, _coopPlayers);
+            lobby = new StartRunLobby(GameMode.Standard, false, client, listener, _coopPlayers);
             listener.Lobby = lobby;
             lobby.InitializeFromMessage(joined.joinResponse.Value);
             lobby.SetLocalCharacter(index == 1 ? guestCharacter : ModelDb.Character<ConstructCharacter>());
@@ -461,16 +469,18 @@ internal static partial class PlaytestRunner
         // One partition for the whole party: the availability cap and the branch
         // that exercises it must never be derived from different player sets.
         bool constructParty = lobby.Players.All(p => p.character is ConstructCharacter);
-        int expectedMaximum = constructParty ? ConstructDifficulty.Maximum :
-            lobby.Players.Where(p => p.character is not ConstructCharacter).Min(p => p.maxMultiplayerAscensionUnlocked);
+        int modeMaximum = ConstructDifficulty.MaximumFor(lobby.GameMode);
+        int expectedMaximum = constructParty ? modeMaximum :
+            lobby.Players.Where(p => p.character is not ConstructCharacter).Min(p =>
+                lobby.GameMode == GameMode.Blitz ? p.maxBlitzAscension : p.maxStandardAscension);
         await CoopWait(() => lobby.MaxAscension == expectedMaximum, "Character-specific multiplayer ascension availability");
         Check(lobby.MaxAscension == expectedMaximum, "Fresh Construct party unlocks all difficulties; native teammate retains its limit");
         int globalAscension = SaveManager.Instance.Progress.MaxMultiplayerAscension;
         if (constructParty)
         {
-            if (_coopRole == "host") lobby.SyncAscensionChange(ConstructDifficulty.Maximum);
-            await CoopWait(() => lobby.Ascension == ConstructDifficulty.Maximum, "Native ENet synchronizes highest difficulty");
-            Check(lobby.Ascension == 10, "All actual ENet peers can select the highest difficulty on fresh profiles");
+            if (_coopRole == "host") lobby.SyncAscensionChange(modeMaximum);
+            await CoopWait(() => lobby.Ascension == modeMaximum, "Native ENet synchronizes highest difficulty");
+            Check(lobby.Ascension == modeMaximum, "All actual ENet peers can select the highest difficulty on fresh profiles");
             await CoopBarrier("ascension-ten");
             if (_coopRole == "host") lobby.SetLocalCharacter(ModelDb.Character<Ironclad>());
             await CoopWait(() => lobby.Players[0].character is Ironclad && lobby.MaxAscension == 0 && lobby.Ascension == 0,
@@ -478,7 +488,7 @@ internal static partial class PlaytestRunner
             Check(SaveManager.Instance.Progress.MaxMultiplayerAscension == globalAscension, "Difficulty unlock does not raise account-wide multiplayer progression");
             await CoopBarrier("ascension-native-cap");
             if (_coopRole == "host") lobby.SetLocalCharacter(ModelDb.Character<ConstructCharacter>());
-            await CoopWait(() => lobby.Players[0].character is ConstructCharacter && lobby.MaxAscension == 10,
+            await CoopWait(() => lobby.Players[0].character is ConstructCharacter && lobby.MaxAscension == modeMaximum,
                 "Switching back restores Construct's full difficulty range on all peers");
         }
         if (_coopRole == "host") lobby.SyncAscensionChange(0);

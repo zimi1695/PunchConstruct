@@ -10,15 +10,17 @@ ROOT = Path(__file__).resolve().parent.parent
 
 def main():
     roster = (ROOT / '资料/卡牌清单.txt').read_text(encoding='utf-8')
-    entries = re.findall(r'^(\d{2})\s+([^\s：]+)：(攻击|技能|能力)／(白卡|蓝卡|金卡|基础|先古)。', roster, re.M)
-    assert [int(e[0]) for e in entries] == list(range(1, 83)), 'Missing, repeated or unordered card numbers'
-    assert len({e[1] for e in entries}) == 82, 'Repeated card title'
+    entries = re.findall(r'^(\d{2})\s+([^：\n]+)：(攻击|技能|能力)／(白卡|蓝卡|金卡|基础|先古)。', roster, re.M)
+    assert [int(e[0]) for e in entries] == list(range(1, 99)), 'Missing, repeated or unordered card numbers'
+    assert len({e[1] for e in entries}) == 98, 'Repeated card title'
     by_name = {e[1]: int(e[0]) for e in entries}
-    assert Counter(e[3] for e in entries) == {'白卡': 26, '蓝卡': 32, '金卡': 15, '基础': 4, '先古': 5}
-    assert Counter(e[2] for e in entries) == {'攻击': 35, '技能': 31, '能力': 16}
-    assert {n: by_name[n] for n in ['灼热铁斩波', '铁斩波', '护卫', '与我一斗', '愈战愈勇', '小斩波', '东尼斩波', '震荡']} == {
-        '灼热铁斩波': 2, '铁斩波': 82, '护卫': 29, '与我一斗': 69, '愈战愈勇': 70, '小斩波': 79, '东尼斩波': 80, '震荡': 81}
-    print('PASS: 82 unique sequential cards, fixed references, rarity and type counts.')
+    assert Counter(e[3] for e in entries) == {'白卡': 31, '蓝卡': 38, '金卡': 19, '基础': 4, '先古': 6}
+    assert Counter(e[2] for e in entries) == {'攻击': 42, '技能': 38, '能力': 18}
+    assert {n: by_name[n] for n in ['灼热铁斩波', '核心电涌', '万能药', '铁斩波', '护卫', '与我一斗', '愈战愈勇',
+                                     '发条机关', '机械飞升', '燃尽', '霸无敌', '小斩波', '东尼斩波', '震荡']} == {
+        '灼热铁斩波': 2, '核心电涌': 48, '万能药': 53, '铁斩波': 88, '护卫': 29, '与我一斗': 71, '愈战愈勇': 72,
+        '发条机关': 81, '机械飞升': 82, '燃尽': 83, '霸无敌': 84, '小斩波': 85, '东尼斩波': 86, '震荡': 87}
+    print('PASS: 98 unique sequential cards, fixed references, rarity and type counts.')
 
     log = (ROOT / 'tools/runtime/pool-current-check.log').read_text(encoding='utf-8-sig')
     actual = re.findall(r'\[PunchConstruct AUDIT (\d+)\] ([^|]+) \| [^|]+ \| (\w+)', log)
@@ -29,7 +31,7 @@ def main():
     for match in re.finditer(r'\[PunchConstruct RARITY\] (\w+) \| \d+ \| (.*?)(?=\[PunchConstruct|FMOD|$)', log, re.S):
         for title in re.sub(r'\s+', '', match[2]).split('、'):
             actual_rarities[title] = grade[match[1]]
-    assert all(actual_rarities[e[1]] == e[3] for e in entries), 'A card rarity differs from the actual game audit'
+    assert all(actual_rarities[re.sub(r'\s+', '', e[1])] == e[3] for e in entries), 'A card rarity differs from the actual game audit'
     pool_source = (ROOT / 'PunchConstruct/ConstructPools.cs').read_text(encoding='utf-8')
     imported = set(re.findall(r'ModelDb.Card<(\w+)>\(\)', pool_source))
     designed = set()
@@ -46,7 +48,7 @@ def main():
     print('PASS: current source membership and actual game card roster agree.')
 
     manifest = json.loads((ROOT / '资料/美术素材/素材清单.json').read_text(encoding='utf-8'))
-    assert len(manifest) == 66 and len({r['source'] for r in manifest}) == 44
+    assert len(manifest) == 86 and len({r['source'] for r in manifest}) == 57
     outputs = {r['output'] for r in manifest}
     actual_outputs = {p.relative_to(ROOT).as_posix() for p in (ROOT / 'PunchConstruct/assets/art').glob('*.ctex')}
     assert outputs == actual_outputs and len(outputs) == len(manifest), 'Unlisted or duplicate exported texture'
@@ -57,17 +59,18 @@ def main():
         assert hashlib.sha256(source.read_bytes()).hexdigest() == row['source_sha256'], source
         sources.add(row['source'])
         if 'card_number' in row:
-            assert by_name[source.stem] == row['card_number'], source
+            assert by_name[row['card_title']] == row['card_number'], source
         for shared in row.get('also_used_by', []):
             assert by_name[shared['name']] == shared['card_number']
-    assert Counter(Path(s).parent.name for s in sources) == {'角色': 5, '卡牌': 23, '遗物': 6, '状态图标': 10}
+    assert Counter(Path(s).parent.name for s in sources) == {
+        '角色': 5, '卡牌': 27, '遗物': 6, '状态图标': 10, '药水': 5, '一代素材': 3, '旧稿': 1}
     icons = json.loads((ROOT / '资料/美术素材/状态图标/图标清单.json').read_text(encoding='utf-8'))
     assert len(icons) == 10
     for row in icons:
         assert row['game_linked'] and row['status'] == '已采用'
         for key in ['original', 'size64', 'game_icon', 'game_big']:
             assert (ROOT / row[key]).exists(), row[key]
-    print('PASS: all 44 adopted sources and 66 textures, outlines, card numbers and icon provenance.')
+    print('PASS: all adopted sources including the ancient sheet and 86 textures, outlines, card numbers and icon provenance.')
 
     observer = json.loads((ROOT / '资料/美术素材/观者搬运素材.json').read_text(encoding='utf-8'))
     assert len(observer) == 13 and len({row['class'] for row in observer}) == 13
@@ -154,22 +157,25 @@ def main():
     print('PASS: English tables use official terms, contain no Chinese and are compiled into the assembly; all locale mirrors match.')
 
     version = json.loads((ROOT / 'PunchConstruct/PunchConstruct.json').read_text(encoding='utf-8'))['version']
-    for name in ['README.md', 'tools/README.md', '资料/角色设计.md', '资料/问题记录.txt', '资料/发布前清单.txt',
-                 'dist/README.md', 'dist/SteamWorkshop/安装说明.txt', 'dist/SteamWorkshop/发布审查.txt']:
+    for name in ['README.md', 'tools/README.md', '资料/角色设计.md', '资料/问题记录.txt', '资料/发布前清单.txt']:
         assert version in (ROOT / name).read_text(encoding='utf-8'), ('Current version missing', name)
     role = (ROOT / '资料/角色设计.md').read_text(encoding='utf-8')
-    assert '无色牌共15种' in role and '普通随机无色来源为11种' in role
+    assert '无色池共19种' in role and '普通随机无色来源为14种' in role
     assert '全难度' in role and '共7张' not in role
-    config = json.loads((ROOT / 'dist/SteamWorkshop/workshop.json').read_text(encoding='utf-8'))
+    content_version = json.loads((ROOT / 'dist/SteamWorkshop/content/PunchConstruct.json').read_text(encoding='utf-8'))['version']
+    for name in ['dist/README.md', 'dist/SteamWorkshop/安装说明.txt', 'dist/SteamWorkshop/发布审查.txt']:
+        assert content_version in (ROOT / name).read_text(encoding='utf-8'), ('Content version missing', name)
+    config = json.loads((ROOT / 'dist/SteamWorkshop/workshop.json').read_text(encoding='utf-8-sig'))
     squeezed = re.sub(r'\s+', '', config['description'])
-    assert '82种卡牌' in squeezed and '22张原创设计' in squeezed
+    assert '98种卡牌' in squeezed and '23张原创设计' in squeezed
+    assert 'BaseLib（已验证3.4.8）' in squeezed and '0.113.0' in squeezed
     assert '[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3747526116]原模组页面[/url]' in config['description']
     assert (ROOT / 'dist/SteamWorkshop/发布说明.txt').read_text(encoding='utf-8') == config['title'] + '\n\n' + config['description'] + '\n'
     sync = json.loads((ROOT / 'tools/runtime/content-current.json').read_text(encoding='utf-8'))
-    assert sync['version'] == version
+    assert sync['version'] == content_version
     for name, digest in sync['build'].items():
         assert hashlib.sha256((ROOT / 'dist/SteamWorkshop/content' / name).read_bytes()).hexdigest() == digest, name
-    print('PASS: current versions, manual-install content hashes, colorless counts and release copy agree.')
+    print('PASS: current source version, candidate distribution, manual-install hashes, colorless counts and release copy agree.')
 
 
 if __name__ == '__main__':

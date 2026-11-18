@@ -98,7 +98,7 @@ internal static class UnarmBlockReplacement
 
 public sealed class NeverBackDownPower : ConstructSystemPower
 {
-    public override List<(string, string)> Localization => [("title", Loc.Pick("不倒不休")), ("description", Loc.Pick("回合开始时，将{Amount}张[gold]拳斗[/gold]加入你的手牌，将{Amount}张[gold]灼烧[/gold]加入弃牌堆。"))];
+    public override List<(string, string)> Localization => [("title", Loc.Pick("不倒不休")), ("description", Loc.Pick("回合开始时，将{Amount}张[gold]拳斗[/gold]加入你的手牌。"))];
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext context, Player player)
     {
         if (player.Creature != Owner) return;
@@ -107,9 +107,6 @@ public sealed class NeverBackDownPower : ConstructSystemPower
             var card = ((CombatState)Owner.CombatState!).CreateCard<Fisticuffs>(player);
             var fistAdded = await CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, player);
             if (fistAdded.cardAdded?.Pile?.Type == PileType.Discard) CardCmd.PreviewCardPileAdd(fistAdded);
-            var burn = ((CombatState)Owner.CombatState!).CreateCard<Burn>(player);
-            var added = await CardPileCmd.AddGeneratedCardToCombat(burn, PileType.Discard, player);
-            CardCmd.PreviewCardPileAdd(added);
         }
     }
 }

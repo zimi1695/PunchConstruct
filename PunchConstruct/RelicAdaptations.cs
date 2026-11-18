@@ -65,7 +65,7 @@ public sealed class ConstructHelmet : CustomRelicModel
     public override RelicRarity Rarity => ModelDb.Relic<RuinedHelmet>().Rarity;
     public override string PackedIconPath => ModelDb.Relic<RuinedHelmet>().PackedIconPath;
     protected override string PackedIconOutlinePath => "res://images/atlases/relic_outline_atlas.sprites/ruined_helmet.tres";
-    public override List<(string, string)> Localization => Loc.Relic("损毁头盔", "每场战斗首次获得[gold]力量[/gold]或[gold]敏捷[/gold]时，获得等量的另一项属性。整场共触发一次。", "买到盗版了");
+    public override List<(string, string)> Localization => Loc.Relic("损毁头盔", "每场战斗第一次获得[gold]力量[/gold]或[gold]敏捷[/gold]时，获得等量的另一项属性。", "买到盗版了");
     public override Task BeforeCombatStart() { HelmetMirror.Reset(this); return Task.CompletedTask; }
     public override Task AfterPowerAmountChanged(PlayerChoiceContext context, PowerModel power, decimal amount, Creature? applier, CardModel? card) => HelmetMirror.Apply(this, context, power, amount);
 }

@@ -209,13 +209,19 @@ def main():
     candidate_report = candidate_dir / 'verification.json'
     candidate_record = json.loads(candidate_report.read_text(encoding='utf-8')) if candidate_report.exists() else {}
     candidate_verified = candidate_matches and candidate_record.get('package_files') == candidate_files and candidate_record.get('targeted_package_checks') == 'PASS' and candidate_record.get('network_multiplayer') == 'PASS_LOCAL_ENET'
+    full_local = not (missing or failed or missing_coop or failed_coop or missing_recovery or failed_recovery)
+    upload_status = candidate_record.get('upload_status') if candidate_verified else None
+    uploaded = upload_status in ('UPLOADED_PUBLIC', 'UPLOADED_PRIVATE')
+    release_axes = ('full_playthrough', 'steam_invites', 'steam_hot_rejoin', 'workshop_subscription')
+    full_release = bool(full_local and candidate_verified and uploaded
+        and all(candidate_record.get(axis) == 'PASS' for axis in release_axes))
     report = dict(schema=3, version=version, dll_sha256=digest, asset_count=len(assets),
         resource_tree_sha256=hashlib.sha256(json.dumps(assets, sort_keys=True).encode()).hexdigest(),
         manifest_sha256=sha(ROOT / 'PunchConstruct/PunchConstruct.json'), checks=checks, multiplayer=coop, recovery_checks=recovery, diagnostic_controls=controls,
         missing_checks=missing, failed_checks=failed, missing_multiplayer=missing_coop, failed_multiplayer=failed_coop,
         missing_recovery=missing_recovery, failed_recovery=failed_recovery,
-        full_local_verification=not (missing or failed or missing_coop or failed_coop or missing_recovery or failed_recovery),
-        full_release_verification=False, exported=bool(candidate_matches), uploaded=False,
+        full_local_verification=full_local,
+        full_release_verification=full_release, exported=bool(candidate_matches), uploaded=uploaded, upload_status=upload_status,
         candidate=dict(directory=candidate_dir.relative_to(ROOT).as_posix(), matches_current_files=bool(candidate_matches),
             local_verification=bool(candidate_verified), verification_sha256=sha(candidate_report) if candidate_report.exists() else None),
         mode_classification={kind: classification.get(kind, []) for kind in

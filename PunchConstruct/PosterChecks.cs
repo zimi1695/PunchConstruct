@@ -48,7 +48,7 @@ internal static partial class PlaytestRunner
         var screen = Descendants(menu).OfType<NCharacterSelectScreen>().Single();
         var construct = Descendants(screen).OfType<NCharacterSelectButton>().Single(b => b.Character is ConstructCharacter);
         var ironclad = Descendants(screen).OfType<NCharacterSelectButton>().Single(b => b.Character is Ironclad);
-        screen.SelectCharacter(construct, ModelDb.Character<ConstructCharacter>());
+        screen.SelectCharacter(construct);
         await Frames(90);
         // The native screen renames each root to its character model ID.
         Control FindPoster() => Descendants(screen).OfType<Control>().Single(n => n.HasMethod("animation_state") && n.IsVisibleInTree());
@@ -128,13 +128,13 @@ internal static partial class PlaytestRunner
         Check(true, "Captured 128 actual selection-screen frames for a looping animation preview");
         poster.Call("resume_animation");
         double hiddenTime = PosterState(poster)["time"].AsDouble();
-        screen.SelectCharacter(ironclad, ModelDb.Character<Ironclad>());
+        screen.SelectCharacter(ironclad);
         await Frames(40);
         Check(!Descendants(screen).OfType<Control>().Any(n => n.HasMethod("animation_state") && n.IsVisibleInTree()), "Selecting another character hides/frees the construct poster");
         if (GodotObject.IsInstanceValid(poster))
             Check(PosterState(poster)["time"].AsDouble() == hiddenTime, "Inactive portrait clock does not keep running");
         Check(!Descendants(screen).OfType<MeshInstance2D>().Any(n => n.Name == "ConstructPortrait" && n.IsVisibleInTree()), "No construct mesh leaks into the native character selection");
-        screen.SelectCharacter(construct, ModelDb.Character<ConstructCharacter>());
+        screen.SelectCharacter(construct);
         await Frames(40);
         poster = FindPoster();
         poster.Call("resume_animation");
