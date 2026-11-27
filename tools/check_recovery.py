@@ -31,7 +31,10 @@ def main():
     parser.add_argument('--resume-order', choices=('same', 'reverse'), default='same', help='Reverse guest arrival order when regrouping from the saved run')
     parser.add_argument('--package-dir', type=Path, help='Read-only test of the exact three files in an existing candidate')
     parser.add_argument('--headless', action='store_true', help='Use the dummy renderer for diagnostics; real rendering is the default')
+    parser.add_argument('--runtime-dir', type=Path, default=RUNTIME,
+                        help='Game runtime to stage and record evidence in (default: tools/runtime)')
     args = parser.parse_args()
+    runtime = args.runtime_dir.resolve()
     if sum((args.abrupt, args.kill_client, args.kill_host)) > 1:
         parser.error('Choose one disconnect mode')
     if (args.native_control or args.independent) and args.party != 'construct':
@@ -42,8 +45,8 @@ def main():
     roles = ['host', 'client'] + ['client' + str(i) for i in range(2, args.players)]
     character = 'native' if args.native_control else 'construct'
     disconnect = 'host-loss' if args.kill_host else 'process-loss' if args.kill_client else 'abrupt' if args.abrupt else 'menu'
-    evidence = RUNTIME / 'qa' / ('recovery-' + character + (('-' + args.party) if args.party != 'construct' else '') + (('-' + str(args.players) + 'p') if args.players > 2 else '') + ('-reverse' if args.resume_order == 'reverse' else '') + ('-independent' if args.independent else '') + (('-' + disconnect) if disconnect != 'menu' else '') + '-' + time.strftime('%Y%m%d-%H%M%S') + '-' + str(time.time_ns() % 1000000000))
-    evidence.mkdir()
+    evidence = runtime / 'qa' / ('recovery-' + character + (('-' + args.party) if args.party != 'construct' else '') + (('-' + str(args.players) + 'p') if args.players > 2 else '') + ('-reverse' if args.resume_order == 'reverse' else '') + ('-independent' if args.independent else '') + (('-' + disconnect) if disconnect != 'menu' else '') + '-' + time.strftime('%Y%m%d-%H%M%S') + '-' + str(time.time_ns() % 1000000000))
+    evidence.mkdir(parents=True)
     parent = Path(tempfile.gettempdir()).resolve()
     stage = Path(tempfile.mkdtemp(prefix='PunchConstruct-recovery-', dir=parent)).resolve()
     assert stage.parent == parent and stage.name.startswith('PunchConstruct-recovery-')
@@ -56,12 +59,12 @@ def main():
         def link(a, b):
             b.parent.mkdir(parents=True, exist_ok=True)
             os.link(a, b)
-        for p in RUNTIME.iterdir():
+        for p in runtime.iterdir():
             if p.is_file() and (p.suffix.lower() in ('.dll', '.exe', '.pck') or p.name in ('override.cfg', 'release_info.json')):
                 link(p, stage / p.name)
         for tree in ('data_sts2_windows_x86_64', 'mods/BaseLib'):
-            for p in (RUNTIME / tree).rglob('*'):
-                if p.is_file(): link(p, stage / tree / p.relative_to(RUNTIME / tree))
+            for p in (runtime / tree).rglob('*'):
+                if p.is_file(): link(p, stage / tree / p.relative_to(runtime / tree))
         if not args.independent:
             mod = stage / 'mods/PunchConstruct'
             mod.mkdir(parents=True)
@@ -153,7 +156,8 @@ def main():
                 log = stage / (phase + '-' + role + '.log')
                 report = log.read_text(encoding='utf-8-sig', errors='replace') if log.exists() else ''
                 if log.exists(): shutil.copy2(log, evidence / log.name)
-                diagnostics = archive_diagnostics(stage / 'userdata' / role, evidence / (phase + '-' + role), require_actions=False) if not args.independent else dict(events=[], errors=[], scope='No character logger in independent control')
+                diagnostics = archive_diagnostics(stage / 'userdata' / role, evidence / (phase + '-' + role), require_actions=False,
+                                                  expected_dll=summary['build']['PunchConstruct.dll']) if not args.independent else dict(events=[], errors=[], scope='No character logger in independent control')
                 issues = qa_issues(report) + diagnostics['errors']
                 if not args.independent and phase == 'resume' and '[Recovery PASS]' in report:
                     issues += ['Missing exercised recovery log: ' + event for event in ('action.begin', 'action.end') if event not in diagnostics['events']]
@@ -189,7 +193,8 @@ def main():
             name = p.parent.name + '-' + p.name
             if not (evidence / name).exists(): shutil.copy2(p, evidence / name)
         for role in roles:
-            archive_diagnostics(stage / 'userdata' / role, evidence / ('final-' + role))
+            archive_diagnostics(stage / 'userdata' / role, evidence / ('final-' + role),
+                                expected_dll=summary['build'].get('PunchConstruct.dll'))
             for p in (stage / 'userdata' / role).rglob('*.save'):
                 target = evidence / 'saves' / role / p.relative_to(stage / 'userdata' / role)
                 target.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(p, target)

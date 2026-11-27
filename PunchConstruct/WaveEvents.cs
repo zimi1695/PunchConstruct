@@ -20,6 +20,10 @@ namespace PunchConstruct;
 
 internal static class WaveEventRules
 {
+    private static readonly SoftRef.Ref<MethodInfo> SetEventFinished =
+        SoftRef.Register<MethodInfo>("EventModel.SetEventFinished", () => AccessTools.Method(typeof(EventModel), "SetEventFinished"));
+    internal static bool CanFinish => SetEventFinished.Value != null;
+    internal static MethodInfo? FinishMethod => SetEventFinished.Value;
     internal static bool Small(CardModel card) => card is SmallWave && card.IsRemovable;
     internal static bool Iron(CardModel card) => card is IronWave && card.IsTransformable;
     internal static CardModel ScorchingReplacement(CardModel source, int upgrades)
@@ -42,31 +46,79 @@ internal static class WaveEventRules
             CardCmd.Enchant((EnchantmentModel)enchantment.MutableClone(), result, enchantment.Amount);
         return result;
     }
-    internal static void Finish(EventModel room, string page) => AccessTools.Method(typeof(EventModel), "SetEventFinished")
-        .Invoke(room, [new LocString("events", "PUNCHCONSTRUCT_" + room.Id.Entry + ".pages." + page + ".description")]);
+    internal static void Finish(EventModel room, string page)
+    {
+        var finish = SetEventFinished.Value;
+        if (finish == null)
+        {
+            Diagnostics.Write("error", "event.finish_unavailable", new { room = room.Id.Entry, page });
+            return;
+        }
+        try
+        {
+            finish.Invoke(room, [new LocString("events", "PUNCHCONSTRUCT_" + room.Id.Entry + ".pages." + page + ".description")]);
+        }
+        catch (Exception error)
+        {
+            Diagnostics.Write("error", "event.finish_failed", new { room = room.Id.Entry, page, error = error.ToString() });
+        }
+    }
 }
 
 internal static class ConstructBugslayer
 {
+    private static readonly SoftRef.Ref<MethodInfo> AddAndPreview =
+        SoftRef.Register<MethodInfo>("Bugslayer.AddAndPreview", () => AccessTools.Method(typeof(Bugslayer), "AddAndPreview"));
+
     // Let the native generator run, then replace this character's options.
-    // A postfix keeps earlier option work from other mods in the result.
+    // A postfix keeps earlier option work from other mods in the result. If the
+    // native add method is gone, keep the native options instead of offering a
+    // choice that cannot complete the event.
     internal static void Apply(Bugslayer __instance, ref IReadOnlyList<EventOption> __result)
     {
         if (!CharacterScope.IsConstruct(__instance.Owner)) return;
-        __result = Build(__instance);
+        var built = Build(__instance);
+        if (built != null) __result = built;
     }
 
-    private static IReadOnlyList<EventOption> Build(Bugslayer __instance) =>
-        new[] { typeof(QuickPunch), typeof(CombinationPunch), typeof(BoxingGuard) }.Select((type, index) =>
+    private static IReadOnlyList<EventOption>? Build(Bugslayer __instance)
+    {
+        var add = AddAndPreview.Value;
+        if (add == null)
         {
-            string page = new[] { "QUICK", "COMBINATION", "GUARD" }[index];
-            string key = "PUNCHCONSTRUCT_BUGSLAYER.pages.INITIAL.options." + page;
-            // Keep the original add-to-deck animation and event completion.
-            Task Receive() => (Task)AccessTools.Method(typeof(Bugslayer), "AddAndPreview").MakeGenericMethod(type)
-                .Invoke(__instance, [new LocString("events", "PUNCHCONSTRUCT_BUGSLAYER.pages." + page + ".description")])!;
-            return new EventOption(__instance, Receive, new LocString("events", key + ".title"),
-                new LocString("events", key + ".description"), key, [HoverTipFactory.FromCard(ModelDb.GetById<CardModel>(ModelDb.GetId(type)))]);
-        }).ToArray();
+            Diagnostics.Write("warn", "event.bugslayer.native_fallback", new { reason = "Bugslayer.AddAndPreview unresolved" });
+            return null;
+        }
+        try
+        {
+            return new[] { typeof(QuickPunch), typeof(CombinationPunch), typeof(BoxingGuard) }.Select((type, index) =>
+            {
+                string page = new[] { "QUICK", "COMBINATION", "GUARD" }[index];
+                string key = "PUNCHCONSTRUCT_BUGSLAYER.pages.INITIAL.options." + page;
+                // Keep the original add-to-deck animation and event completion.
+                Task Receive()
+                {
+                    try
+                    {
+                        return (Task)add.MakeGenericMethod(type)
+                            .Invoke(__instance, [new LocString("events", "PUNCHCONSTRUCT_BUGSLAYER.pages." + page + ".description")])!;
+                    }
+                    catch (Exception error)
+                    {
+                        Diagnostics.Write("error", "event.bugslayer.receive_failed", new { card = type.Name, error = error.ToString() });
+                        return Task.CompletedTask;
+                    }
+                }
+                return new EventOption(__instance, Receive, new LocString("events", key + ".title"),
+                    new LocString("events", key + ".description"), key, [HoverTipFactory.FromCard(ModelDb.GetById<CardModel>(ModelDb.GetId(type)))]);
+            }).ToArray();
+        }
+        catch (Exception error)
+        {
+            Diagnostics.Write("error", "event.bugslayer.build_failed", new { error = error.ToString() });
+            return null;
+        }
+    }
 }
 
 // Reuse the native observation selection, enchant animation and synchronization.
@@ -82,24 +134,46 @@ internal static class SmallWaveSpiral
 
 internal static class ConstructAmalgamation
 {
+    private static readonly SoftRef.Ref<MethodInfo> CombineStrikes =
+        SoftRef.Register<MethodInfo>("Amalgamator.CombineStrikes", () => AccessTools.Method(typeof(Amalgamator), "CombineStrikes"));
+
     // Native options are generated first; only this character's two choices
-    // are replaced, preserving earlier option work from other mods.
+    // are replaced, preserving earlier option work from other mods. If either
+    // native completion method is gone, keep the native options.
     internal static void Apply(Amalgamator __instance, ref IReadOnlyList<EventOption> __result)
     {
         var owner = __instance.Owner;
         if (owner is null || !CharacterScope.IsConstruct(owner)) return;
+        var combine = CombineStrikes.Value;
+        if (combine == null || !WaveEventRules.CanFinish)
+        {
+            Diagnostics.Write("warn", "event.amalgamator.native_fallback", new
+            {
+                combineResolved = combine != null,
+                finishResolved = WaveEventRules.CanFinish
+            });
+            return;
+        }
         string prefix = "PUNCHCONSTRUCT_AMALGAMATOR.pages.INITIAL.options.";
         EventOption Option(string key, Func<Task> action, bool enabled, IEnumerable<IHoverTip> tips) => new(__instance,
             enabled ? action : null!, new LocString("events", prefix + key + ".title"),
             new LocString("events", prefix + key + ".description"), prefix + key, tips);
         __result = [
-            Option("COMBINE_STRIKES", () => Combine(__instance), owner.Deck.Cards.Count(WaveEventRules.Small) >= 2,
+            Option("COMBINE_STRIKES", () => Combine(__instance, combine), owner.Deck.Cards.Count(WaveEventRules.Small) >= 2,
                 HoverTipFactory.FromCardWithCardHoverTips<IronWave>()),
             Option("COMBINE_DEFENDS", () => Reforge(__instance), owner.Deck.Cards.Any(WaveEventRules.Iron),
                 [HoverTipFactory.FromCard<ScorchingIronWave>(true)])
         ];
     }
-    private static Task Combine(Amalgamator room) => (Task)AccessTools.Method(typeof(Amalgamator), "CombineStrikes").Invoke(room, [])!;
+    private static Task Combine(Amalgamator room, MethodInfo combine)
+    {
+        try { return (Task)combine.Invoke(room, [])!; }
+        catch (Exception error)
+        {
+            Diagnostics.Write("error", "event.amalgamator.combine_failed", new { error = error.ToString() });
+            return Task.CompletedTask;
+        }
+    }
     private static async Task Reforge(Amalgamator room)
     {
         var cards = await CardSelectCmd.FromDeckGeneric(room.Owner!,
@@ -170,6 +244,11 @@ internal static class ConstructInfestedAutomaton
     internal static void Apply(InfestedAutomaton room, ref IReadOnlyList<EventOption> __result)
     {
         if (!CharacterScope.IsConstruct(room.Owner)) return;
+        if (!WaveEventRules.CanFinish)
+        {
+            Diagnostics.Write("warn", "event.infested_automaton.native_fallback", new { reason = "EventModel.SetEventFinished unresolved" });
+            return;
+        }
         string prefix = "PUNCHCONSTRUCT_INFESTED_AUTOMATON.pages.INITIAL.options.";
         EventOption Option(string key, Func<Task>? action, bool enabled, IEnumerable<IHoverTip> tips) => new(room,
             enabled ? action : null, new LocString("events", prefix + key + ".title"),
@@ -177,8 +256,9 @@ internal static class ConstructInfestedAutomaton
         __result = [
             Option("REPAIR", () => Repair(room), room.Owner!.Gold >= 67,
                 HoverTipFactory.FromRelic<ConstructClockworkSouvenir>()),
+            // SEARCH grants the base panacea (Search() never upgrades); keep the preview unupgraded to match.
             Option("SEARCH", () => Search(room), true,
-                [HoverTipFactory.FromCard<ConstructPanacea>(true)])
+                [HoverTipFactory.FromCard<ConstructPanacea>(false)])
         ];
     }
 

@@ -43,13 +43,18 @@ namespace PunchConstruct;
 // or remains untouched; each method only replaces its own cosmetic decision.
 internal static class PresentationAdapter
 {
+    private static readonly SoftRef.Ref<FieldInfo> IconField =
+        SoftRef.Field("NCharacterSelectButton._icon", typeof(NCharacterSelectButton), "_icon");
+    private static readonly SoftRef.Ref<FieldInfo> IconAddField =
+        SoftRef.Field("NCharacterSelectButton._iconAdd", typeof(NCharacterSelectButton), "_iconAdd");
+
     internal static void CharacterPortrait(NCharacterSelectButton button, CharacterModel character)
     {
         if (!CharacterScope.IsConstruct(character)) return;
         var portrait = ResourceLoader.Load<Texture2D>("res://PunchConstruct/art/character_select_icon.ctex");
-        foreach (var field in new[] { "_icon", "_iconAdd" })
+        foreach (var field in new[] { IconField.Value, IconAddField.Value })
         {
-            var icon = (TextureRect)AccessTools.Field(typeof(NCharacterSelectButton), field).GetValue(button)!;
+            if (field?.GetValue(button) is not TextureRect icon) continue;
             icon.Texture = portrait;
             icon.TextureFilter = CanvasItem.TextureFilterEnum.Linear;
             icon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
@@ -194,22 +199,27 @@ internal static class PresentationAdapter
 
     internal static List<CodeInstruction> MapDrawingTranspiler(List<CodeInstruction> original)
     {
-        var send = typeof(INetGameService).GetMethods()
-            .Single(m => m.Name == nameof(INetGameService.SendMessage) && m.IsGenericMethodDefinition && m.GetParameters().Length == 1)
-            .MakeGenericMethod(typeof(MapDrawingModeChangedMessage));
+        const string site = "disconnected map drawing";
+        var sendDef = typeof(INetGameService).GetMethods()
+            .FirstOrDefault(m => m.Name == nameof(INetGameService.SendMessage) && m.IsGenericMethodDefinition && m.GetParameters().Length == 1);
+        if (sendDef == null) { IlBridge.Skip(site, "SendMessage generic definition not found"); return original; }
+        var send = sendDef.MakeGenericMethod(typeof(MapDrawingModeChangedMessage));
+        var players = IlBridge.RequireField(typeof(NMapDrawings), "_playerCollection", typeof(IPlayerCollection), site);
+        if (players == null) return original;
         return IlBridge.ReplaceCall(original, send, call =>
             new CodeInstruction[]
             {
                 IlBridge.Inherit(call, new CodeInstruction(OpCodes.Ldarg_0)),
-                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(NMapDrawings), "_playerCollection")),
+                new CodeInstruction(OpCodes.Ldfld, players),
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PresentationAdapter), nameof(MapDrawingSend)))
-            },
-            "disconnected map drawing");
+            }, site);
     }
 
     private static void MapDrawingSend(INetGameService net, MapDrawingModeChangedMessage message, IPlayerCollection players)
     {
-        if (!net.IsConnected && CharacterScope.AnyConstruct(players.Players))
+        // The injected field can be null before Initialize or after teardown; fall
+        // back to the native send rather than dereferencing null inside the method.
+        if (players != null && !net.IsConnected && CharacterScope.AnyConstruct(players.Players))
         {
             Diagnostics.Write("info", "network.map_mode.local_only",
                 new { mode = message.drawingMode.ToString(), reason = "disconnected" });
@@ -218,22 +228,35 @@ internal static class PresentationAdapter
         net.SendMessage(message);
     }
 
-    private static readonly FieldInfo Connections = AccessTools.Field(typeof(ENetHost), "_connectedPeers");
-    private static readonly FieldInfo Peer = AccessTools.Field(AccessTools.Inner(typeof(ENetHost), "ClientConnection"), "peer");
-    private static readonly MethodInfo HandleDisconnect = AccessTools.Method(typeof(ENetHost), "HandleClientDisconnection");
+    private static readonly SoftRef.Ref<FieldInfo> Connections =
+        SoftRef.Register<FieldInfo>("ENetHost._connectedPeers", () => AccessTools.Field(typeof(ENetHost), "_connectedPeers"));
+    private static readonly SoftRef.Ref<FieldInfo> Peer =
+        SoftRef.Register<FieldInfo>("ENetHost.ClientConnection.peer", () =>
+            AccessTools.Inner(typeof(ENetHost), "ClientConnection") is { } connection ? AccessTools.Field(connection, "peer") : null);
+    private static readonly SoftRef.Ref<MethodInfo> HandleDisconnect =
+        SoftRef.Register<MethodInfo>("ENetHost.HandleClientDisconnection", () => AccessTools.Method(typeof(ENetHost), "HandleClientDisconnection"));
 
     internal static void DisconnectedPeers(ENetHost host)
     {
+        var connections = Connections.Value;
+        var peerField = Peer.Value;
+        var handleDisconnect = HandleDisconnect.Value;
+        if (connections == null || peerField == null || handleDisconnect == null) return;
         var manager = RunManager.Instance;
-        if (!host.IsConnected || manager.NetService is not INetHostGameService service ||
+        if (manager == null || !host.IsConnected || manager.NetService is not INetHostGameService service ||
             !ReferenceEquals(service.NetHost, host) ||
             !CharacterScope.AnyConstruct(manager.DebugOnlyGetState()?.Players)) return;
-        foreach (var connection in ((System.Collections.IEnumerable)Connections.GetValue(host)!).Cast<object>().ToArray())
+        if (connections.GetValue(host) is not System.Collections.IEnumerable peers) return;
+        foreach (var connection in peers.Cast<object>().ToArray())
         {
-            var peer = (ENetPacketPeer)Peer.GetValue(connection)!;
+            if (peerField.GetValue(connection) is not ENetPacketPeer peer) continue;
             if (peer.GetState() is not (ENetPacketPeer.PeerState.Disconnected or ENetPacketPeer.PeerState.Zombie)) continue;
             Diagnostics.Write("warn", "network.transport.peer_closed", new { reason = "terminal_enet_peer" });
-            HandleDisconnect.Invoke(host, [connection, NetError.UnknownNetworkError, true]);
+            try { handleDisconnect.Invoke(host, [connection, NetError.UnknownNetworkError, true]); }
+            catch (Exception error)
+            {
+                Diagnostics.Write("warn", "network.transport.disconnect_failed", new { error = error.ToString() });
+            }
         }
     }
 
@@ -253,28 +276,37 @@ internal static class PresentationAdapter
         if (result != null) result = RelicIcons.Adapt(relic, result, originalMethod.Name == "get_IconOutline");
     }
 
-    private static readonly AccessTools.FieldRef<NRelic, NRelic.IconSize> IconSize =
-        AccessTools.FieldRefAccess<NRelic, NRelic.IconSize>("_iconSize");
-    private static readonly AccessTools.FieldRef<NRelic, RelicModel?> IconModel =
-        AccessTools.FieldRefAccess<NRelic, RelicModel?>("_model");
-    private static readonly MethodInfo PackedOutline = AccessTools.PropertyGetter(typeof(RelicModel), "PackedIconOutlinePath");
+    private static readonly SoftRef.Ref<AccessTools.FieldRef<NRelic, NRelic.IconSize>> IconSize =
+        SoftRef.FieldRef<NRelic, NRelic.IconSize>("NRelic._iconSize", "_iconSize");
+    private static readonly SoftRef.Ref<AccessTools.FieldRef<NRelic, RelicModel?>> IconModel =
+        SoftRef.FieldRef<NRelic, RelicModel?>("NRelic._model", "_model");
+    private static readonly SoftRef.Ref<MethodInfo> PackedOutline =
+        SoftRef.Register<MethodInfo>("RelicModel.PackedIconOutlinePath", () => AccessTools.PropertyGetter(typeof(RelicModel), "PackedIconOutlinePath"));
 
     internal static void RelicControlReload(NRelic control)
     {
-        if (!control.IsNodeReady() || control.Icon == null || IconSize(control) != NRelic.IconSize.Small) return;
-        var relic = IconModel(control);
+        var iconSize = IconSize.Value;
+        var iconModel = IconModel.Value;
+        var packedOutline = PackedOutline.Value;
+        if (iconSize == null || iconModel == null || packedOutline == null) return;
+        if (!control.IsNodeReady() || control.Icon == null || iconSize(control) != NRelic.IconSize.Small) return;
+        var relic = iconModel(control);
         if (relic is not (RippleBasin or ConstructRippleBasin or ConstructDart or HelicalDart or ConstructHelmet or RuinedHelmet)) return;
         var icon = ResourceLoader.Load<Texture2D>(relic.PackedIconPath);
         control.Icon.Texture = RelicIcons.Adapt(relic, icon);
-        var outline = ResourceLoader.Load<Texture2D>((string)PackedOutline.Invoke(relic, null)!);
+        var outline = ResourceLoader.Load<Texture2D>((string)packedOutline.Invoke(relic, null)!);
         control.Outline.Texture = RelicIcons.Adapt(relic, outline, outline: true);
     }
 
-    private static readonly AccessTools.FieldRef<MerchantEntry, MegaCrit.Sts2.Core.Entities.Players.Player> EntryPlayer =
-        AccessTools.FieldRefAccess<MerchantEntry, MegaCrit.Sts2.Core.Entities.Players.Player>("_player");
+    private static readonly SoftRef.Ref<AccessTools.FieldRef<MerchantEntry, MegaCrit.Sts2.Core.Entities.Players.Player>> EntryPlayer =
+        SoftRef.FieldRef<MerchantEntry, MegaCrit.Sts2.Core.Entities.Players.Player>("MerchantEntry._player", "_player");
 
-    internal static void MerchantRelicPreview(MerchantRelicEntry entry) =>
-        RelicPreviewContext.Register(entry.Model, EntryPlayer(entry));
+    internal static void MerchantRelicPreview(MerchantRelicEntry entry)
+    {
+        var entryPlayer = EntryPlayer.Value;
+        if (entryPlayer == null) return;
+        RelicPreviewContext.Register(entry.Model, entryPlayer(entry));
+    }
 
     internal static void RewardRelicPreview(RelicReward reward) =>
         RelicPreviewContext.Register(reward.Relic, reward.Player);
@@ -299,13 +331,25 @@ internal static class PresentationAdapter
         stats.MaxAscension = Math.Max(stats.MaxAscension, ConstructDifficulty.Maximum);
     }
 
+    private static readonly SoftRef.Ref<MethodInfo> MaxAscensionSetter =
+        SoftRef.Register<MethodInfo>("StartRunLobby.MaxAscension", () => AccessTools.PropertySetter(typeof(StartRunLobby), nameof(StartRunLobby.MaxAscension)));
+    private static readonly SoftRef.Ref<MethodInfo> UpdateMaxSharedAscension =
+        SoftRef.Register<MethodInfo>("StartRunLobby.UpdateMaxSharedAscension", () => AccessTools.Method(typeof(StartRunLobby), "UpdateMaxSharedAscension"));
+
     internal static bool DifficultyMultiplayer(StartRunLobby lobby)
     {
         if (!lobby.Players.Any(p => CharacterScope.IsConstruct(p))) return true;
+        var setter = MaxAscensionSetter.Value;
+        if (setter == null) return true;
         int maximum = ConstructDifficulty.LobbyMaximum(lobby);
         if (maximum != lobby.MaxAscension)
         {
-            AccessTools.PropertySetter(typeof(StartRunLobby), nameof(StartRunLobby.MaxAscension)).Invoke(lobby, [maximum]);
+            try { setter.Invoke(lobby, [maximum]); }
+            catch (Exception error)
+            {
+                Diagnostics.Write("warn", "lobby.max_ascension.failed", new { error = error.ToString() });
+                return true;
+            }
             lobby.LobbyListener.MaxAscensionChanged();
             if (lobby.Ascension > maximum && lobby.NetService.Type == NetGameType.Host)
                 lobby.SyncAscensionChange(maximum);
@@ -315,7 +359,13 @@ internal static class PresentationAdapter
 
     internal static void DifficultyChanged(StartRunLobby lobby)
     {
-        if (lobby.NetService.Type is NetGameType.Host or NetGameType.Client)
-            AccessTools.Method(typeof(StartRunLobby), "UpdateMaxSharedAscension").Invoke(lobby, [true]);
+        if (lobby.NetService.Type is not (NetGameType.Host or NetGameType.Client)) return;
+        var update = UpdateMaxSharedAscension.Value;
+        if (update == null) return;
+        try { update.Invoke(lobby, [true]); }
+        catch (Exception error)
+        {
+            Diagnostics.Write("warn", "lobby.max_ascension_update.failed", new { error = error.ToString() });
+        }
     }
 }

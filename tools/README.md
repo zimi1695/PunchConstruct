@@ -1,12 +1,14 @@
 # 开发工具
 
-`python tools/check_current.py boxing --rendered`检查八张无色新牌、获取限制、所有单位荆棘、左右勾拳顺序、格斗流程当回合生成、过载与满手牌计数。联机从0.4.20起增加boxing-generated／boxing-resolved两阶段快照。当前源码为0.5.1候选（游戏0.113.0／BaseLib 3.4.8），新增6张卡牌、1件遗物、3种药水与被寄生的自动机械事件；左勾拳削弱、录像命令 `pcdeck`（三个脚本 all/changes/mod，含药水与原创展示）、10张愚者搬运牌与啾组门槛、先古药水／浑浊机油图标修正、pcdeck遗物图标可见性修复已合入；本轮最终构建 DLL `858f76de…`（PCK `d67662e5…`、277 份资源）已通过全量 QA：本地 35/35、联机 4/4（含 4p 弱网）、断线恢复 4/4，`full_local_verification=true`、不变量 16/16，`workshop.py --verify` 全 PASS；机械飞升改 3 费、霸无敌重写（下回合能量＋抽牌、升级 0 费）、能量文字改能量图标、卸甲成军／厄运共鸣／霸无敌换交接新美术并按先古规格裁剪、极速（Blitz）／恐惧（Dread）模式适配（难度上限按模式感知：Blitz 5、Dread 10，大厅上限同步，构装体补 shortTitle）均已合入。QA 侧修正 modes 断言（池挑战下尊重原生 MultiplayerConstraint 排除），`network_proxy.py` 容忍加入期一次性 ICMP 10054 不再终结代理线程。本轮另修正 modes 存档夹具（揭示 NEOW_EPOCH，避免全新存档未揭示尼奥纪元致 Overgrowth 先古池为空、原生 BlitzActMap 抛 RoomSet.Ancient not set），`check_current.py` 增 `--runtime-dir`、`prepare_runtime.py` 参数化并修复 ECFG 写入顺序、新增 `preview_latest.py` 封装 0.113.1 预检。0.4.28 仍是已发布冻结版本，公开条目 3826907330 仍为 0.4.28；私密测试条目 3835179658 已按最终 DLL 重传并校验通过（2026-11-17，远端元数据＋回下载哈希＋清单）。官方验收环境为游戏 0.113.0，另用正式 0.113.1 游戏文件完成隔离预检（startup、smoke、additions、pool、modes、selection 6/6 均 PASS，已复核最终 DLL）。
+`python tools/check_current.py boxing --rendered`检查八张无色新牌、获取限制、所有单位荆棘、左右勾拳顺序、格斗流程当回合生成、过载与满手牌计数。联机从0.4.20起增加boxing-generated／boxing-resolved两阶段快照。0.113 兼容基线记录为0.5.2（游戏0.113.0／BaseLib 3.4.8，DLL `2bc0f3a3…`，在 0.5.1 基础上修复 SEARCH 预览/古牙映射/临时力量死代码/共享遗物池/稳健性加固与审查 3 缺口，全量 QA 已在此 DLL 重跑通过），新增6张卡牌、1件遗物、3种药水与被寄生的自动机械事件；左勾拳削弱、录像命令 `pcdeck`（三个脚本 all/changes/mod，含药水与原创展示）、10张愚者搬运牌与啾组门槛、先古药水／浑浊机油图标修正、pcdeck遗物图标可见性修复已合入；0.5.1 最终构建 DLL `858f76de…`（PCK `d67662e5…`、277 份资源，已公开）已通过全量 QA：本地 35/35、联机 4/4（含 4p 弱网）、断线恢复 4/4，`full_local_verification=true`、不变量 16/16，`workshop.py --verify` 全 PASS；机械飞升改 3 费、霸无敌重写（下回合能量＋抽牌、升级 0 费）、能量文字改能量图标、卸甲成军／厄运共鸣／霸无敌换交接新美术并按先古规格裁剪、极速（Blitz）／恐惧（Dread）模式适配（难度上限按模式感知：Blitz 5、Dread 10，大厅上限同步，构装体补 shortTitle）均已合入。QA 侧修正 modes 断言（池挑战下尊重原生 MultiplayerConstraint 排除），`network_proxy.py` 容忍加入期一次性 ICMP 10054 不再终结代理线程。本轮另修正 modes 存档夹具（揭示 NEOW_EPOCH，避免全新存档未揭示尼奥纪元致 Overgrowth 先古池为空、原生 BlitzActMap 抛 RoomSet.Ancient not set），`check_current.py` 增 `--runtime-dir`、`prepare_runtime.py` 参数化并修复 ECFG 写入顺序、新增 `preview_latest.py` 封装 0.113.1 预检。0.4.28 归档保持冻结，公开条目 3826907330 现为 0.5.1（已上线）；私密测试条目 3835179658 已按 0.5.1 最终 DLL 重传并校验通过（2026-11-17，远端元数据＋回下载哈希＋清单），0.5.2 私测待 Steam 重传。官方验收环境为游戏 0.113.0，另用正式 0.113.1 游戏文件完成隔离预检（startup、smoke、additions、pool、modes、selection 6/6 均 PASS，已复核最终 DLL）。
+
+> **0.114.0 适配验收（2026-11-26）**：当前源码 DLL `0a6ea643…`、PCK `99a6c13b…`、JSON `9ceef44e…`（277 资源）；本地 35/35、精确包 35/35、联机 4/4（含 4p 弱网）、恢复 4/4、`workshop.py` targeted=PASS、不变量 16/16。0.113.0 兼容基线证据保留。`workshop.py` 新增 `--runtime-dir`，候选证据在 `tools/runtime-0.114`。该隔离运行时没有 `play-userdata`，`existing_local_play_files_unchanged` 如实记录为 `null`，不冒充 `true`。
 
 ## 本地使用
 
 `run_all_checks.ps1` 一次串行执行本地 35 项（含 `compat`、`english`、`locale`、`localezh`）、联机 4 项、断线恢复 4 项，最后调用 `report_local.py` 汇总；`check_local.py` 对长批跑后偶发失败的 `shadernative` 会隔离重跑一次。
 
-`launch.ps1`启动工作区离线试玩，`-PrepareOnly`仅同步最新DLL、清单与资源；运行中的本地试玩会阻止同步。用户存档在runtime/play-userdata，不被QA覆盖。`sync_runtime_art.py`校对资源，不写dist。手动分发content为0.5.1最终候选（DLL `858f76de…`、PCK `d67662e5…`，98种卡牌、277份资源），已通过全量QA与`workshop.py --verify`并同步；私密测试条目3835179658已按最终DLL重传并校验通过；公开条目仍为0.4.28（已发布冻结）；已有试玩窗口须退出后由启动器同步；只依赖BaseLib。
+`launch.ps1`启动工作区离线试玩，`-PrepareOnly`仅同步最新DLL、清单与资源；运行中的本地试玩会阻止同步。用户存档在runtime/play-userdata，不被QA覆盖。`sync_runtime_art.py`校对资源，不写dist。手动分发content为0.5.2候选（DLL `0a6ea643…`、PCK `99a6c13b…`，98种卡牌、277份资源），0.114.0本地35/35、精确包35/35、联机4/4与恢复4/4通过；私密测试条目3835179658待Steam重传；公开条目现为0.5.1（已上线）；已有试玩窗口须退出后由启动器同步；只依赖BaseLib。
 
 仅编译：
 
@@ -15,7 +17,7 @@ $env:DOTNET_CLI_HOME = Join-Path (Get-Location) '.dotnet-local'
 dotnet build PunchConstruct/PunchConstruct.csproj -c Release --no-restore
 ```
 
-`build.ps1`会同时调用打包；`package.py`、`release.py`也是发布工具，只有明确要求导出／发布时使用。日常整理、修复和验证不运行这些打包入口。
+`build.ps1`会同时调用打包；`package.py`、`release.py`也是发布工具，只有明确要求导出／发布时使用。日常整理、修复和验证不运行这些打包入口。`release.py`只从精确三件套生成可复现 ZIP，`--check`校验现有 ZIP 是否仍能逐字节重建。
 
 ## 文档与素材
 
@@ -120,9 +122,9 @@ python tools/check_coop.py --guest construct --players 4 --latency-ms 100 --jitt
 Windows可能在原生主机正常退出后向UDP代理报告端口关闭；只有所有端均已完成最后checked屏障时才作为退出事件保留。提前发生则仍判失败，游戏错误判定不变。网络压力结果以独立-network键写入current-verification.json，不覆盖普通直连证据；若已有当前构建的网络压力失败，汇总也会列为失败。历史失败结果始终保留在自己的qa目录。
 
 
-测试覆盖独立召唤标记、遗物成长和归属、回合结束、普通／升级生成牌、延迟随机伤害、真实手牌变牌选择、战斗结束重置及海玻璃远端奖励选择；另检查连续战斗、各玩家同时提交攻击、队友死亡后的胜利与开口扳手归属；0.4.13另核对新螺丝的独立伤害标记／下回合抽牌、油壶同步目标随机数及指节击败格挡。比较战斗开始、标记、神格、下一回合、临时力量消退、变牌、奖励、并发行动、幸存者胜利九个阶段的所有进程快照。0.4.14另让每位玩家通过原生网络队列打出强化三次的灼热铁斩波，核对11伤害／11格挡；快照包含精确强化次数和动态数值。未知错误、诊断观察器异常、异常退出、缺失快照或任一快照不同均判失败。
+测试覆盖独立召唤标记、遗物成长和归属、回合结束、普通／升级生成牌、延迟随机伤害、真实手牌变牌选择、战斗结束重置及海玻璃远端奖励选择；另检查连续战斗、各玩家同时提交攻击、队友死亡后的胜利与开口扳手归属；0.4.13另核对新螺丝的独立伤害标记／下回合抽牌、油壶同步目标随机数及指节击败格挡。比较战斗开始、标记、神格、下一回合、第二回合、变牌、奖励、并发行动、幸存者胜利九个阶段的所有进程快照。0.4.14另让每位玩家通过原生网络队列打出强化三次的灼热铁斩波，核对11伤害／11格挡；快照包含精确强化次数和动态数值。未知错误、诊断观察器异常、异常退出、缺失快照或任一快照不同均判失败。
 
-`runtime/current-verification.json`按实际构建指纹汇总，旧coop-verification.json仅为历史。0.4.23完整验收要求31项功能、2／3／4人直连、四人弱网及四种恢复；missing_checks／missing_multiplayer／missing_recovery列出缺项。0.4.23共12阶段快照，包含拳法生成／结算和潘多拉魔盒；旧0.4.20—0.4.21为11阶段；旧构建仍按当时要求检查。
+`runtime/current-verification.json`按实际构建指纹汇总，旧coop-verification.json仅为历史。0.4.23完整验收要求31项功能、2／3／4人直连、四人弱网及四种恢复；missing_checks／missing_multiplayer／missing_recovery列出缺项；stale_checks／stale_multiplayer／stale_recovery列出同一必测项的旧DLL证据，仅提示、不计入通过。0.4.23共12阶段快照，包含拳法生成／结算和潘多拉魔盒；旧0.4.20—0.4.21为11阶段；旧构建仍按当时要求检查。
 
 本机ENet测试不代替跨机器Steam线路、热重连或工坊订阅验证。作者与朋友已反馈此前联机总体正常；本次0.4.23实玩另记结果。`launch.ps1`关闭Steam接口，Steam邀请需从Steam启动手动安装版本。
 
@@ -130,11 +132,11 @@ Windows可能在原生主机正常退出后向UDP代理报告端口关闭；只�
 
 ## 联机断开与存档恢复
 
-`RecoveryProbe`是独立QA模组，仅复制进临时环境，不能装入试玩或发布目录。支持2—4人，两阶段各启动全新游戏进程：先建立原生联机、准备升级／附魔牌和专属遗物并等待主机存档落盘；一名客端退出后，其余客端检查连接与对局仍保留，再由新进程实际加载主机磁盘存档、经原生LoadRunLobby重新组队，核对状态并实际网络出牌。每阶段上限150秒，静音、独立档，不推进整局。
+`RecoveryProbe`是独立QA模组，仅复制进临时环境，不能装入试玩或发布目录。支持2—4人，两阶段各启动全新游戏进程：先建立原生联机、准备升级／附魔牌和专属遗物并等待主机存档落盘；一名客端退出后，其余客端检查连接与对局仍保留，再由新进程实际加载主机磁盘存档、经原生LoadRunLobby重新组队，核对状态并实际网络出牌。每阶段上限150秒，静音、独立档，不推进整局。**游戏更新后必须按当前 `sts2.dll` 重建 RecoveryProbe 与 RecoveryNativeProbe**；旧探针在 0.114 会因 `CardModel.UpgradeInternal()` 签名变化报 MissingMethodException，这不是模组玩法失败。
 
 ```powershell
 dotnet build tools/RecoveryProbe/RecoveryProbe.csproj -c Release
-python tools/check_recovery.py
+python tools/check_recovery.py --runtime-dir tools/runtime-0.114
 python tools/check_recovery.py --players 3 --party mixed
 python tools/check_recovery.py --players 4
 python tools/check_recovery.py --players 3 --party mixed --resume-order reverse
@@ -158,15 +160,15 @@ python tools/check_recovery.py --independent --abrupt
 
 ## 创意工坊发布准备
 
-content已同步0.4.26（Native Bridge + 五域适配器、英文本地化与 14 个语言镜像的 DLL），供手动复制mods及发给朋友。按该DLL真实渲染复核：35项专项全部通过；恢复4/4、联机4/4通过（2p构装体、3p死灵、4p构装体、4p弱网），`full_local_verification`与`full_invariant_verification`均为true。`dist/SteamWorkshop/verification.json`已按0.4.26候选三个文件复核通过：`targeted_package_checks`为PASS、`network_multiplayer`为PASS_LOCAL_ENET、`upload_status`为NOT_UPLOADED；核对完整资源237份、BaseLib唯一依赖与8个联机／恢复场景。远端公开条目3826907330线上仍为0.4.24（未动）；另建私密测试条目3835179658「拳击构装体(测试)」，内容与0.4.26候选一致，证据见`runtime/test-workshop-0.4.26.json`。正式上传后须重跑`workshop.py --verify`更新线上状态。`full_release_verification`仍为false，但该字段在`report_local.py`里恒为false、没有代码路径会置true。
+**[历史快照·已被取代：当前 content 为 0.5.2 候选 DLL `2bc0f3a3…`，公开条目 3826907330 现为 0.5.1（已上线）；以下为 0.4.26 时期记录]** content已同步0.4.26（Native Bridge + 五域适配器、英文本地化与 14 个语言镜像的 DLL），供手动复制mods及发给朋友。按该DLL真实渲染复核：35项专项全部通过；恢复4/4、联机4/4通过（2p构装体、3p死灵、4p构装体、4p弱网），`full_local_verification`与`full_invariant_verification`均为true。`dist/SteamWorkshop/verification.json`已按0.4.26候选三个文件复核通过：`targeted_package_checks`为PASS、`network_multiplayer`为PASS_LOCAL_ENET、`upload_status`为NOT_UPLOADED；核对完整资源237份、BaseLib唯一依赖与8个联机／恢复场景。远端公开条目3826907330线上仍为0.4.24（未动）；另建私密测试条目3835179658「拳击构装体(测试)」，内容与0.4.26候选一致，证据见`runtime/test-workshop-0.4.26.json`。正式上传后须重跑`workshop.py --verify`更新线上状态。`full_release_verification`仍为false，但该字段在`report_local.py`里恒为false、没有代码路径会置true。
 
 `python tools/workshop.py --status`只读核对文件、资源、旧报告覆盖与发布文案；报告不匹配会如实显示，不能把content更新视为完整验收。状态见[发布前清单](../资料/发布前清单.txt)。
 
 此前使用`python tools/workshop.py --prepare`生成`dist/SteamWorkshop`，采用官方上传工具的目录格式；不会上传，也不生成ZIP。封面从作者提供的 `资料/宣传图/模组封面.png` 等比缩小，不修改源图。
 
-`python tools/check_current.py 模式 --package-dir dist/SteamWorkshop/content`直接检查发布候选的三个文件，记录包内文件的SHA256。完成专项后运行`python tools/workshop.py --verify`核对完整资源、BaseLib唯一依赖、存档未变及对应日志；另须通过同一DLL／PCK／清单的2／3／4人联机、普通及强制断开、四人客端进程丢失与三人混组主机进程丢失恢复。release_evidence.py只按实际三个文件指纹筛选，联机证据另复制进验收日志并记录全部校验值。--status为只读核对。旧release.py仍针对历史版本，不作为这次发布入口。
+`python tools/check_current.py 模式 --package-dir dist/SteamWorkshop/content`直接检查发布候选的三个文件，记录包内文件的SHA256。完成专项后运行`python tools/workshop.py --verify --runtime-dir <运行时>`核对完整资源、BaseLib唯一依赖、存档未变及对应日志；另须通过同一DLL／PCK／清单的2／3／4人联机、普通及强制断开、四人客端进程丢失与三人混组主机进程丢失恢复。release_evidence.py只按实际三个文件指纹筛选，联机证据另复制进验收日志并记录全部校验值。--status为只读核对。`release.py`从同一精确三件套生成确定性ZIP，`--check`验证现有ZIP可逐字节复现。
 
-`python tools/check_candidate_network.py`顺序补齐当前候选缺失的8项联机／恢复验收，包含四人弱网。已通过且三个文件指纹完全相同的证据直接复用；不同构建绝不复用。进度写入runtime/candidate-network-版本.json，测试直接跳转房间，不运行整局。
+`python tools/check_candidate_network.py --runtime-dir <运行时>`顺序补齐当前候选缺失的8项联机／恢复验收，包含四人弱网。已通过且三个文件指纹完全相同的证据直接复用；不同构建绝不复用。进度写入该运行时的candidate-network-版本.json，测试直接跳转房间，不运行整局。
 
 创意工坊标题、正文、可见性和BaseLib工坊ID位于`dist/SteamWorkshop/workshop.json`。仅`content`上传；验证报告及本地存档校验值不在上传目录。未取得作者明确同意前，不运行上传、创建条目或公开发布。观者素材已注明Boninall及来源页面，用户确认没有该作者授权；来源标注不能当作许可结论。
 

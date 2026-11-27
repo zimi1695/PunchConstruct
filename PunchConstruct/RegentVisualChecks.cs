@@ -76,7 +76,7 @@ internal static class RegentVisualChecks
                 AccessTools.Method(typeof(NCard), "UpdateStarCostText").Invoke(view, [0]);
                 Check(!stars.Visible && energy.Visible && energyLabel.Text == card.EnergyCost.GetWithModifiers(CostModifiers.All).ToString(),
                     "Upgraded card and resource-text refresh keep energy without zero stars: " + type.Name);
-                card.DowngradeInternal(); card.FinalizeUpgradeInternal();
+                NativeCardOps.Downgrade(card); card.FinalizeUpgradeInternal();
                 view.UpdateVisuals(PileType.Deck, CardPreviewMode.Normal);
                 Check(!stars.Visible && energyLabel.Text == change.Cost.ToString(), "Downgrade keeps the adapted presentation: " + type.Name);
                 index++;

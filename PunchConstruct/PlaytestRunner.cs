@@ -1,3 +1,4 @@
+using System.Reflection;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
@@ -489,7 +490,7 @@ internal static partial class PlaytestRunner
             Check(gamma.EnergyCost.GetWithModifiers(CostModifiers.None) == 2 && gamma.CurrentStarCost == 0 && gamma.DynamicVars.Damage.BaseValue == originalGamma.DynamicVars.Damage.BaseValue + 3, "Gamma Blast receives only the character-specific cost and damage changes");
             var clonedGamma = gamma.CreateCloneForPlayer(player);
             Check(clonedGamma.DynamicVars.Damage.BaseValue == gamma.DynamicVars.Damage.BaseValue, "Cloning an adapted card does not double the bonus");
-            clonedGamma.UpgradeInternal(); clonedGamma.DowngradeInternal();
+            clonedGamma.UpgradeInternal(); NativeCardOps.Downgrade(clonedGamma);
             Check(clonedGamma.DynamicVars.Damage.BaseValue == gamma.DynamicVars.Damage.BaseValue && clonedGamma.CurrentStarCost == 0, "Adaptation survives upgrade and downgrade without drifting");
             var nativePlayer = Player.CreateForNewRun<Ironclad>(new MegaCrit.Sts2.Core.Unlocks.UnlockState([], [], 0), 9999);
             var nativeGamma = run.CreateCard<GammaBlast>(nativePlayer);
@@ -827,6 +828,20 @@ internal static partial class PlaytestRunner
         var nativeRun = RunState.CreateForTest([native], [ModelDb.Act<Overgrowth>()]);
         Check(colorlessOptions.GetPossibleCards(native).Any(c => !player.Character.CardPool.AllCardIds.Contains(c.Id)),
             "Other characters still use the original full colorless candidates");
+        // Brain Leech's Rip and All Star set NoCardPoolModifications. That flag
+        // must not bypass the construct's curated colorless set.
+        var skippedOptions = CardCreationOptions.ForNonCombatWithDefaultOdds([colorlessPool])
+            .WithFlags(CardCreationFlags.NoRarityModification | CardCreationFlags.NoCardPoolModifications);
+        var skippedCandidates = skippedOptions.GetPossibleCards(player).ToArray();
+        Check(skippedCandidates.Length == 14 &&
+            skippedCandidates.Select(c => c.Id).ToHashSet().SetEquals(candidates.Select(c => c.Id)),
+            "Skip-flag colorless rewards stay inside the construct's fourteen-card set");
+        Check(skippedOptions.GetPossibleCards(native).Count() > 14,
+            "Skip-flag colorless rewards remain the full native pool for other characters");
+        var skippedReward = new CardReward(skippedOptions, 3, player);
+        skippedReward.Populate();
+        Check(skippedReward.Cards.Count() == 3 && skippedReward.Cards.All(r => candidates.Any(c => c.Id == r.Id)),
+            "A populated skip-flag colorless reward only offers the construct's selected cards");
         var curseOptions = CardCreationOptions.ForNonCombatWithUniformOdds([ModelDb.CardPool<MegaCrit.Sts2.Core.Models.CardPools.CurseCardPool>()]);
         Check(curseOptions.GetPossibleCards(player).Any(c => c.Type == CardType.Curse),
             "Explicit curse-card sources remain available outside the normal character pool");
@@ -995,7 +1010,7 @@ internal static partial class PlaytestRunner
         await CreatureCmd.Damage(Context, target, 2, ValueProp.Unpowered, enemies[0]);
         await CreatureCmd.Damage(Context, target, 2, ValueProp.Unpowered, enemies[0]);
         Check(target.GetPowerAmount<VigorPower>() == vigor + 11 && upgradedRelic.DisplayAmount == 7 &&
-            !target.HasPower<GuardStrengthNextTurnPower>() && !target.HasPower<GuardTemporaryStrengthPower>() && !target.HasPower<DrawCardsNextTurnPower>(),
+            !target.HasPower<StrengthPower>() && !target.HasPower<DrawCardsNextTurnPower>(),
             "Ancient first two blocked hits grant five then six Vigor, with no Strength or draw");
         target.LoseBlockInternal(target.Block); target.GainBlockInternal(1);
         await CreatureCmd.Damage(Context, target, 2, ValueProp.Unpowered, enemies[0]);
@@ -1003,7 +1018,7 @@ internal static partial class PlaytestRunner
             "Partial block neither grants Vigor nor advances ancient growth");
         await NextTurn(player, enemies[0]);
         Check(player.PlayerCombatState!.Hand.Cards.Count == 5 && !target.HasPower<DrawCardsNextTurnPower>() &&
-            !target.HasPower<GuardStrengthNextTurnPower>() && !target.HasPower<GuardTemporaryStrengthPower>(),
+            !target.HasPower<StrengthPower>(),
             "Next actual turn draws the normal five cards without queuing Strength");
         await CreatureCmd.GainBlock(target, 20, ValueProp.Unpowered, null);
         await CreatureCmd.Damage(Context, target, 2, ValueProp.Unpowered, enemies[0]);
@@ -1254,6 +1269,17 @@ internal static partial class PlaytestRunner
             ModelDb.Relic<PaelsClaw>().DynamicDescription.GetFormattedText().Contains("小斩波"),
             "Paels Claw owned and unowned previews both describe Small Waves");
         await RelicCmd.Remove(claw);
+        // D3: obtaining a construct variant must not strip the native original from the
+        // run-wide shared chest bag, so mixed-party vanilla teammates keep their access.
+        var sharedBag = new RelicGrabBag();
+        sharedBag.Populate([ModelDb.Relic<StrikeDummy>(), ModelDb.Relic<Anchor>()], new Rng(7));
+        var previousShared = run.SharedRelicGrabBag;
+        AccessTools.Field(typeof(RunState), "<SharedRelicGrabBag>k__BackingField").SetValue(run, sharedBag);
+        var swappedDummy = await RelicCmd.Obtain(ModelDb.Relic<StrikeDummy>().ToMutable(), player);
+        Check(swappedDummy is ConstructStrikeDummy && sharedBag.Contains(ModelDb.Relic<StrikeDummy>()),
+            "Construct Strike Dummy obtain keeps the native original in the shared chest bag for teammates");
+        await RelicCmd.Remove(swappedDummy);
+        AccessTools.Field(typeof(RunState), "<SharedRelicGrabBag>k__BackingField").SetValue(run, previousShared);
         await RunManager.Instance.EnterRoomDebug(RoomType.Monster, model: ModelDb.Encounter<PunchConstructNormal>().ToMutable(), showTransition: false);
         await Until(() => player.PlayerCombatState?.Phase == PlayerTurnPhase.Play && !CombatManager.Instance.PlayerActionsDisabled, "Relic fixture ready");
         var state = (CombatState)player.Creature.CombatState!;
@@ -1470,9 +1496,9 @@ internal static partial class PlaytestRunner
         Check(toUpgrade.IsUpgraded && toUpgrade.DynamicVars.Damage.BaseValue == 5, "Smithing through the actual card-selection screen upgrades Small Wave");
         await Capture("qa-rest");
         var tooth = (ArchaicTooth)ModelDb.Relic<ArchaicTooth>().ToMutable();
-        Check(tooth.SetupForPlayer(player) && tooth.AncientCard!.Id == ModelDb.GetId<ScorchingIronWave>(), "Archaic Tooth selects Scorching Iron Wave for the construct");
+        Check(tooth.SetupForPlayer(player) && tooth.AncientCard!.Id == ModelDb.GetId<ConstructDomineering>(), "Archaic Tooth selects Domineering for the construct holding Tony Wave");
         await RelicCmd.Obtain(tooth, player);
-        Check(player.Deck.Cards.Any(c => c is ScorchingIronWave && c.CurrentUpgradeLevel == 3) && player.Deck.Cards.All(c => c is not Doubt), "Actually acquiring Archaic Tooth transforms Iron Wave into Scorching Iron Wave upgraded three times");
+        Check(player.Deck.Cards.Any(c => c is ConstructDomineering) && player.Deck.Cards.All(c => c is not Doubt), "Actually acquiring Archaic Tooth transforms Tony Wave into Domineering");
         int waves = player.Deck.Cards.Count(c => c is SmallWave);
         await RelicCmd.Obtain(ModelDb.Relic<ConstructNutritiousSoup>().ToMutable(), player);
         Check(player.Deck.Cards.All(c => c is not SmallWave) && player.Deck.Cards.Count(c => c is IronWave && c.Keywords.Contains(CardKeyword.Eternal)) == waves, "Nutritious Soup transforms every Small Wave and makes the replacements Eternal");
@@ -1585,11 +1611,30 @@ internal static partial class PlaytestRunner
 
 // Deterministic combat-unit cases use an inert enemy; later flow cases run normal enemy AI.
 [HarmonyPatch(typeof(MonsterModel), nameof(MonsterModel.PerformMove))]
+[QaOnly]
 internal static class PlaytestInertEnemy
 {
     private static bool Prefix(MonsterModel __instance, ref Task __result)
     {
         if (!PlaytestRunner.HoldEnemyActions) return true;
         __result = PlaytestRunner.EnemyMoveForQa?.Invoke(__instance) ?? Task.CompletedTask; return false;
+    }
+}
+
+// 0.113 has DowngradeInternal() (full reset); 0.114 changed it to
+// DowngradeInternal(int downgradeAmount = 1) (one level). A call compiled
+// against 0.114 emits the int overload, so a direct parameterless call throws
+// MissingMethodException when the same DLL runs on 0.113. QA resolves the
+// method at runtime and preserves each game's native semantics.
+internal static class NativeCardOps
+{
+    private static readonly MethodInfo? DowngradeInternal =
+        typeof(CardModel).GetMethod("DowngradeInternal", BindingFlags.Public | BindingFlags.Instance);
+    internal static bool DowngradesOneLevel => DowngradeInternal?.GetParameters().Length > 0;
+
+    internal static void Downgrade(CardModel card)
+    {
+        if (DowngradeInternal == null) throw new MissingMethodException(nameof(CardModel), "DowngradeInternal");
+        DowngradeInternal.Invoke(card, DowngradesOneLevel ? new object[] { 1 } : null);
     }
 }

@@ -25,25 +25,39 @@ internal static class GuardDamagePresentation
     }
     internal static List<CodeInstruction> Transpile(List<CodeInstruction> original, MethodBase __originalMethod)
     {
-        var wait = AccessTools.Method(typeof(Cmd), nameof(Cmd.CustomScaledWait));
-        var targets = AccessTools.Field(__originalMethod.DeclaringType, "<targetList>5__3");
-        var results = AccessTools.Field(__originalMethod.DeclaringType, "<results>5__2");
-        return IlBridge.ReplaceCall(original, wait, call =>
-            new CodeInstruction[]
-            {
-                IlBridge.Inherit(call, new CodeInstruction(OpCodes.Ldarg_0)),
-                new CodeInstruction(OpCodes.Ldfld, targets),
-                new CodeInstruction(OpCodes.Ldarg_0),
-                new CodeInstruction(OpCodes.Ldfld, results),
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(GuardDamagePresentation), nameof(Wait)))
-            },
-            "guard damage presentation");
+        const string site = "guard damage presentation";
+        var wait = IlBridge.RequireCall(typeof(Cmd), nameof(Cmd.CustomScaledWait), site);
+        if (wait == null) return original;
+        int callIndex = original.FindIndex(i => i.Calls(wait));
+        if (callIndex < 0) { IlBridge.Skip(site, "wait call not found"); return original; }
+        // Anchor the returned results list by IL position + type, not by the
+        // compiler-generated ordinal name. Two List<DamageResult> locals exist
+        // (results + damageResults), so a by-type search alone is ambiguous; the
+        // first ldfld of a List<DamageResult> after the wait is the returned list.
+        FieldInfo? results = null;
+        for (int i = callIndex + 1; i < original.Count; i++)
+            if (original[i].opcode == OpCodes.Ldfld && original[i].operand is FieldInfo f && f.FieldType == typeof(List<DamageResult>))
+            { results = f; break; }
+        if (results == null) { IlBridge.Skip(site, "results field not found after wait"); return original; }
+        var waitMethod = AccessTools.Method(typeof(GuardDamagePresentation), nameof(Wait));
+        var rewritten = new List<CodeInstruction>(original.Count);
+        for (int i = 0; i < original.Count; i++)
+        {
+            if (i != callIndex) { rewritten.Add(original[i]); continue; }
+            rewritten.Add(IlBridge.Inherit(original[i], new CodeInstruction(OpCodes.Ldarg_0)));
+            rewritten.Add(new CodeInstruction(OpCodes.Ldfld, results));
+            rewritten.Add(new CodeInstruction(OpCodes.Call, waitMethod));
+        }
+        return rewritten;
     }
     private static Task Wait(float fast, float standard, bool ignoreCombatEnd, CancellationToken cancellation,
-        List<Creature> targets, List<DamageResult> results)
+        List<DamageResult> results)
     {
-        if (!NativeTimingForQa && fast == .1f && standard == .2f && targets.Count == 1 && results.Count == 1 &&
-            results[0].WasFullyBlocked && targets[0].Player is { Character: ConstructCharacter } player &&
+        // OriginalTarget is the creature originally aimed at (== the old targetList
+        // entry), so the targets field dependency is gone entirely. A shape change
+        // upstream only makes this conservatively keep native timing, never bad IL.
+        if (!NativeTimingForQa && fast == .1f && standard == .2f && results is { Count: 1 } &&
+            results[0].WasFullyBlocked && results[0].OriginalTarget.Player is { Character: ConstructCharacter } player &&
             player.Relics.Any(r => r is GuardStance or AncientGuardStance))
         {
             Diagnostics.Write("info", "guard.damage.presentation", new { owner = player.NetId.ToString(), nativeMs = 200, compactMs = 50 });

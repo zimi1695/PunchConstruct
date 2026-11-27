@@ -93,7 +93,7 @@ internal static class EnglishChecks
         ModelDb.Power<DelayedWavePower>(), ModelDb.Power<IronWaveFormPower>(),
         ModelDb.Power<ForgeWorkshopPower>(), ModelDb.Power<RoyalBearingPower>(), ModelDb.Power<StrikeWhileHotPower>(),
         ModelDb.Power<FinalJudgmentPower>(), ModelDb.Power<UnarmToArmsPower>(), ModelDb.Power<NeverBackDownPower>(),
-        ModelDb.Power<BoxingChampionFormPower>(), ModelDb.Power<GuardStrengthNextTurnPower>(),
+        ModelDb.Power<BoxingChampionFormPower>(),
         ModelDb.Power<ClockworkMechanismPower>(), ModelDb.Power<ConstructDomineeringPower>(),
         ModelDb.Power<ConstructSicEmPower>(), ModelDb.Power<ObserverMantra>(), ModelDb.Power<ObserverDivinity>(),
         ModelDb.Power<ObserverBlockReturn>(), ModelDb.Power<ObserverColdObservationPower>(), ModelDb.Power<ObserverEnergyDown>()

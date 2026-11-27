@@ -27,7 +27,8 @@ public sealed class DelayedWavePower : CustomPowerModel
         get
         {
             var text = base.Description;
-            text.Add("Waves", string.Join("；", _pending.Select(w => $"{w.Damage}伤害、{w.Block}格挡")));
+            text.Add("Waves", string.Join(Loc.Pick("；"),
+                _pending.Select(w => $"{w.Damage}{Loc.Pick("伤害")}{Loc.Pick("、")}{w.Block}{Loc.Pick("格挡")}")));
             return text;
         }
     }
@@ -43,14 +44,16 @@ public sealed class DelayedWavePower : CustomPowerModel
         var owner = Owner;
         var combat = owner.CombatState!;
         var waves = _pending.ToArray();
-        _pending.Clear();
-        await PowerCmd.Remove(this);
+        // Pay before clearing: a mid-loop failure must not wipe the remaining
+        // segments. Clear + remove only after every wave has settled.
         foreach (var wave in waves)
         {
             if (!combat.HittableEnemies.Any()) break;
             await DelayedWaveFacing.ExecuteWave(context, wave.Card, wave.Play, wave.Damage, combat);
             await CreatureCmd.GainBlock(owner, wave.Block, ValueProp.Move, wave.Play);
         }
+        _pending.Clear();
+        await PowerCmd.Remove(this);
     }
 }
 
@@ -74,9 +77,8 @@ public sealed class IronWaveFormPower : CustomPowerModel
     }
     public override async Task AfterDamageGiven(PlayerChoiceContext context, Creature? dealer, DamageResult result, ValueProp props, Creature? target, CardModel? card)
     {
-        if (dealer != Owner || _triggeredThisTurn >= Amount) return;
+        if (dealer != Owner || _triggeredThisTurn >= Amount || result.UnblockedDamage <= 0) return;
         _triggeredThisTurn++;
-        if (result.UnblockedDamage > 0)
-            await CreatureCmd.GainBlock(Owner, result.UnblockedDamage, ValueProp.Unpowered, null);
+        await CreatureCmd.GainBlock(Owner, result.UnblockedDamage, ValueProp.Unpowered, null);
     }
 }

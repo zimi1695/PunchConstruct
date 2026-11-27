@@ -262,7 +262,7 @@ internal static class BridgeWaveFacing
         var redirected = __result;
         var runNative = AdaptationRegistry.Guard("presentation", "WaveFacing",
             () => PresentationAdapter.WaveFacingRedirect(choiceContext, targetData, amount, props, dealer, cardSource, cardPlay, ref redirected));
-        __result = redirected;
+        __result = runNative ? redirected : AsyncGuard.Wrap("presentation", "WaveFacing", redirected);
         return runNative;
     }
 }

@@ -91,7 +91,10 @@ internal static class UnarmBlockReplacement
         await Hook.BeforeBlockGained(state, creature, amount, props, cardPlay?.Card);
         decimal modified = Math.Max(0, Hook.ModifyBlock(state, creature, amount, props, cardPlay?.Card, cardPlay, out var modifiers));
         await Hook.AfterModifyingBlockAmount(state, modified, cardPlay?.Card, cardPlay, modifiers);
-        if (modified > 0) await OstyCmd.Summon(new BlockingPlayerChoiceContext(), creature.Player!, modified, creature.GetPower<UnarmToArmsPower>()!);
+        // The power may have been removed by another hook across the awaits above;
+        // re-resolve and skip the summon rather than dereferencing null.
+        var unarm = creature.GetPower<UnarmToArmsPower>();
+        if (modified > 0 && unarm != null) await OstyCmd.Summon(new BlockingPlayerChoiceContext(), creature.Player!, modified, unarm);
         return 0;
     }
 }

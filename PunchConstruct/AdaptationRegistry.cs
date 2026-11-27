@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace PunchConstruct;
@@ -26,15 +27,19 @@ internal static class AdaptationRegistry
     };
 
     private const char Separator = '\u001f';
-    private static readonly HashSet<string> Disabled = new(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<string, byte> Disabled = new(StringComparer.Ordinal);
 
     private static string Key(string adapter, string hook) => adapter + Separator + hook;
 
     // True when no hook of this adapter has been disabled.
-    internal static bool Enabled(string adapter) => !Disabled.Any(key =>
+    internal static bool Enabled(string adapter) => !Disabled.Keys.Any(key =>
         key.StartsWith(adapter + Separator, StringComparison.Ordinal));
-    internal static bool Enabled(string adapter, string hook) => !Disabled.Contains(Key(adapter, hook));
-    internal static IReadOnlyCollection<string> DisabledHooks => Disabled;
+    internal static bool Enabled(string adapter, string hook) => !Disabled.ContainsKey(Key(adapter, hook));
+    internal static IReadOnlyCollection<string> DisabledHooks => Disabled.Keys.ToArray();
+    // QA installs throw-away adapters (qa.compat.*); they must not turn the
+    // production COMPAT line into DEGRADED. Only configured adapters count.
+    internal static IReadOnlyCollection<string> DisabledProductionHooks => Disabled.Keys
+        .Where(key => Policies.ContainsKey(key.Split(Separator)[0])).ToArray();
     internal static AdapterPolicy Policy(string adapter) => Policies.GetValueOrDefault(adapter, AdapterPolicy.Optional);
 
     internal static void Run(string adapter, string hook, Action action)
@@ -62,7 +67,7 @@ internal static class AdaptationRegistry
 
     internal static void Fail(string adapter, string hook, Exception error)
     {
-        Disabled.Add(Key(adapter, hook));
+        Disabled.TryAdd(Key(adapter, hook), 0);
         var policy = Policy(adapter);
         Diagnostics.Write(policy == AdapterPolicy.Required ? "error" : "warn", "adapter.failed", new
         {

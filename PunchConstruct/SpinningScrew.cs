@@ -53,6 +53,10 @@ public sealed class SpinningScrew : CustomRelicModel
         Diagnostics.Write("info", "relic.screw.round_evaluated", new { owner = Owner.NetId, dealt, hurt, draw = dealt && !hurt });
         return Task.CompletedTask;
     }
+    // Native Hook.ModifyHandDraw records a listener only when the integer count
+    // changes, and Hook.AfterModifyingHandDraw runs only for those recorded
+    // listeners. Returning the unchanged count for another player therefore
+    // cannot clear this relic's pending draw on that player's turn.
     public override decimal ModifyHandDraw(Player player, decimal count)
         => player == Owner && CombatRelicState.ScrewDrawReady[this] ? count + 1 : count;
     public override Task AfterModifyingHandDraw()

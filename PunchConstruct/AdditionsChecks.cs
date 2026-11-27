@@ -158,6 +158,16 @@ internal static partial class PlaytestRunner
         await PowerCmd.Apply<DexterityPower>(Context, player.Creature, 3, player.Creature, null);
         player.Creature.LoseBlockInternal(player.Creature.Block);
         enemies[0].LoseBlockInternal(enemies[0].Block);
+        var mechPreview = state.CreateCard<ConstructMechanicalAscension>(player);
+        // The native preview only runs global damage/block hooks for a card in
+        // hand or play; a card created outside any pile would show the bare base.
+        hand.AddInternal(mechPreview, silent: true);
+        mechPreview.UpdateDynamicVarPreview(CardPreviewMode.Normal, enemies[0], mechPreview.DynamicVars);
+        bool mechPreviewOk = mechPreview.DynamicVars.Damage.PreviewValue == 22 &&
+            mechPreview.DynamicVars.Block.PreviewValue == 27;
+        hand.RemoveInternal(mechPreview, silent: true);
+        Check(mechPreviewOk,
+            "Mechanical Ascension preview includes all five points of scaling per Strength and Dexterity");
         int hp = enemies[0].CurrentHp;
         await Play<ConstructMechanicalAscension>(player, enemies[0]);
         Check(enemies[0].CurrentHp == hp - 22 && player.Creature.Block == 27,
@@ -251,6 +261,19 @@ internal static partial class PlaytestRunner
         Check(player.Creature.GetPowerAmount<VigorPower>() == vigor + 1 && player.Creature.Block == block + 1 &&
             hand.Cards.Count == handBefore + 1,
             "Clockwork Mechanism reacts to a status draw with one Vigor, one block and one card");
+        // Real draw chain: two stacked Burns on the draw pile, one native Draw recurses
+        // through AfterCardDrawn (status -> draw 1 -> status -> draw 1 -> non-status stop).
+        await CardCmd.Discard(Context, hand.Cards.ToArray());
+        player.Creature.LoseBlockInternal(player.Creature.Block);
+        await PowerCmd.Remove<VigorPower>(player.Creature);
+        await CardPileCmd.AddGeneratedCardToCombat(state.CreateCard<SmallWave>(player), PileType.Draw, player, CardPilePosition.Top);
+        await CardPileCmd.AddGeneratedCardToCombat(state.CreateCard<Burn>(player), PileType.Draw, player, CardPilePosition.Top);
+        await CardPileCmd.AddGeneratedCardToCombat(state.CreateCard<Burn>(player), PileType.Draw, player, CardPilePosition.Top);
+        int chainVigor = player.Creature.GetPowerAmount<VigorPower>(), chainBlock = player.Creature.Block, chainHand = hand.Cards.Count;
+        await CardPileCmd.Draw(Context, 1, player);
+        Check(player.Creature.GetPowerAmount<VigorPower>() == chainVigor + 2 && player.Creature.Block == chainBlock + 2 &&
+            hand.Cards.Count == chainHand + 3,
+            "Clockwork Mechanism real draw chain: two stacked Burns each grant Vigor/block and draw again, stopping at the non-status card");
         await PowerCmd.Remove<ClockworkMechanismPower>(player.Creature);
         await CardCmd.Discard(Context, hand.Cards.ToArray());
         await PowerCmd.Remove<VigorPower>(player.Creature);
@@ -283,10 +306,27 @@ internal static partial class PlaytestRunner
         Check(player.Creature.GetPowerAmount<ArtifactPower>() == 1, "Ancient Potion grants one Artifact only to its user");
         await PowerCmd.Remove<ArtifactPower>(player.Creature);
         await UsePotion(murky);
-        Check(player.Creature.GetPowerAmount<VigorPower>() == 10 && player.Creature.GetPowerAmount<StretchPower>() == 10,
-            "Murky Oil grants ten Vigor and ten Stretch");
+        Check(player.Creature.GetPowerAmount<VigorPower>() == 10 &&
+            (!MurkyOilSupport.HasStretch || MurkyOilSupport.AmountOn(player.Creature) == 10),
+            "Murky Oil grants ten Vigor and ten Stretch when Stretch exists");
         await PowerCmd.Remove<VigorPower>(player.Creature);
-        await PowerCmd.Remove<StretchPower>(player.Creature);
+        await MurkyOilSupport.Remove(player.Creature);
+
+        // 0.111/0.112 do not have StretchPower. Simulate that absence on this
+        // runtime and verify the potion still applies its Vigor half.
+        var murkyFallback = ModelDb.Potion<ConstructMurkyOil>().ToMutable();
+        MurkyOilSupport.ForceMissingForTest(true);
+        try
+        {
+            await UsePotion(murkyFallback);
+            Check(player.Creature.GetPowerAmount<VigorPower>() == 10 && MurkyOilSupport.AmountOn(player.Creature) == 0,
+                "Murky Oil falls back to ten Vigor when Stretch is unavailable");
+            await PowerCmd.Remove<VigorPower>(player.Creature);
+        }
+        finally
+        {
+            MurkyOilSupport.ForceMissingForTest(false);
+        }
 
         CardModel[] waves = [state.CreateCard<SmallWave>(player), state.CreateCard<TonyWave>(player),
             state.CreateCard<IronWave>(player), state.CreateCard<ScorchingIronWave>(player), state.CreateCard<IronWaveForm>(player)];
@@ -383,7 +423,7 @@ internal static partial class PlaytestRunner
         Check(keywordPreview.Keywords.Contains(CardKeyword.Exhaust), "Base Fervor has native Exhaust");
         keywordPreview.UpgradeInternal(); keywordPreview.FinalizeUpgradeInternal();
         Check(!keywordPreview.Keywords.Contains(CardKeyword.Exhaust), "Upgrading Fervor removes Exhaust");
-        keywordPreview.DowngradeInternal(); keywordPreview.FinalizeUpgradeInternal();
+        NativeCardOps.Downgrade(keywordPreview); keywordPreview.FinalizeUpgradeInternal();
         Check(keywordPreview.Keywords.Contains(CardKeyword.Exhaust), "Downgrading Fervor restores Exhaust");
         Check(ModelDb.Card<NeverBackDown>().Rarity == CardRarity.Rare && ModelDb.Card<BattleFervor>().Rarity == CardRarity.Rare &&
             ModelDb.Card<BattleFervor>().Type == CardType.Skill && ModelDb.Card<BattleFervor>().Pool is ColorlessCardPool,

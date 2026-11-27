@@ -5,7 +5,7 @@ from pathlib import Path
 import shutil
 
 
-def archive_diagnostics(userdata, destination, *, require_actions=False):
+def archive_diagnostics(userdata, destination, *, require_actions=False, expected_dll=None):
     destination.mkdir(parents=True, exist_ok=True)
     files = sorted(p for p in userdata.rglob('pc-*.jsonl') if p.parent.name == 'logs')
     records = []
@@ -29,8 +29,16 @@ def archive_diagnostics(userdata, destination, *, require_actions=False):
         ids = [r['seq'] for r in session]
         if ids != sorted(set(ids)):
             errors.append('Non-monotonic or duplicated diagnostic sequence')
-        if not any(r['event'] == 'session.start' and len(r['data']['dllSha256']) == 64 for r in session):
+        starts = [r for r in session if r['event'] == 'session.start']
+        if not starts or any(len(r['data'].get('dllSha256', '')) != 64 for r in starts):
             errors.append('Missing build fingerprint')
+        elif expected_dll is not None:
+            # Closed loop: every session must attest the exact candidate DLL the
+            # game actually loaded (assembly.Location), not merely a well-formed
+            # fingerprint. A stale or wrong-path DLL fails the gate here.
+            bad = [r['data']['dllSha256'] for r in starts if r['data']['dllSha256'] != expected_dll]
+            if bad:
+                errors.append('Build fingerprint mismatch: loaded %s expected %s' % (bad[0][:12], expected_dll[:12]))
     if require_actions:
         events = {r['event'] for r in records}
         for name in ('run.setup', 'room.enter', 'action.begin', 'action.end', 'choice.sent', 'choice.received', 'run.cleanup'):

@@ -7,41 +7,77 @@ namespace PunchConstruct;
 
 public sealed class ConstructCardPool : CustomCardPoolModel
 {
-    public override string Title => "拳击构装体";
+    public override string Title => Loc.Pick("拳击构装体");
     public override bool IsColorless => false;
     public override string EnergyColorName => "defect";
     public override string CardFrameMaterialPath => "card_frame_blue";
     public override Color DeckEntryCardColor => new("9ec9c7");
     public override bool IsShared => false;
 
+    // Pool construction runs before any Harmony guard. A removed/unregistered
+    // native card must not throw here — that is the shortest path to "character
+    // disappears after a game update". Collect missing names, skip them, mark the
+    // pool DEGRADED, and keep loading (fail-open, consistent with F3).
+    internal static bool PoolDegraded { get; private set; }
+    internal static IReadOnlyList<string> MissingCards => missingCards;
+    private static readonly List<string> missingCards = [];
+    private static CardModel? TryCard<T>() where T : CardModel
+    {
+        try { return ModelDb.Card<T>(); }
+        catch (Exception error)
+        {
+            // Diagnostics must not turn a degraded card into a failed pool:
+            // this is the last boundary before BaseLib builds the character.
+            try
+            {
+                missingCards.Add(typeof(T).Name);
+                Diagnostics.Write("error", "pool.card_missing", new { card = typeof(T).Name, error = error.Message });
+            }
+            catch { }
+            return null;
+        }
+    }
+
     // Acquisition gates live in EventCards; never force a particular event reward.
-    protected override CardModel[] GenerateAllCards() => [
+    protected override CardModel[] GenerateAllCards()
+    {
         // BaseLib appends [Pool]-registered custom cards automatically. This is
         // the acquisition list; a card's Pool can retain its design origin.
-        ModelDb.Card<BodySlam>(), ModelDb.Card<IronWave>(), ModelDb.Card<Taunt>(),
-        ModelDb.Card<Uppercut>(), ModelDb.Card<Rage>(), ModelDb.Card<FlameBarrier>(),
-        ModelDb.Card<Mangle>(), ModelDb.Card<Juggernaut>(), ModelDb.Card<Neutralize>(), ModelDb.Card<SuckerPunch>(),
-        ModelDb.Card<CloakAndDagger>(), ModelDb.Card<Dash>(), ModelDb.Card<BladeOfInk>(),
-        ModelDb.Card<Abrasive>(), ModelDb.Card<Suppress>(), ModelDb.Card<Fisticuffs>(),
-        ModelDb.Card<Shockwave>(), ModelDb.Card<Prowess>(), ModelDb.Card<Whistle>(),
-        ModelDb.Card<FallingStar>(), ModelDb.Card<CrushUnder>(), ModelDb.Card<KnowThyPlace>(), ModelDb.Card<Patter>(),
-        ModelDb.Card<GammaBlast>(), ModelDb.Card<Reflect>(), ModelDb.Card<Resonance>(), ModelDb.Card<Bulwark>(),
-        ModelDb.Card<Comet>(), ModelDb.Card<DyingStar>(), ModelDb.Card<MonarchsGaze>(), ModelDb.Card<MeteorShower>(),
-        ModelDb.Card<Parry>(), ModelDb.Card<Bodyguard>(),
-        ModelDb.Card<SicEm>(), ModelDb.Card<NegativePulse>(), ModelDb.Card<Unleash>(), ModelDb.Card<BoneShards>(),
-        ModelDb.Card<Putrefy>(), ModelDb.Card<Deathbringer>(), ModelDb.Card<Shroud>(), ModelDb.Card<Protector>(),
-        ModelDb.Card<GoForTheEyes>(), ModelDb.Card<ColdSnap>(), ModelDb.Card<LightningRod>(), ModelDb.Card<Null>(),
-        ModelDb.Card<Glasswork>(), ModelDb.Card<ShadowShield>(), ModelDb.Card<Hailstorm>(), ModelDb.Card<BulkUp>(),
-        ModelDb.Card<IceLance>(), ModelDb.Card<Rainbow>(),
-        // Native Fool designs. Their arrow slots, shooting and impale flow are
-        // character-agnostic in the base game, so only the acquisition list and
-        // the group gate in CardAcquisition are mod-side work.
-        ModelDb.Card<ChoBarbs>(), ModelDb.Card<ChoReady>(), ModelDb.Card<WahCho>(), ModelDb.Card<WahChoKi>(),
-        ModelDb.Card<HobblingShot>(), ModelDb.Card<BlossomShot>(), ModelDb.Card<WhistlingArrows>(),
-        ModelDb.Card<Nail>(), ModelDb.Card<Enrapture>(), ModelDb.Card<CoveringFire>()
-        // The eight independently implemented observer cards are appended via
-        // their [Pool] attributes, alongside the other local designs.
-    ];
+        CardModel?[] cards = [
+            TryCard<BodySlam>(), TryCard<IronWave>(), TryCard<Taunt>(),
+            TryCard<Uppercut>(), TryCard<Rage>(), TryCard<FlameBarrier>(),
+            TryCard<Mangle>(), TryCard<Juggernaut>(), TryCard<Neutralize>(), TryCard<SuckerPunch>(),
+            TryCard<CloakAndDagger>(), TryCard<Dash>(), TryCard<BladeOfInk>(),
+            TryCard<Abrasive>(), TryCard<Suppress>(), TryCard<Fisticuffs>(),
+            TryCard<Shockwave>(), TryCard<Prowess>(), TryCard<Whistle>(),
+            TryCard<FallingStar>(), TryCard<CrushUnder>(), TryCard<KnowThyPlace>(), TryCard<Patter>(),
+            TryCard<GammaBlast>(), TryCard<Reflect>(), TryCard<Resonance>(), TryCard<Bulwark>(),
+            TryCard<Comet>(), TryCard<DyingStar>(), TryCard<MonarchsGaze>(), TryCard<MeteorShower>(),
+            TryCard<Parry>(), TryCard<Bodyguard>(),
+            TryCard<SicEm>(), TryCard<NegativePulse>(), TryCard<Unleash>(), TryCard<BoneShards>(),
+            TryCard<Putrefy>(), TryCard<Deathbringer>(), TryCard<Shroud>(), TryCard<Protector>(),
+            TryCard<GoForTheEyes>(), TryCard<ColdSnap>(), TryCard<LightningRod>(), TryCard<Null>(),
+            TryCard<Glasswork>(), TryCard<ShadowShield>(), TryCard<Hailstorm>(), TryCard<BulkUp>(),
+            TryCard<IceLance>(), TryCard<Rainbow>(),
+            // Native Fool designs. Their arrow slots, shooting and impale flow are
+            // character-agnostic in the base game, so only the acquisition list and
+            // the group gate in CardAcquisition are mod-side work. Cho Barbs,
+            // Cho Ready and Wah Cho Ki are re-authored in FoolCards.cs with the
+            // construct's 0.113 values and join through their [Pool] attributes.
+            TryCard<WahCho>(),
+            TryCard<HobblingShot>(), TryCard<BlossomShot>(), TryCard<WhistlingArrows>(),
+            TryCard<Nail>(), TryCard<Enrapture>(), TryCard<CoveringFire>()
+            // The eight independently implemented observer cards are appended via
+            // their [Pool] attributes, alongside the other local designs.
+        ];
+        var present = cards.Where(c => c != null).Cast<CardModel>().ToArray();
+        if (missingCards.Count > 0)
+        {
+            PoolDegraded = true;
+            Diagnostics.Write("error", "pool.degraded", new { missing = missingCards, kept = present.Length });
+        }
+        return present;
+    }
 }
 
 public sealed class ConstructRelicPool : CustomRelicPoolModel

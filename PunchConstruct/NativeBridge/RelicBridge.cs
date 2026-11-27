@@ -58,11 +58,11 @@ internal static class BridgeConstructRelicRolls
 [HarmonyPatch(typeof(TreasureRoomRelicSynchronizer), nameof(TreasureRoomRelicSynchronizer.BeginRelicPicking))]
 internal static class BridgeConstructTreasureRelics
 {
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase __originalMethod)
     {
         var original = instructions.ToList();
         return AdaptationRegistry.Run("relic", "ConstructTreasureRelics", original,
-            () => ConstructTreasureRelics.Transpile(original));
+            () => ConstructTreasureRelics.Transpile(original, __originalMethod));
     }
 }
 
@@ -150,13 +150,14 @@ internal static class BridgeConstructRelicVariants
         }
         relic = value;
         if (ReferenceEquals(original, relic)) return;
-        // The native bag entries are the shared relic; remove them so the roll
-        // cannot offer it again while this player owns the variant. Cleanup is
-        // isolated so a bag conflict cannot abort the native obtain call.
+        // Remove the original only from this player's own bag so their rolls cannot
+        // offer it again while they own the variant. The run-wide SharedRelicGrabBag
+        // stays intact: in a mixed party vanilla teammates must still draw the native
+        // original from shared chests. Cleanup is isolated so a bag conflict cannot
+        // abort the native obtain call.
         AdaptationRegistry.Run("relic", "ConstructRelicVariantsCleanup", () =>
         {
             player.RelicGrabBag.Remove(original);
-            player.RunState.SharedRelicGrabBag.Remove(original);
         });
     }
 }

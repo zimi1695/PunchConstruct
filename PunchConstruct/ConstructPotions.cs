@@ -43,14 +43,23 @@ public sealed class ConstructMurkyOil : CustomPotionModel
     public override string? CustomPackedImagePath => "res://PunchConstruct/art/potion_murky_oil.ctex";
     public override string? CustomPackedOutlinePath => "res://PunchConstruct/art/potion_murky_oil_outline.ctex";
     public override string? CustomLargeImagePath => "res://PunchConstruct/art/potion_murky_oil_large.ctex";
-    public override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<VigorPower>(), HoverTipFactory.FromPower<StretchPower>()];
-    public override List<(string, string)> Localization => Loc.Potion("浑浊机油",
-        "获得10点[gold]活力[/gold]和10点[gold]拉伸[/gold]。");
+    public override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            yield return HoverTipFactory.FromPower<VigorPower>();
+            var stretch = MurkyOilSupport.StretchModel();
+            if (stretch != null) yield return HoverTipFactory.FromPower(stretch);
+        }
+    }
+    public override List<(string, string)> Localization => MurkyOilSupport.HasStretch
+        ? Loc.Potion("浑浊机油", "获得10点[gold]活力[/gold]和10点[gold]拉伸[/gold]。")
+        : Loc.Potion("浑浊机油", "获得10点[gold]活力[/gold]。");
     protected override async Task OnUse(PlayerChoiceContext context, Creature? target)
     {
         PotionModel.AssertValidForTargetedPotion(target);
         await PowerCmd.Apply<VigorPower>(context, Owner.Creature, 10, Owner.Creature, null);
-        await PowerCmd.Apply<StretchPower>(context, Owner.Creature, 10, Owner.Creature, null);
+        await MurkyOilSupport.Apply(context, Owner.Creature, 10, Owner.Creature);
     }
 }
 

@@ -44,11 +44,6 @@ internal static partial class PlaytestRunner
         await Inspect<ConstructDomineeringPower>(1, player.Creature, "下回合", "所有敌人", "格挡");
         await Inspect<HelicalDartPower>(3, player.Creature, "3", "敏捷");
         await PowerCmd.Remove<DexterityPower>(player.Creature);
-        await Inspect<GuardStrengthNextTurnPower>(11, player.Creature, "下回合", "11", "临时力量");
-        var expiry = await PowerCmd.Apply<GuardTemporaryStrengthPower>(Context, player.Creature, 4, player.Creature, null);
-        Check(expiry is { IsVisible: false }, "Internal temporary-Strength expiry helper deliberately has no second visible status or tooltip");
-        checkedTypes.Add(typeof(GuardTemporaryStrengthPower));
-        await PowerCmd.Remove(expiry!);
         await PowerCmd.Remove<StrengthPower>(player.Creature);
         await Play<NeverBackDown>(player);
         var never = player.Creature.GetPower<NeverBackDownPower>()!;

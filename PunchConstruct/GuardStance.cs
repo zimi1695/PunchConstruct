@@ -29,9 +29,12 @@ public sealed class GuardStance : CustomRelicModel
     public override async Task AfterDamageReceived(PlayerChoiceContext context, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? card)
     {
         if (target != Owner.Creature || !result.WasFullyBlocked) return;
-        int amount = NextAmount++;
+        int amount = NextAmount;
+        await GuardStancePowerGain.Apply<VigorPower>(context, Owner.Creature, amount);
+        // Grow only after the grant succeeds: a failed Apply must not inflate
+        // the next trigger's amount without having granted this one.
+        NextAmount = amount + 1;
         InvokeDisplayAmountChanged();
         Flash();
-        await GuardStancePowerGain.Apply<VigorPower>(context, Owner.Creature, amount);
     }
 }

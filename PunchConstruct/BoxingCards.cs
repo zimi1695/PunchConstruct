@@ -60,7 +60,7 @@ public sealed class LeftHook() : CustomCardModel(1, CardType.Attack, CardRarity.
     protected override void AddExtraArgsToDescription(LocString description)
     {
         base.AddExtraArgsToDescription(description);
-        description.Add("RightTitle", IsUpgraded ? "右勾拳+" : "右勾拳");
+        description.Add("RightTitle", Loc.Pick(IsUpgraded ? "右勾拳+" : "右勾拳"));
     }
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {

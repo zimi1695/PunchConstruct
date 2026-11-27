@@ -1,8 +1,8 @@
-﻿拳击构装体：本地交付与发布审查（2026-10-26，2026-11-17更新）
+﻿拳击构装体：本地交付与发布审查（2026-10-26，2026-11-27更新）
 
 【长期护栏·每次工坊上传必做】附加宣传图空壳已多次复发（0.4.24／0.4.28／0.5.1）：ModUploader 对后端已存在的同名附加预览只保留条目、不重传图片内容，URL 全空时页面表现为宣传图"消失"，单传封面修不了。每次 upload 后必须跑 `python tools/verify_previews.py <条目>` 确认封面＋6 张附加预览 URL 全非空（退出码 0）；若为空壳，按"先清空 previews/ 上传删除空壳 → 放回 6 张再上传重传内容"两步修复，再复核。完整规程见 tools/README.md「附加宣传图空壳护栏」。此操作只动预览，不影响 mod 本体三文件哈希。
 
-content现为0.5.1最终候选（DLL `702f587a…`、PCK `d67662e5…`、清单 `030ce557…`，98种卡牌、277份资源）；已合入10张愚者搬运牌、先古药水／浑浊机油图标修正、pcdeck药水展示与遗物图标可见性修复及 `pcdeck mod` 原创展示，以及任务清单改动（机械飞升改3费、霸无敌重写为下回合能量＋抽牌、能量文字改用能量图标、卸甲成军／厄运共鸣／霸无敌换用交接新美术并按先古卡规格裁剪）。本地35/35、联机4/4（含4p弱网）、恢复4/4与 `workshop.py --verify` 全通过，`full_local_verification=true`、不变量16/16；content已同步、归档与ZIP已重建。0.5.1 适配游戏0.113.0／BaseLib 3.4.8，新增6张卡牌、齿轮工艺品遗物、3种构造专属药水并改写被寄生的自动机械事件；左勾拳削弱与录像命令 `pcdeck` 已合入。公开条目`upload_status=NOT_UPLOADED`；0.113.1隔离预检已在最终DLL复核PASS，官方验收仍以0.113.0为准。旧0.5.1曾上传私密测试条目3835179658（对应已作废的 `d22fa5b4…`），需按最终DLL重传（本次Steam未运行，暂缓、暂存就绪）；公开条目3826907330仍为0.4.28；0.4.28保持冻结，不重建、不重传。
+content现为0.5.2候选（DLL `0a6ea643…`、PCK `99a6c13b…`、清单 `9ceef44e…`，98种卡牌、277份资源）；在 0.5.1 基础上修复被寄生的自动机械 SEARCH 预览升级不一致、古牙对构装体泄漏原版先古映射（无东尼斩波不出现古牙）、清理古铜之拳临时力量死代码并改 QA 测活力、共享遗物池按玩家过滤（混编队友保留原生遗物），以及稳健性加固（补丁空目标 fail-closed、遗物抽取局部类型与 pull/_rng 判空守卫、启动兼容预检异常隔离、QA 探针仅 QA 模式安装、适配器禁用表线程安全）、统一健康状态、机械飞升完整力量/敏捷预览与独立审查 3 缺口；0.114.0 适配（三张愚者搬运牌改 mod 自有 0.113 数值副本、愚者卡不再用构装体蓝框、脑蛭无色池收窄、QA 兼容逐级降级语义）。代码编译 0 警告 0 错误；0.114.0 本地35/35（5020 条断言）、精确包35/35、联机4/4（含4p弱网）、恢复4/4通过，不变量16/16，`workshop.py` targeted=PASS；0.113.0 仅作兼容基线。0.113.0 兼容基线证据（构建 `be3fdda6…` 的本地35/35、联机4/4、恢复4/4、精确包35/35与`workshop.py --verify`全 PASS、0.113.1 预检6/6）保留在 `tools/runtime`，不单独发布 0.5.2 版本。公开条目3826907330现为0.5.1（DLL `858f76de…`，已上线）；0.5.2 公开待作者许可，私测3835179658待 Steam 重传。0.4.28保持冻结，不重建、不重传。
 
 0.5.1（2026-11-15，2026-11-16修订）
 
@@ -91,4 +91,25 @@ PunchConstruct.json 57f12420485c2d7d8220f95c96fe5e0de8a20a9cf04c5767fcf1611d9b85
 PunchConstruct.dll  934e75d188998f3135f86e265fbacd4d7ae75d9fdd0a322db79b039b3dc5d1fa
 PunchConstruct.pck  1c76ea442bb5e873c7d2c40f69349d61935ffcff382e8fabdcf761ea2a9f0e26
 PunchConstruct.json f72c1ed2e9e0e4c87d70a43269fd57b559ff2710c7953e73401a5eba031e5d80
+
+0.5.2（2026-11-27）
+
+[已完成] 0.114.0 适配：三张愚者搬运牌（ChoBarbs／ChoReady／WahChoKi）改为 mod 自有 `CustomCardModel` 副本，保留 0.113 模组数值；愚者卡运行时 Pool 覆盖为 `FoolCardPool`，不再显示构装体蓝框；Brain Leech 在 `NoCardPoolModifications` 下仍收窄无色池；浑浊机油保留 Vigor-only 回退。
+[已完成] 0.114.0 隔离运行时（`tools/runtime-0.114`，游戏 0.114.0 build 26909018、BaseLib 3.4.8）本地 35/35（5020 断言）、精确包 35/35、联机 4/4（含 4p 100ms／40ms／5%／5s 弱网）、恢复 4/4（菜单／强制／进程丢失 4p／主机丢失 3p 混组）全部 PASS；不变量 16/16，`stale_evidence_count=0`。
+[已完成] `workshop.py --verify --runtime-dir tools/runtime-0.114`：`targeted_package_checks=PASS`、`network_multiplayer=PASS_LOCAL_ENET`、`missing_multiplayer_checks=[]`、`upload_status=NOT_UPLOADED`；`workshop.py --status` 35 项精确候选检查全 true、`missing_candidate_multiplayer=[]`、`verification_matches_candidate=true`、`description_synced=true`。
+[已完成] RecoveryProbe／RecoveryNativeProbe 已按 0.114 `sts2.dll` 重建（`CardModel.UpgradeInternal(bool)` 签名变化）；0.113 旧探针的 MissingMethodException 证据归档在 `tools/runtime-0.114/qa-archive/20261127-acceptance`，不计入验收。
+[已完成] `dist/releases/PunchConstruct-0.5.2.zip` 由 `release.py` 确定性重建：51,364,889 B，SHA256 `fb4e66d0…`，三文件位于根目录，`release.py --check` PASS。
+[待作者] 公开条目 3826907330 现为 0.5.1；0.5.2 公开待作者许可。私测条目 3835179658 待 Steam 重传。0.4.28 保持冻结，不重建、不重传。
+
+0.5.2 最终候选 SHA256（2026-11-26，与当前 verification.json／content-current.json 一致；content 与 dist/releases/0.5.2 已同步）
+PunchConstruct.dll  0a6ea643fe2b4eff3fd4c9517c5275c8a1b4ba11b0d6a7e29023dfb7121c3f15
+PunchConstruct.pck  99a6c13b64400dce2c44f39fa11989556340e83104e6c075711cc4df7b6ae6b1
+PunchConstruct.json 9ceef44e94803370351bb8b7127674fd8046010ea685dde6356d4893349f6c38
+PunchConstruct-0.5.2.zip  fb4e66d00f60e83de25a170a34f6c54db542bb706e3a16d46421b6fb454c6ee8（51,364,889 B，三文件位于根目录，release.py --check 可复现）
+
+0.5.2 旧候选 SHA256（2026-11-18，已被最终 DLL 取代）
+PunchConstruct.dll  2bc0f3a3e1b5b487b929842ed692c513c514eb5c394c452c46e29cdf064439e3
+PunchConstruct.pck  d67662e5ddaad39799e179d357d2cff72817cffaf45a13f93d7bbf430c8dee08
+PunchConstruct.json 9ceef44e94803370351bb8b7127674fd8046010ea685dde6356d4893349f6c38
+PunchConstruct-0.5.2.zip  55a02af474bb0eb4658b2cc984835563f30aab30ce72fb5c2dc3681af1c6bfb6（51,346,311 B，已作废）
 

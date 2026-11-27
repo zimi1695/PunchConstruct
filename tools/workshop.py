@@ -12,6 +12,7 @@ from check_current import qa_issues
 from release_evidence import collect as multiplayer_evidence
 
 ROOT = Path(__file__).resolve().parent.parent
+RUNTIME = ROOT / 'tools/runtime'
 WORKSHOP = ROOT / 'dist/SteamWorkshop'
 CONTENT = WORKSHOP / 'content'
 NAMES = ('PunchConstruct.dll', 'PunchConstruct.pck', 'PunchConstruct.json')
@@ -70,8 +71,23 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def runtime_versions():
+    game = '0.113.0'
+    info = RUNTIME / 'release_info.json'
+    if info.exists():
+        game = str(json.loads(info.read_text(encoding='utf-8')).get('version', game)).removeprefix('v')
+    baselib = '3.4.8'
+    manifest = RUNTIME / 'mods/BaseLib/BaseLib.json'
+    if manifest.exists():
+        baselib = str(json.loads(manifest.read_text(encoding='utf-8-sig')).get('version', baselib)).removeprefix('v')
+    return game, baselib
+
+
 def profile_hashes():
-    profile = ROOT / 'tools/runtime/play-userdata'
+    profile = RUNTIME / 'play-userdata'
+    if not profile.exists():
+        # A minimal isolated runtime may not have a play profile at all.
+        return None
     return {p.relative_to(ROOT).as_posix(): sha(p) for p in profile.rglob('*') if p.is_file()}
 
 
@@ -102,7 +118,7 @@ def status():
     candidate_manifest = json.loads((CONTENT / 'PunchConstruct.json').read_text(encoding='utf-8')) if (CONTENT / 'PunchConstruct.json').exists() else {'version': '0.0.0'}
     required_checks = checks_for_version(candidate_manifest['version'])
     for mode, marker in required_checks.items():
-        log = ROOT / f'tools/runtime/{mode}-current-check.log'
+        log = RUNTIME / f'{mode}-current-check.log'
         recorded = evidence.get(mode)
         if recorded:
             recorded_log = ROOT / recorded['log']
@@ -134,7 +150,7 @@ def status():
             config.get('title', '') + '\n\n' + config.get('description', '') + '\n',
         locally_recorded_upload_status=report.get('upload_status', 'UNKNOWN'),
     )
-    candidate_multiplayer, missing_multiplayer = multiplayer_evidence(files)
+    candidate_multiplayer, missing_multiplayer = multiplayer_evidence(files, runtime=RUNTIME)
     result['missing_candidate_multiplayer'] = missing_multiplayer
     result['candidate_multiplayer'] = [{k: v for k, v in row.items() if k != 'files'} for row in candidate_multiplayer]
     result['archived_multiplayer_logs_changed'] = [row['mode'] + ':' + name
@@ -221,7 +237,7 @@ def verify(require_checks):
     evidence = []
     missing = []
     for mode, marker in checks_for_version(manifest['version']).items():
-        path = ROOT / f'tools/runtime/{mode}-current-check.log'
+        path = RUNTIME / f'{mode}-current-check.log'
         value = path.read_text(encoding='utf-8-sig', errors='replace') if path.exists() else ''
         package = re.search(r'^\[Construct QA PACKAGE\] (.+)$', value, re.M)
         passed = marker in value and ' QA FAIL]' not in value and ' SMOKE FAIL]' not in value and not qa_issues(value)
@@ -239,7 +255,7 @@ def verify(require_checks):
         helper = re.search(r'^\[Construct QA HELPER\] (.+)$', value, re.M)
         if helper: evidence[-1]['qa_helpers'] = json.loads(helper[1])
         if passed and matched and mode in ('persist', 'observerpersist'):
-            seed = ROOT / f'tools/runtime/{mode}-seed-check.log'
+            seed = RUNTIME / f'{mode}-seed-check.log'
             seed_value = seed.read_text(encoding='utf-8-sig')
             assert marker in seed_value and not qa_issues(seed_value) and '[Construct QA FAIL]' not in seed_value
             assert '[Construct QA DLL] ' + digests['PunchConstruct.dll'] in seed_value
@@ -247,22 +263,25 @@ def verify(require_checks):
             seed_snapshot.write_bytes(seed.read_bytes())
             evidence[-1].update(seed_log=seed_snapshot.relative_to(ROOT).as_posix(), seed_log_sha256=sha(seed_snapshot))
     before = json.loads((WORKSHOP / 'play-profile-before.json').read_text(encoding='utf-8'))
-    assert before == profile_hashes(), 'Local play profile changed during release checks'
-    network_evidence, missing_network = multiplayer_evidence(digests, WORKSHOP / '验收日志')
+    current_profile = profile_hashes()
+    if current_profile is not None:
+        assert before == current_profile, 'Local play profile changed during release checks'
+    game, baselib = runtime_versions()
+    network_evidence, missing_network = multiplayer_evidence(digests, WORKSHOP / '验收日志', runtime=RUNTIME)
     # Upload state is recorded by the sync record, not guessed here: only trust it
     # when the recorded item id still matches mod_id.txt and every recorded file
     # hash equals the candidate actually being verified.
     upload_state = 'NOT_UPLOADED'
-    sync_path = ROOT / 'tools/runtime/content-current.json'
+    sync_path = RUNTIME / 'content-current.json'
     if sync_path.exists():
         sync = json.loads(sync_path.read_text(encoding='utf-8'))
         item_id = (WORKSHOP / 'mod_id.txt').read_text(encoding='utf-8').strip()
         if sync.get('uploaded') and sync.get('workshop_item') == item_id and sync.get('build') == digests:
             upload_state = 'UPLOADED_PRIVATE' if sync.get('workshop_visibility') == 'private' else 'UPLOADED_PUBLIC'
     report = dict(version=manifest['version'], generated_utc=datetime.now(timezone.utc).isoformat(),
-                  package_files=digests, resources=len(entries), game='0.113.0', baselib='3.4.8', watcher_required=False,
+                  package_files=digests, resources=len(entries), game=game, baselib=baselib, watcher_required=False,
                   static_package='PASS', targeted_package_checks='PASS' if not missing else 'INCOMPLETE',
-                  evidence=evidence, existing_local_play_files_unchanged=True,
+                  evidence=evidence, existing_local_play_files_unchanged=None if current_profile is None else True,
                   qa_error_gate='Unknown Godot errors, script/loading exceptions and unclassified game errors reject a check, including after its PASS marker',
                   classified_diagnostics=[
                       'Exact root-certificate, Invalid Task ID and exit-resource diagnostic forms also reproduced in the BaseLib-only startup baseline',
@@ -288,7 +307,10 @@ if __name__ == '__main__':
     parser.add_argument('--prepare', action='store_true')
     parser.add_argument('--verify', action='store_true', help='Require successful targeted checks of these exact files')
     parser.add_argument('--status', action='store_true', help='Read-only candidate freshness and evidence audit; writes nothing')
+    parser.add_argument('--runtime-dir', type=Path, default=RUNTIME,
+                        help='Runtime whose logs/profile are audited (default: tools/runtime)')
     args = parser.parse_args()
+    RUNTIME = args.runtime_dir.resolve()
     if args.status:
         if args.prepare or args.verify:
             parser.error('--status cannot be combined with --prepare or --verify')

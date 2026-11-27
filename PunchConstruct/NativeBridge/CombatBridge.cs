@@ -29,7 +29,7 @@ internal static class BridgeUnarmBlock
         var result = __result;
         var runNative = AdaptationRegistry.Guard("combat", "UnarmBlock",
             () => UnarmBlockReplacement.Apply(creature, amount, props, cardPlay, ref result));
-        __result = result;
+        __result = runNative ? result : AsyncGuard.Wrap("combat", "UnarmBlock", result);
         return runNative;
     }
 }
@@ -39,10 +39,11 @@ internal static class BridgeGuardVigorConsumption
 {
     private static void Postfix(VigorPower __instance, AttackCommand command, ref Task __result)
     {
+        var original = __result;
         var result = __result;
         AdaptationRegistry.Run("combat", "GuardVigorConsumption",
             () => GuardVigorConsumption.Apply(__instance, command, ref result));
-        __result = result;
+        __result = ReferenceEquals(result, original) ? result : AsyncGuard.Wrap("combat", "GuardVigorConsumption", result);
     }
 }
 
@@ -92,7 +93,7 @@ internal static class BridgeConstructSicEm
         var result = __result;
         var runNative = AdaptationRegistry.Guard("combat", "ConstructSicEm",
             () => ConstructSicEm.Apply(__instance, choiceContext, cardPlay, ref result));
-        __result = result;
+        __result = runNative ? result : AsyncGuard.Wrap("combat", "ConstructSicEm", result);
         return runNative;
     }
 }
@@ -150,7 +151,7 @@ internal static class BridgeConstructOstyAttack
         var result = __result;
         var runNative = AdaptationRegistry.Guard("combat", "ConstructOstyAttack",
             () => ConstructOstyHealthAttack.Apply(__instance, choiceContext, cardPlay, ref result));
-        __result = result;
+        __result = runNative ? result : AsyncGuard.Wrap("combat", "ConstructOstyAttack", result);
         return runNative;
     }
 }

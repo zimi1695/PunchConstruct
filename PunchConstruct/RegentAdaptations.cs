@@ -18,27 +18,36 @@ internal static class RegentAdaptations
         [typeof(Reflect)] = (2, 0), [typeof(Resonance)] = (1, 0), [typeof(Comet)] = (3, 0), [typeof(DyingStar)] = (2, 0)
     };
     private static readonly SpireField<CardModel, bool> Adapted = new SpireField<CardModel, bool>(() => false).CopyOnClone();
-    private static readonly AccessTools.FieldRef<CardModel, Player?> OwnerField = AccessTools.FieldRefAccess<CardModel, Player?>("_owner");
-    private static readonly AccessTools.FieldRef<CardModel, int> StarBase = AccessTools.FieldRefAccess<CardModel, int>("_baseStarCost");
-    private static readonly AccessTools.FieldRef<CardModel, bool> StarSet = AccessTools.FieldRefAccess<CardModel, bool>("_starCostSet");
-    internal static bool Owns(CardModel card) => CharacterScope.IsConstruct(OwnerField(card));
+    // Lazy soft refs: a renamed native field degrades to null (Owns → false, star
+    // rewrite skipped) instead of poisoning RegentAdaptations and cascading
+    // through its ~19 call sites one disabled hook at a time.
+    private static readonly SoftRef.Ref<AccessTools.FieldRef<CardModel, Player?>> OwnerField = SoftRef.FieldRef<CardModel, Player?>("CardModel._owner", "_owner");
+    private static readonly SoftRef.Ref<AccessTools.FieldRef<CardModel, int>> StarBase = SoftRef.FieldRef<CardModel, int>("CardModel._baseStarCost", "_baseStarCost");
+    private static readonly SoftRef.Ref<AccessTools.FieldRef<CardModel, bool>> StarSet = SoftRef.FieldRef<CardModel, bool>("CardModel._starCostSet", "_starCostSet");
+    internal static bool Owns(CardModel card)
+    {
+        var owner = OwnerField.Value;
+        return owner != null && CharacterScope.IsConstruct(owner(card));
+    }
     internal static void Apply(CardModel card, bool reset = false)
     {
         if (!Changes.TryGetValue(card.GetType(), out var change)) return;
         bool shouldAdapt = Owns(card);
         bool wasAdapted = Adapted[card];
         if (!reset && wasAdapted == shouldAdapt) return;
+        var starBase = StarBase.Value;
+        var starSet = StarSet.Value;
         if (shouldAdapt)
         {
             card.EnergyCost.SetCustomBaseCost(change.Cost);
             if (change.Damage != 0) card.DynamicVars.Damage.BaseValue += change.Damage;
-            if (ReplaceStarCost) { StarBase(card) = 0; StarSet(card) = true; }
+            if (ReplaceStarCost && starBase != null && starSet != null) { starBase(card) = 0; starSet(card) = true; }
         }
         else if (wasAdapted && !reset)
         {
             card.EnergyCost.SetCustomBaseCost(card.EnergyCost.Canonical);
             if (change.Damage != 0) card.DynamicVars.Damage.BaseValue -= change.Damage;
-            StarBase(card) = card.CanonicalStarCost; StarSet(card) = true;
+            if (starBase != null && starSet != null) { starBase(card) = card.CanonicalStarCost; starSet(card) = true; }
         }
         Adapted[card] = shouldAdapt;
     }

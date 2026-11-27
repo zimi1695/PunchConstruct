@@ -246,10 +246,6 @@ internal static partial class PlaytestRunner
         await CreatureCmd.Damage(Context, p0.Creature, 1, ValueProp.Unpowered, enemy);
         Check(p0.Creature.GetPowerAmount<VigorPower>() == 11 && !p0.Creature.HasPower<StrengthPower>(),
             "Two blocked ancient hits grant five then six Vigor without immediate Strength");
-        // The relic now grants Vigor. Exercise the retained next-turn
-        // temporary-Strength model directly so multiplayer activation and
-        // expiry stay covered.
-        await PowerCmd.Apply<GuardStrengthNextTurnPower>(Context, p0.Creature, 5, p0.Creature, null);
         await CoopSnapshot(run, "marks");
 
         await CoopPlay<NeverBackDown>(run, 0, "host-never", targetsEnemy: false);
@@ -289,9 +285,8 @@ internal static partial class PlaytestRunner
         }
         Check(!p0.Creature.HasPower<DelayedWavePower>() && !p1.Creature.HasPower<DelayedWavePower>() &&
             !enemy.HasPower<ConstructSicEmPower>(), "Both delayed random attacks resolve and temporary enemy marks expire");
-        Check(p0.Creature.GetPowerAmount<StrengthPower>() == 5 && p0.Creature.GetPowerAmount<GuardTemporaryStrengthPower>() == 5 &&
-            p0.Creature.GetPower<GuardStrengthNextTurnPower>() is { ActiveAmount: 5, PendingAmount: 0 } && !p1.Creature.HasPower<GuardTemporaryStrengthPower>(),
-            "Native multiplayer turn start activates five temporary Strength only on its owner");
+        Check(!p0.Creature.HasPower<StrengthPower>() && !p1.Creature.HasPower<StrengthPower>(),
+            "The ancient relic grants Vigor, never Strength, on either peer");
         Check(!p0.Creature.HasPower<ObserverDivinity>() && ObserverDivinityVfx.Find(p0.Creature) == null,
             "Owner turn end exits Divinity and clears all peer effects before the next turn");
         await CoopSnapshot(run, "turn");
@@ -300,18 +295,18 @@ internal static partial class PlaytestRunner
         HoldEnemyActions = true;
         try
         {
-            await CoopBarrier("temporary-strength-expiry-prepared");
+            await CoopBarrier("second-turn-prepared");
             var me = LocalContext.GetMe(run)!;
             RunManager.Instance.ActionQueueSynchronizer.RequestEnqueue(new EndPlayerTurnAction(me, me.PlayerCombatState!.TurnNumber));
             await CoopWait(() => run.Players.All(p => p.PlayerCombatState!.TurnNumber > turn && p.PlayerCombatState.Phase == PlayerTurnPhase.Play) &&
-                !CombatManager.Instance.PlayerActionsDisabled, "Native multiplayer temporary-Strength expiry turn");
+                !CombatManager.Instance.PlayerActionsDisabled, "Native multiplayer second turn");
             await RunManager.Instance.ActionExecutor.FinishedExecutingActions();
-            await CoopBarrier("temporary-strength-expired");
+            await CoopBarrier("second-turn-ready");
         }
         finally { HoldEnemyActions = false; }
-        Check(!p0.Creature.HasPower<GuardTemporaryStrengthPower>() && !p0.Creature.HasPower<StrengthPower>(),
-            "Temporary Strength expires on its owner's actual multiplayer turn end");
-        await CoopSnapshot(run, "temporary-strength-expired");
+        Check(!p0.Creature.HasPower<StrengthPower>(),
+            "The ancient relic still grants no Strength after another multiplayer turn end");
+        await CoopSnapshot(run, "second-turn");
 
         int remoteChoices = 0;
         RunManager.Instance.PlayerChoiceSynchronizer.PlayerChoiceReceived += (player, _, _) =>

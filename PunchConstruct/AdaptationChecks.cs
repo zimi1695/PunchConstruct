@@ -35,7 +35,7 @@ internal static partial class PlaytestRunner
             abrasive.DynamicVars["ThornsPower"].BaseValue == 6,
             "Upgraded Abrasive stays two energy and preserves native upgrade");
         var abrasiveClone = (Abrasive)abrasive.MutableClone();
-        abrasiveClone.DowngradeInternal(); abrasiveClone.FinalizeUpgradeInternal();
+        NativeCardOps.Downgrade(abrasiveClone); abrasiveClone.FinalizeUpgradeInternal();
         Check(abrasiveClone.EnergyCost.GetWithModifiers(CostModifiers.None) == 2 &&
             abrasiveClone.DynamicVars["ThornsPower"].BaseValue == 4,
             "Abrasive cloning and downgrade retain the owned cost adaptation");

@@ -16,7 +16,9 @@ namespace PunchConstruct;
 internal static class DelayedWaveFacing
 {
     private static readonly AsyncLocal<CardModel?> Active = new();
-    private static readonly System.Reflection.MethodInfo UpdateDirection = AccessTools.Method(typeof(SurroundedPower), "UpdateDirection");
+    private static readonly SoftRef.Ref<System.Reflection.MethodInfo> UpdateDirection =
+        SoftRef.Register<System.Reflection.MethodInfo>("SurroundedPower.UpdateDirection", () => AccessTools.Method(typeof(SurroundedPower), "UpdateDirection"));
+    private static bool warnedMissingFacing;
 
     internal static async Task ExecuteWave(PlayerChoiceContext context, CardModel card, CardPlay play, decimal damage, ICombatState combat)
     {
@@ -44,10 +46,31 @@ internal static class DelayedWaveFacing
         try
         {
             var before = surrounded.Facing;
-            await (Task)UpdateDirection.Invoke(surrounded, [targets[0].target])!;
-            Diagnostics.Observe(() => Diagnostics.Write("info", "delayed_wave.facing", new {
-                owner = Diagnostics.Slot(card.Owner.NetId), card = card.Id.ToString(), before = before.ToString(),
-                after = surrounded.Facing.ToString(), left = targets[0].target.HasPower<BackAttackLeftPower>(), right = targets[0].target.HasPower<BackAttackRightPower>() }));
+            var update = UpdateDirection.Value;
+            if (update == null)
+            {
+                if (!warnedMissingFacing)
+                {
+                    warnedMissingFacing = true;
+                    Diagnostics.Write("warn", "delayed_wave.facing_unavailable", new { reason = "SurroundedPower.UpdateDirection unresolved" });
+                }
+            }
+            else
+            {
+                try
+                {
+                    await (Task)update.Invoke(surrounded, [targets[0].target])!;
+                    Diagnostics.Observe(() => Diagnostics.Write("info", "delayed_wave.facing", new {
+                        owner = Diagnostics.Slot(card.Owner.NetId), card = card.Id.ToString(), before = before.ToString(),
+                        after = surrounded.Facing.ToString(), left = targets[0].target.HasPower<BackAttackLeftPower>(), right = targets[0].target.HasPower<BackAttackRightPower>() }));
+                }
+                catch (Exception error)
+                {
+                    // A facing failure must not swallow the hit: deal damage with
+                    // the native facing so this card still resolves.
+                    Diagnostics.Write("warn", "delayed_wave.facing_failed", new { error = error.ToString() });
+                }
+            }
             return await CreatureCmd.Damage(context, targets, amount, props, dealer, card, play);
         }
         finally { Active.Value = previous; }

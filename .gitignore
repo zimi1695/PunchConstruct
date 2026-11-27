@@ -8,6 +8,9 @@ Thumbs.db
 
 # 本地运行时：游戏本体、隔离存档、QA 证据、临时日志
 tools/runtime/
+tools/runtime-0.113.1/
+tools/runtime-0.114/
+tools/_refscratch/
 tools/game-reference/
 *.log
 .screenshots/

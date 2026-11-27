@@ -23,7 +23,7 @@ public sealed class ShowcaseConsoleCmd : AbstractConsoleCmd
     public override string CmdName => "pcdeck";
     public override string Args => "<all|changes|mod>";
     public override string Description =>
-        "Replaces the construct's deck, relics and potions for recording: all mod content, 0.4.28 to 0.5.1 changes, or only the mod-original cards/relics/potions. Use at the start of a run, outside combat.";
+        "Replaces the construct's deck, relics and potions for recording: all mod content, 0.4.28 to 0.5.2 changes, or only the mod-original cards/relics/potions. Use at the start of a run, outside combat.";
     public override bool IsNetworked => true;
 
     public override CmdResult Process(Player? issuingPlayer, string[] args)
@@ -114,7 +114,8 @@ public sealed class ShowcaseConsoleCmd : AbstractConsoleCmd
         ModelDb.Card<ConstructDomineering>(),
         ModelDb.Card<ConstructCoreSurge>(),
         ModelDb.Card<ConstructPanacea>(),
-        ModelDb.Card<ChoBarbs>(), ModelDb.Card<ChoReady>(), ModelDb.Card<WahCho>(), ModelDb.Card<WahChoKi>(),
+        ModelDb.Card<ConstructChoBarbs>(), ModelDb.Card<ConstructChoReady>(), ModelDb.Card<WahCho>(),
+        ModelDb.Card<ConstructWahChoKi>(),
         ModelDb.Card<HobblingShot>(), ModelDb.Card<BlossomShot>(), ModelDb.Card<WhistlingArrows>(),
         ModelDb.Card<Nail>(), ModelDb.Card<Enrapture>(), ModelDb.Card<CoveringFire>()
     ];

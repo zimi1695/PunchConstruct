@@ -65,7 +65,7 @@ relic_descriptions = {
     'PUNCHCONSTRUCT_ADAPTED_RUINED_HELMET.description': '每场战斗第一次获得[gold]力量[/gold]或[gold]敏捷[/gold]时，获得等量的另一项属性。',
     'PUNCHCONSTRUCT_ADAPTED_ARCHAIC_TOOTH.description': '将一张[gold]东尼斩波[/gold][gold]变化[/gold]为[gold]霸无敌[/gold]。',
     'PUNCHCONSTRUCT_ADAPTED_NEOWS_TALISMAN.description': '[gold]强化[/gold]两张[gold]小斩波[/gold]。',
-    'PUNCHCONSTRUCT_ADAPTED_NUTRITIOUS_SOUP.description': '拾起时，将你[gold]牌组[/gold]中的所有[gold]小斩波[/gold][gold]变化[/gold]为[gold]铁斩波[/gold]，并赋予[gold]永恒[/gold]。',
+    'PUNCHCONSTRUCT_ADAPTED_NUTRITIOUS_SOUP.description': '拾起时，将你[gold]牌组[/gold]中的所有未附魔的[gold]小斩波[/gold][gold]变化[/gold]为[gold]铁斩波[/gold]，并赋予[gold]永恒[/gold]。',
     'PUNCHCONSTRUCT_ADAPTED_PANDORAS_BOX.description': '拾起时，将所有可变化的[gold]小斩波[/gold]、[gold]打击[/gold]和[gold]防御[/gold][gold]变化[/gold]为其他牌。',
     'PUNCHCONSTRUCT_ADAPTED_PAELS_CLAW.description': '拾起时，为所有未附魔的[gold]小斩波[/gold]附魔[purple]黏糊[/purple]。',
 }

@@ -15,9 +15,10 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def collect(build, archive=None):
+def collect(build, archive=None, runtime=None):
+    runtime = Path(runtime).resolve() if runtime else ROOT / 'tools/runtime'
     selected = {}
-    for path in sorted((ROOT / 'tools/runtime/qa').glob('*/result.json')):
+    for path in sorted((runtime / 'qa').glob('*/result.json')):
         row = json.loads(path.read_text(encoding='utf-8'))
         if row.get('build') != build:
             continue
@@ -34,7 +35,7 @@ def collect(build, archive=None):
         if row['scenario'] == 'coop':
             versions = {match.group(1) for log in logs for match in re.finditer(
                 r'\[PunchConstruct\] v(\d+\.\d+\.\d+)(?:\.\d+)? loaded', log.read_text(encoding='utf-8-sig', errors='replace'))}
-            phases = {'combat', 'marks', 'divinity', 'turn', 'temporary-strength-expired',
+            phases = {'combat', 'marks', 'divinity', 'turn', 'second-turn',
                       'choices', 'rewards', 'concurrent', 'survivor'}
             if len(versions) == 1 and tuple(map(int, next(iter(versions)).split('.'))) >= (0, 4, 20):
                 phases |= {'boxing-generated', 'boxing-resolved'}

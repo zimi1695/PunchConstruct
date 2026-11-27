@@ -96,7 +96,7 @@ internal static partial class PlaytestRunner
             var card = run.CreateCard(original, player);
             await CardPileCmd.Add(card, PileType.Deck, skipVisuals: true);
             var clone = (CardModel)card.MutableClone();
-            clone.UpgradeInternal(); clone.FinalizeUpgradeInternal(); clone.DowngradeInternal(); clone.FinalizeUpgradeInternal();
+            clone.UpgradeInternal(); clone.FinalizeUpgradeInternal(); NativeCardOps.Downgrade(clone); clone.FinalizeUpgradeInternal();
             Check(card.CurrentStarCost == 0 && clone.CurrentStarCost == 0 && card.EnergyCost.GetWithModifiers(CostModifiers.None) == change.Cost &&
                 (change.Damage == 0 || clone.DynamicVars.Damage.BaseValue == card.DynamicVars.Damage.BaseValue),
                 "Regent cost and damage do not drift through cloning, upgrade and downgrade: " + type.Name);

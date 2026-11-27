@@ -62,6 +62,43 @@ public sealed class ConstructClockworkMechanism() : CustomCardModel(2, CardType.
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }
 
+// Mechanical Ascension's play path pre-adds (Scale - 1) per point of Strength
+// before the native pipeline adds its own +1. The native DamageVar preview only
+// sees the bare base, so it would show 12 + Strength instead of 12 + Scale x
+// Strength. Re-run the native preview with the same scaled base the play path
+// uses; Weak/Vulnerable then multiply the whole value exactly like resolution.
+internal sealed class ScaledDamageVar(decimal damage, ValueProp props) : DamageVar(damage, props)
+{
+    public override void UpdateCardPreview(CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
+    {
+        base.UpdateCardPreview(card, previewMode, target, runGlobalHooks);
+        if (!runGlobalHooks || card.Owner is not { } owner ||
+            !card.DynamicVars.TryGetValue("Scale", out var scaleVar)) return;
+        decimal strength = owner.Creature.GetPowerAmount<StrengthPower>();
+        if (strength == 0 || scaleVar.BaseValue <= 1) return;
+        var scaled = new DamageVar(Name, BaseValue + (scaleVar.BaseValue - 1) * strength, Props);
+        scaled.SetOwner(card);
+        scaled.UpdateCardPreview(card, previewMode, target, true);
+        PreviewValue = scaled.PreviewValue;
+    }
+}
+
+internal sealed class ScaledBlockVar(decimal block, ValueProp props) : BlockVar(block, props)
+{
+    public override void UpdateCardPreview(CardModel card, CardPreviewMode previewMode, Creature? target, bool runGlobalHooks)
+    {
+        base.UpdateCardPreview(card, previewMode, target, runGlobalHooks);
+        if (!runGlobalHooks || card.Owner is not { } owner ||
+            !card.DynamicVars.TryGetValue("Scale", out var scaleVar)) return;
+        decimal dexterity = owner.Creature.GetPowerAmount<DexterityPower>();
+        if (dexterity == 0 || scaleVar.BaseValue <= 1) return;
+        var scaled = new BlockVar(Name, BaseValue + (scaleVar.BaseValue - 1) * dexterity, Props);
+        scaled.SetOwner(card);
+        scaled.UpdateCardPreview(card, previewMode, target, true);
+        PreviewValue = scaled.PreviewValue;
+    }
+}
+
 [Pool(typeof(ConstructCardPool))]
 public sealed class ConstructMechanicalAscension() : CustomCardModel(3, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
@@ -69,13 +106,15 @@ public sealed class ConstructMechanicalAscension() : CustomCardModel(3, CardType
     public override string CustomPortraitPath => "res://PunchConstruct/art/mechanical_ascension.ctex";
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<StrengthPower>(), HoverTipFactory.FromPower<DexterityPower>()];
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        [new DamageVar(12, ValueProp.Move), new BlockVar(12, ValueProp.Move), new DynamicVar("Scale", 5)];
+        [new ScaledDamageVar(12, ValueProp.Move), new ScaledBlockVar(12, ValueProp.Move), new DynamicVar("Scale", 5)];
     public override List<(string, string)> Localization => Loc.Card("机械飞升",
         "造成{Damage:diff()}点伤害。\n获得{Block:diff()}点[gold]格挡[/gold]。\n每有1点[gold]力量[/gold]，伤害额外+{Scale:diff()}；每有1点[gold]敏捷[/gold]，格挡额外+{Scale:diff()}。");
     protected override async Task OnPlay(PlayerChoiceContext context, CardPlay play)
     {
         // Native Strength/Dexterity still add their own +1 per point, so pre-add
         // the remaining (Scale - 1) per point to reach the designed +Scale.
+        // ScaledDamageVar/ScaledBlockVar mirror this formula for the card text;
+        // keep the two paths in sync if the scaling changes.
         decimal scale = DynamicVars["Scale"].BaseValue;
         decimal damage = DynamicVars.Damage.BaseValue + (scale - 1) * Owner.Creature.GetPowerAmount<StrengthPower>();
         decimal block = DynamicVars.Block.BaseValue + (scale - 1) * Owner.Creature.GetPowerAmount<DexterityPower>();
@@ -119,17 +158,16 @@ public sealed class ConstructDomineeringPower : CustomPowerModel
     public override string CustomBigIconPath => ConstructPowerIcons.Big(GetType());
     public override string CustomBigBetaIconPath => CustomBigIconPath;
     public override List<(string, string)> Localization => [("title", Loc.Pick("霸无敌")),
-        ("description", Loc.Pick("下回合开始时，依次结算{Amount}次：获得{Energy:energyIcons()}、抽{Cards:diff()}张牌，对所有敌人造成伤害，获得格挡。\n{Waves}"))];
+        ("description", Loc.Pick("下回合开始时，依次结算{Amount}次，每段获得能量、抽牌，对所有敌人造成伤害并获得格挡：\n{Waves}"))];
     public override LocString Description
     {
         get
         {
             var text = base.Description;
-            var first = _pending.FirstOrDefault();
-            text.Add(new EnergyVar((int)(first?.Energy ?? 1)));
-            text.Add(new CardsVar((int)(first?.Cards ?? 1)));
+            // List every segment's own energy/cards/damage/block: a mixed stack
+            // (upgraded + base) must not show only the first segment's values.
             text.Add("Waves", string.Join(Loc.Pick("；"),
-                _pending.Select(w => $"{w.Damage}{Loc.Pick("伤害")}{Loc.Pick("、")}{w.Block}{Loc.Pick("格挡")}")));
+                _pending.Select(w => $"{w.Energy}{Loc.Pick("能量")}{Loc.Pick("、")}{Loc.Pick("抽")}{w.Cards}{Loc.Count(w.Cards, "张", " card", " cards")}{Loc.Pick("、")}{w.Damage}{Loc.Pick("伤害")}{Loc.Pick("、")}{w.Block}{Loc.Pick("格挡")}")));
             return text;
         }
     }
@@ -145,8 +183,7 @@ public sealed class ConstructDomineeringPower : CustomPowerModel
         var owner = Owner;
         var combat = owner.CombatState!;
         var waves = _pending.ToArray();
-        _pending.Clear();
-        await PowerCmd.Remove(this);
+        // Pay before clearing so a mid-loop failure keeps the remaining segments.
         foreach (var wave in waves)
         {
             if (!combat.HittableEnemies.Any()) break;
@@ -155,6 +192,8 @@ public sealed class ConstructDomineeringPower : CustomPowerModel
             await DamageCmd.Attack(wave.Damage).FromCard(wave.Card, wave.Play).TargetingAllOpponents(combat).Execute(context);
             await CreatureCmd.GainBlock(owner, wave.Block, ValueProp.Move, wave.Play);
         }
+        _pending.Clear();
+        await PowerCmd.Remove(this);
     }
 }
 

@@ -2,19 +2,27 @@
 
 拳击构装体：本质铁斩波，一个《杀戮尖塔 2》角色模组。把暗港「重拳出击」里的拳击构装体做成可用角色，围绕「完全格挡、积累活力、反击成长」设计。
 
-当前候选版本 **0.5.1**（最终 DLL `858f76de…`、PCK `d67662e5…`、277 份资源；左勾拳削弱、录像命令 `pcdeck all/changes/mod`、10 张愚者搬运牌、药水图标修正与 pcdeck 遗物可见性修复，机械飞升改 3 费、霸无敌重写为下回合能量＋抽牌、能量文字改用能量图标、卸甲成军／厄运共鸣／霸无敌换用交接新美术并按先古卡规格裁剪，以及极速（Blitz）／恐惧（Dread）模式适配——难度上限按模式感知（Blitz 5、Dread 10）、大厅上限同步、构装体补 shortTitle——均已合入；本地 35/35、联机 4/4（含 4p 弱网）、断线恢复 4/4 与 `workshop.py --verify` 全部通过，`full_local_verification=true`、不变量 16/16，0.113.1 隔离预检 6/6（startup/smoke/additions/pool/modes/selection）复核通过；content 已同步、归档与 ZIP 已重建；私密测试条目 3835179658 待重传），公开版本仍为 **0.4.28**；支持简体中文与英文，英文术语复用游戏官方本地化。
+当前版本 **0.5.2**，适配游戏 **0.114.0** 与 **BaseLib 3.4.8**。
 
 ![模组封面](资料/宣传图/模组封面.png)
 
-## 内容
+## 角色特色
 
-安装后角色开放全部难度（0—10），保留玩家选择的难度；多人混组时保留原版队友的难度限制。角色沿用原版拳击构装体骨骼，采用 52 份源图，包含动态选人界面、分层循环海报与选人语音。
+- **完全格挡**：用格挡覆盖伤害，稳稳站住回合。
+- **活力**：积累活力，把防守转化为下一击的力量。
+- **反击成长**：挨打、格挡、反击，越战越强。
+- 开放 0—10 难度，保留玩家自己选择的难度；多人混组时保留原版队友的难度上限。
+- 动态选人界面、分层循环海报与选人语音。
 
 ![选人界面](dist/SteamWorkshop/previews/preview-1.jpg)
 
+## 内容
+
 ### 卡牌
 
-**98 种卡牌**：70 张原版搬运牌、1 张铁斩波改版、23 张原创设计、4 种初始牌。锻造、召唤、灾厄等体系有新的搭配，同体系卡牌更容易凑齐。新增的 10 张愚者搬运牌沿用原版箭矢机制，其中呼哨箭矢、钉住、火力掩护、啾就绪要先获得蹒跚射击或绽放射击才会出现；欣喜若狂、火力掩护仅多人联机。
+**98 种卡牌**：70 张原版搬运牌、1 张铁斩波改版、23 张原创设计、4 种初始牌。锻造、召唤、灾厄等体系有新的搭配，同体系卡牌也更容易凑齐。
+
+新增 10 张愚者搬运牌，沿用原版箭矢机制。其中呼哨箭矢、钉住、火力掩护、啾就绪要先获得蹒跚射击或绽放射击才会出现；欣喜若狂、火力掩护仅多人联机。
 
 ![原创卡牌](dist/SteamWorkshop/previews/preview-4.jpg)
 
@@ -32,18 +40,32 @@
 
 「融合者」会围绕铁斩波改写选项，把牌组里的斩波牌变成更高阶的形态。
 
-![熔合者事件](dist/SteamWorkshop/previews/preview-5.jpg)
+![融合者事件](dist/SteamWorkshop/previews/preview-5.jpg)
+
+### 模式与联机
+
+支持标准、极速（Blitz）与恐惧（Dread）模式；难度上限会按模式调整，多人大厅同步。
+
+本模组支持多人联机，非主机玩家也能正常出牌与结算。联机时建议双方使用相同的游戏版本与模组版本。
+
+![联机战斗](dist/SteamWorkshop/previews/preview-3.jpg)
 
 ## 安装
 
-需要 [BaseLib](https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127)（已验证 3.4.8，对应游戏 0.113.0；0.113.1 隔离预检通过）。
+需要 [BaseLib](https://steamcommunity.com/sharedfiles/filedetails/?id=3737335127) 3.4.8。
 
-- **Steam 创意工坊**：条目 [3826907330](https://steamcommunity.com/sharedfiles/filedetails/?id=3826907330)。已公开，可直接订阅。
-- **手动安装**：把 `PunchConstruct.dll`、`PunchConstruct.pck`、`PunchConstruct.json` 放进 `游戏目录/mods/PunchConstruct`，在游戏模组管理中启用本模组与 BaseLib。
+- **Steam 创意工坊**：条目 [3826907330](https://steamcommunity.com/sharedfiles/filedetails/?id=3826907330)。订阅后在游戏模组管理中启用。Steam 版本的更新可能稍晚于 GitHub Releases。
+- **GitHub 下载**：从 [Releases](https://github.com/zimi1695/PunchConstruct/releases) 下载最新的 `PunchConstruct-0.5.2.zip`，解压后把 `PunchConstruct.dll`、`PunchConstruct.pck`、`PunchConstruct.json` 放进 `游戏目录/mods/PunchConstruct`。
+- 在游戏模组管理中同时启用本模组与 BaseLib。
+- 手动安装与创意工坊订阅请二选一，不要同时保留两份副本。
 
-本模组支持多人联机，非主机玩家也能正常出牌与结算。
+## 兼容性
 
-![联机战斗](dist/SteamWorkshop/previews/preview-3.jpg)
+- 主要适配游戏 **0.114.0**。
+- 需要 **BaseLib 3.4.8**。
+- 游戏 0.113.x 保留兼容代码，但未做完整旧版回归；推荐使用 0.114.0。
+- 支持简体中文与英文；其他官方语言回退英文。
+- 与 RitsuLib、随机数预测等会改动卡牌播放的模组做了兼容处理。
 
 ## 从源码构建
 
@@ -56,23 +78,6 @@ python tools\workshop.py --prepare
 ```
 
 `tools/package.py` 把源码与资源打成 `.pck`，输出到 `dist/PunchConstruct`；`workshop.py --prepare` 生成工坊目录 `dist/SteamWorkshop`。
-
-本机离线试玩可双击 `TryPrototype.cmd`，启动器会同步最新的 Release 构建，使用隔离存档，不影响正常游戏存档。
-
-## 仓库结构
-
-| 位置 | 内容 |
-|---|---|
-| `PunchConstruct/` | 模组源码（C# / .NET 9）与游戏资源 |
-| `tools/` | 构建、打包、验收脚本与 QA 探针 |
-| `dist/SteamWorkshop/` | 工坊配置、封面与宣传预览；`content/` 与 `验收日志/` 为本地构建产物，不入库 |
-| `资料/` | 卡牌清单、角色设计、对白、美术源图与开发记录 |
-
-## 验证
-
-发布前在本机通过角色功能专项（含新增内容、兼容性仿真、英文与多语言回退验收）、断线恢复与联机场景（含 4 人弱网），报告按 16 条不变量归并，未覆盖轴见 `tools/invariants.json`；官方验收环境为 Windows、游戏 0.113.0、BaseLib 3.4.8，另用正式 0.113.1 游戏文件完成隔离预检（startup、smoke、additions、pool 均 PASS），正式 Steam 实机仍待作者确认。跨机器联机、Steam 邀请与热重连尚未验证。
-
-![拳击台立绘](dist/SteamWorkshop/previews/preview-6.jpg)
 
 ## 素材来源
 

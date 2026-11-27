@@ -28,12 +28,16 @@ internal static class CardAcquisition
     internal const int GroupMultiplier = 2;
     internal const float AncientShopChance = .05f;
     internal const decimal AncientPriceMultiplier = 1.5m;
+    // Native event offers pin their own rarity and card pool, so relic hooks must
+    // not broaden either; these are the exact flags the mirrored events use.
+    internal const CardCreationFlags EventRewardFlags =
+        CardCreationFlags.NoRarityModification | CardCreationFlags.NoCardPoolModifications;
     internal static readonly Type[][] Groups = [
         [typeof(Bulwark), typeof(Parry), typeof(ForgeWorkshop), typeof(RoyalBearing), typeof(StrikeWhileHot)],
         [typeof(SicEm), typeof(Bodyguard), typeof(Unleash), typeof(BoneShards), typeof(UnarmToArms), typeof(DoomResonance)],
         [typeof(FinalJudgment), typeof(NegativePulse), typeof(Deathbringer), typeof(Shroud), typeof(DoomResonance)],
         [typeof(Hailstorm), typeof(ColdSnap), typeof(Rainbow)], [typeof(ObserverProstrate)],
-        [typeof(HobblingShot), typeof(BlossomShot), typeof(WhistlingArrows), typeof(Nail), typeof(CoveringFire), typeof(ChoReady)]
+        [typeof(HobblingShot), typeof(BlossomShot), typeof(WhistlingArrows), typeof(Nail), typeof(CoveringFire), typeof(ConstructChoReady)]
     ];
     internal static readonly Type[] ShopAncients = [typeof(Suppress), typeof(MeteorShower), typeof(Protector), typeof(Whistle)];
     internal static bool IsAncient(CardModel card) => ShopAncients.Contains(card.GetType()) || card is BoxingChampionForm or ConstructDomineering;
@@ -62,7 +66,7 @@ internal static class CardAcquisition
             Unleash or BoneShards => Own(typeof(Bodyguard)),
             Shroud or FinalJudgment => Group(2),
             Hailstorm => Group(3),
-            WhistlingArrows or Nail or CoveringFire or ChoReady => Own(typeof(HobblingShot)) || Own(typeof(BlossomShot)),
+            WhistlingArrows or Nail or CoveringFire or ConstructChoReady => Own(typeof(HobblingShot)) || Own(typeof(BlossomShot)),
             _ => true
         };
     }
@@ -116,7 +120,11 @@ internal static class CardAcquisition
 internal static class ConstructCombatCardSources
 {
     internal static IEnumerable<MethodBase> Targets() => typeof(CardFactory).GetMethods()
-        .Where(m => m.Name is nameof(CardFactory.GetDistinctForCombat) or nameof(CardFactory.GetForCombat));
+        .Where(m => m.Name is nameof(CardFactory.GetDistinctForCombat) or nameof(CardFactory.GetForCombat))
+        .Where(m => m.GetParameters() is { Length: >= 3 } ps &&
+            ps[0].ParameterType == typeof(Player) &&
+            ps[1].ParameterType == typeof(IEnumerable<CardModel>) &&
+            ps[2].ParameterType == typeof(int));
     internal static void Apply(Player player, ref IEnumerable<CardModel> __1, ref int __2, MethodBase __originalMethod, out Player? __state)
     {
         __state = CardFactoryScope.Player;
@@ -174,10 +182,27 @@ internal static class GroupCardGates
         else
         {
             // Kaleidoscope and similar effects explicitly ask for the untouched
-            // native pools. Filtering them would cross out every foreign card
-            // and leave the reward roller with no legal rarity (native crash).
-            if (__instance.Flags.HasFlag(CardCreationFlags.NoCardPoolModifications) ||
-                __instance.Flags.HasFlag(CardCreationFlags.NoModifyHooks)) return;
+            // native character pools. Filtering them would cross out every
+            // foreign card and leave the reward roller with no legal rarity
+            // (native crash). A colorless-only pool is different: the construct
+            // has its own curated colorless set, so narrowing cannot empty it.
+            bool colorlessOnly = __instance.CardPools.Count > 0 &&
+                __instance.CardPools.All(p => p is ColorlessCardPool);
+            if (__instance.Flags.HasFlag(CardCreationFlags.NoModifyHooks)) return;
+            if (__instance.Flags.HasFlag(CardCreationFlags.NoCardPoolModifications))
+            {
+                // Brain Leech's Rip and All Star explicitly skip pool
+                // modification, but that must not hand the construct native
+                // colorless cards outside its selected set. Non-colorless
+                // skip-flag sources keep their native behavior.
+                if (colorlessOnly) __result = NarrowColorless(player, __instance, __result);
+                return;
+            }
+            if (colorlessOnly)
+            {
+                __result = NarrowColorless(player, __instance, __result);
+                return;
+            }
             var additions = __instance.CardPools.Any(p => p is ColorlessCardPool)
                 ? ModelDb.CardPool<ConstructCardPool>().AllCards.Where(c => c.Pool is ColorlessCardPool &&
                     (__instance.CardPoolFilter?.Invoke(c) ?? true)) : [];
@@ -185,6 +210,20 @@ internal static class GroupCardGates
                 .Where(c => c.Rarity is CardRarity.Event or CardRarity.Token or CardRarity.Status or CardRarity.Curse or CardRarity.Quest ||
                     CardAcquisition.Eligible(player, c)).ToArray();
         }
+    }
+
+    // A native colorless-only reward can be a complete native pool query or a
+    // filtered one. Add the construct's colorless designs, then keep only cards
+    // that pass the character's acquisition gate. The result is the same
+    // fourteen-card set used by shops, combat generation and ordinary events.
+    private static IEnumerable<CardModel> NarrowColorless(Player player, CardCreationOptions options, IEnumerable<CardModel> result)
+    {
+        var additions = ModelDb.CardPool<ConstructCardPool>().AllCards
+            .Where(c => c.Pool is ColorlessCardPool && (options.CardPoolFilter?.Invoke(c) ?? true));
+        return result.Where(c => c.Pool is ColorlessCardPool)
+            .Concat(additions)
+            .DistinctBy(c => c.Id)
+            .Where(c => CardAcquisition.Eligible(player, c));
     }
 }
 
@@ -195,10 +234,15 @@ internal static class PhilosopherRandomRewards
     internal static bool Apply(ColorfulPhilosophers __instance, CardPoolModel pool, ref Task __result)
     {
         if (!CharacterScope.IsConstruct(__instance.Owner)) return true;
-        __result = Offer(__instance, pool);
+        // Never take over half-way: if the event-finish method cannot be resolved,
+        // the reward would be offered but the event never marked complete (a
+        // soft-lock in the event room). Fall back to native instead.
+        var finish = WaveEventRules.FinishMethod;
+        if (finish == null) return true;
+        __result = Offer(__instance, pool, finish);
         return false;
     }
-    private static async Task Offer(ColorfulPhilosophers philosopher, CardPoolModel pool)
+    private static async Task Offer(ColorfulPhilosophers philosopher, CardPoolModel pool, MethodInfo finish)
     {
         var shown = new HashSet<Type>();
         var rewards = new List<Reward>();
@@ -209,15 +253,24 @@ internal static class PhilosopherRandomRewards
             var excluded = shown.ToHashSet();
             var options = CardCreationOptions.ForNonCombatWithUniformOdds([pool],
                     card => CardAcquisition.IsPhilosopherCard(card) && !excluded.Contains(card.GetType()))
-                .WithFlags((CardCreationFlags)17); // Retain the original event's flags.
+                .WithFlags(CardAcquisition.EventRewardFlags); // Retain the original event's flags.
             var reward = new CardReward(options, 3, philosopher.Owner!, null);
             reward.Populate();
             shown.UnionWith(reward.Cards.Select(card => card.GetType()));
             rewards.Add(reward);
         }
         await RewardsCmd.OfferCustom(philosopher.Owner!, rewards);
-        AccessTools.Method(typeof(EventModel), "SetEventFinished").Invoke(philosopher,
-            [new LocString("events", "COLORFUL_PHILOSOPHERS.pages.DONE.description")]);
+        try
+        {
+            finish.Invoke(philosopher, [new LocString("events", "COLORFUL_PHILOSOPHERS.pages.DONE.description")]);
+        }
+        catch (Exception error)
+        {
+            // Rethrow so AsyncGuard fuses the hook; the player already picked rewards
+            // but the event could not be marked finished.
+            Diagnostics.Write("error", "reward.philosopher.finish_failed", new { error = error.ToString() });
+            throw;
+        }
     }
 }
 
@@ -239,23 +292,17 @@ internal static class CardFactoryScope
             !CardAcquisition.SeaGlassSelection && !CardAcquisition.IsPhilosopher(player);
     }
     internal static void Restore((Player?, bool) __state) { Player = __state.Item1; RugReward = __state.Item2; }
-    internal static List<CodeInstruction> Transpile(List<CodeInstruction> original)
-    {
-        var rewritten = new List<CodeInstruction>(original.Count);
-        foreach (var instruction in original)
-        {
-            if (instruction.operand is MethodInfo method && method.DeclaringType == typeof(Rng) && method.Name == nameof(Rng.NextItem) && method.IsGenericMethod && method.GetGenericArguments().SequenceEqual([typeof(CardModel)]))
+    internal static List<CodeInstruction> Transpile(List<CodeInstruction> original) =>
+        IlBridge.ReplaceAll(original,
+            i => i.operand is MethodInfo m && m.DeclaringType == typeof(Rng) && m.Name == nameof(Rng.NextItem) && m.IsGenericMethod && m.GetGenericArguments().SequenceEqual([typeof(CardModel)]),
+            call =>
             {
                 var load = new CodeInstruction(OpCodes.Ldarg_0);
-                load.labels.AddRange(instruction.labels);
-                load.blocks.AddRange(instruction.blocks);
-                rewritten.Add(load);
-                rewritten.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CardAcquisition), nameof(CardAcquisition.Pick))));
-            }
-            else rewritten.Add(instruction);
-        }
-        return rewritten;
-    }
+                load.labels.AddRange(call.labels);
+                load.blocks.AddRange(call.blocks);
+                return [load, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CardAcquisition), nameof(CardAcquisition.Pick)))];
+            },
+            "card acquisition weight");
 }
 
 internal static class ConstructCardRarity
@@ -292,6 +339,11 @@ internal static class MerchantCardGates
 
 internal static class ConstructColorlessShop
 {
+    private static readonly SoftRef.Ref<FieldInfo> CardPoolField =
+        SoftRef.Field("MerchantCardEntry._cardPool", typeof(MerchantCardEntry), "_cardPool");
+    private static readonly SoftRef.Ref<MethodInfo> CreationResultSetter =
+        SoftRef.Register<MethodInfo>("MerchantCardEntry.CreationResult", () => AccessTools.PropertySetter(typeof(MerchantCardEntry), nameof(MerchantCardEntry.CreationResult)));
+
     internal static bool Apply(Player player, ref List<MerchantCardEntry> entries)
     {
         if (!CharacterScope.IsConstruct(player)) return true;
@@ -313,35 +365,88 @@ internal static class ConstructColorlessShop
     internal static void PrepareRestock(MerchantCardEntry entry)
     {
         if (entry.CreationResult?.Card is not ConstructPanacea || !CharacterScope.IsConstruct(entry.Player)) return;
-        if (AccessTools.Field(typeof(MerchantCardEntry), "_cardPool")?.GetValue(entry) is not IEnumerable<CardModel> pool) return;
-        var cards = pool.ToArray();
-        if (cards.Length != 1 || cards[0] is not ConstructPanacea) return;
-        AccessTools.PropertySetter(typeof(MerchantCardEntry), nameof(MerchantCardEntry.CreationResult))?.Invoke(entry, [null]);
+        var field = CardPoolField.Value;
+        var setter = CreationResultSetter.Value;
+        if (field == null || setter == null) return;
+        try
+        {
+            if (field.GetValue(entry) is not IEnumerable<CardModel> pool) return;
+            var cards = pool.ToArray();
+            if (cards.Length != 1 || cards[0] is not ConstructPanacea) return;
+            setter.Invoke(entry, [null]);
+        }
+        catch (Exception error)
+        {
+            Diagnostics.Write("warn", "merchant.panacea_restock_failed", new { error = error.ToString() });
+        }
     }
 }
 
 // Reward-domain adapter: see NativeBridge/RewardBridge.cs.
 internal static class PhilosopherColors
 {
+    private static readonly SoftRef.Ref<MethodInfo> OfferRewards =
+        SoftRef.Register<MethodInfo>("ColorfulPhilosophers.OfferRewards", () => AccessTools.Method(typeof(ColorfulPhilosophers), "OfferRewards"));
+
     // Native options are generated first; only this character's three pool
     // choices are replaced, preserving earlier option work from other mods.
     internal static void Apply(ColorfulPhilosophers __instance, ref IReadOnlyList<EventOption> __result)
     {
         if (!CharacterScope.IsConstruct(__instance.Owner)) return;
-        __result = new CardPoolModel[] { ModelDb.CardPool<RegentCardPool>(), ModelDb.CardPool<NecrobinderCardPool>(), ModelDb.CardPool<DefectCardPool>() }
-            .Select(pool => new EventOption(__instance,
-                () => (Task)AccessTools.Method(typeof(ColorfulPhilosophers), "OfferRewards").Invoke(__instance, [pool])!,
-                "COLORFUL_PHILOSOPHERS.pages.INITIAL.options." + pool.EnergyColorName.ToUpperInvariant(), [])).ToArray();
+        var offer = OfferRewards.Value;
+        if (offer == null)
+        {
+            Diagnostics.Write("warn", "event.philosopher.native_fallback", new { reason = "ColorfulPhilosophers.OfferRewards unresolved" });
+            return;
+        }
+        try
+        {
+            __result = new CardPoolModel[] { ModelDb.CardPool<RegentCardPool>(), ModelDb.CardPool<NecrobinderCardPool>(), ModelDb.CardPool<DefectCardPool>() }
+                .Select(pool => new EventOption(__instance,
+                    () => Invoke(offer, __instance, pool),
+                    "COLORFUL_PHILOSOPHERS.pages.INITIAL.options." + pool.EnergyColorName.ToUpperInvariant(), [])).ToArray();
+        }
+        catch (Exception error)
+        {
+            Diagnostics.Write("error", "event.philosopher.build_failed", new { error = error.ToString() });
+        }
+    }
+
+    private static Task Invoke(MethodInfo offer, ColorfulPhilosophers instance, CardPoolModel pool)
+    {
+        try { return (Task)offer.Invoke(instance, [pool])!; }
+        catch (Exception error)
+        {
+            Diagnostics.Write("error", "event.philosopher.offer_failed", new { pool = pool.EnergyColorName, error = error.ToString() });
+            return Task.CompletedTask;
+        }
     }
 }
 
 // Reward-domain adapter: see NativeBridge/RewardBridge.cs.
 internal static class ConstructDustyTome
 {
+    private static readonly SoftRef.Ref<MethodInfo> AncientCardSetter =
+        SoftRef.Register<MethodInfo>("DustyTome.AncientCard", () => AccessTools.PropertySetter(typeof(DustyTome), nameof(DustyTome.AncientCard)));
+
     internal static bool Apply(DustyTome __instance, Player player)
     {
         if (!CharacterScope.IsConstruct(player)) return true;
-        AccessTools.PropertySetter(typeof(DustyTome), nameof(DustyTome.AncientCard)).Invoke(__instance, [ModelDb.GetId<BoxingChampionForm>()]);
-        return false;
+        var setter = AncientCardSetter.Value;
+        if (setter == null)
+        {
+            Diagnostics.Write("warn", "relic.dusty_tome.native_fallback", new { reason = "DustyTome.AncientCard setter unresolved" });
+            return true;
+        }
+        try
+        {
+            setter.Invoke(__instance, [ModelDb.GetId<BoxingChampionForm>()]);
+            return false;
+        }
+        catch (Exception error)
+        {
+            Diagnostics.Write("warn", "relic.dusty_tome.apply_failed", new { error = error.ToString() });
+            return true;
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace PunchConstruct;
 // Only explicit QA uses this barrier. Normal gameplay and native preloading
 // retain their own scheduling; the existing task is observed, never restarted.
 [HarmonyPatch(typeof(PreloadManager), "LoadAssets")]
+[QaOnly]
 internal static class QaStartupPreload
 {
     private static AssetLoadingSession? _pending;

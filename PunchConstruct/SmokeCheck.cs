@@ -101,17 +101,49 @@ internal static class SmokeCheck
                 var player = Player.CreateForNewRun(construct, unlocks, 9999);
                 Check(!CardAcquisition.Eligible(player, ModelDb.Card<WhistlingArrows>()) &&
                     !CardAcquisition.Eligible(player, ModelDb.Card<Nail>()) &&
-                    !CardAcquisition.Eligible(player, ModelDb.Card<ChoReady>()) &&
+                    !CardAcquisition.Eligible(player, ModelDb.Card<ConstructChoReady>()) &&
                     CardAcquisition.Eligible(player, ModelDb.Card<HobblingShot>()) &&
                     CardAcquisition.Eligible(player, ModelDb.Card<BlossomShot>()),
                     "Fool group stays locked until Hobbling Shot or Blossom Shot is owned");
                 Check(!CardAcquisition.Eligible(player, ModelDb.Card<Enrapture>()) &&
                     !CardAcquisition.Eligible(player, ModelDb.Card<CoveringFire>()),
                     "Multiplayer-only Fool cards never enter singleplayer acquisition");
+                // The construct re-authors these three Fool designs so 0.114's
+                // balance pass cannot overwrite the values this character shipped
+                // with. Assert both faces here, next to the pool roster.
+                var foolBarbs = ModelDb.Card<ConstructChoBarbs>().ToMutable();
+                Check(foolBarbs.EnergyCost.Canonical == 1 && foolBarbs.DynamicVars.Block.BaseValue == 7 &&
+                    foolBarbs.DynamicVars["ChoBarbsPower"].BaseValue == 3,
+                    "Cho Barbs keeps its 0.113 values: one energy, seven block, three thorns");
+                foolBarbs.UpgradeInternal();
+                Check(foolBarbs.DynamicVars.Block.BaseValue == 9 && foolBarbs.DynamicVars["ChoBarbsPower"].BaseValue == 4,
+                    "Cho Barbs+ keeps its 0.113 upgrade: nine block, four thorns");
+                var foolReady = ModelDb.Card<ConstructChoReady>().ToMutable();
+                Check(foolReady.EnergyCost.Canonical == 1 && foolReady.DynamicVars.Block.BaseValue == 8 &&
+                    foolReady.DynamicVars["AimPower"].BaseValue == 3,
+                    "Cho Ready keeps its 0.113 values: one energy, eight block, three aim");
+                foolReady.UpgradeInternal();
+                Check(foolReady.DynamicVars.Block.BaseValue == 11 && foolReady.DynamicVars["AimPower"].BaseValue == 5,
+                    "Cho Ready+ keeps its 0.113 upgrade: eleven block, five aim");
+                var foolKi = ModelDb.Card<ConstructWahChoKi>().ToMutable();
+                Check(foolKi.EnergyCost.Canonical == 1 && foolKi.DynamicVars.Damage.BaseValue == 9 &&
+                    foolKi.DynamicVars.Block.BaseValue == 9 && foolKi.DynamicVars.Cards.BaseValue == 1,
+                    "Wah Cho Ki keeps its 0.113 values: one energy, nine damage, nine block, one draw");
+                foolKi.UpgradeInternal();
+                Check(foolKi.DynamicVars.Damage.BaseValue == 12 && foolKi.DynamicVars.Block.BaseValue == 12 &&
+                    foolKi.DynamicVars.Cards.BaseValue == 2,
+                    "Wah Cho Ki+ keeps its 0.113 upgrade: twelve damage, twelve block, two draw");
+                Check(ModelDb.Card<ConstructChoBarbs>().VisualCardPool is FoolCardPool &&
+                    ModelDb.Card<ConstructChoReady>().VisualCardPool is FoolCardPool &&
+                    ModelDb.Card<ConstructWahChoKi>().VisualCardPool is FoolCardPool &&
+                    ModelDb.CardPool<ConstructCardPool>().AllCardIds.Contains(ModelDb.Card<ConstructChoBarbs>().Id) &&
+                    ModelDb.CardPool<ConstructCardPool>().AllCardIds.Contains(ModelDb.Card<ConstructChoReady>().Id) &&
+                    ModelDb.CardPool<ConstructCardPool>().AllCardIds.Contains(ModelDb.Card<ConstructWahChoKi>().Id),
+                    "Re-authored Fool cards use the Fool frame but stay in the construct acquisition pool");
                 player.Deck.AddInternal(ModelDb.Card<HobblingShot>().ToMutable(), -1, false);
                 Check(CardAcquisition.Eligible(player, ModelDb.Card<WhistlingArrows>()) &&
                     CardAcquisition.Eligible(player, ModelDb.Card<Nail>()) &&
-                    CardAcquisition.Eligible(player, ModelDb.Card<ChoReady>()) &&
+                    CardAcquisition.Eligible(player, ModelDb.Card<ConstructChoReady>()) &&
                     CardAcquisition.Weight(player, ModelDb.Card<WhistlingArrows>()) == CardAcquisition.GroupMultiplier,
                     "Owning Hobbling Shot unlocks the Fool group and doubles its draw weight");
                 var previousScope = CardFactoryScope.Player;
@@ -151,7 +183,7 @@ internal static class SmokeCheck
                 PowerModel[] powers = [ModelDb.Power<DelayedWavePower>(), ModelDb.Power<IronWaveFormPower>(),
                     ModelDb.Power<ForgeWorkshopPower>(), ModelDb.Power<RoyalBearingPower>(), ModelDb.Power<StrikeWhileHotPower>(),
                     ModelDb.Power<FinalJudgmentPower>(), ModelDb.Power<UnarmToArmsPower>(), ModelDb.Power<NeverBackDownPower>(), ModelDb.Power<BoxingChampionFormPower>(),
-                    ModelDb.Power<GuardStrengthNextTurnPower>(), ModelDb.Power<ClockworkMechanismPower>(),
+                    ModelDb.Power<ClockworkMechanismPower>(),
                     ModelDb.Power<ConstructDomineeringPower>()];
                 foreach (var power in powers)
                 {
@@ -161,13 +193,13 @@ internal static class SmokeCheck
                     using var bigImage = big.GetImage();
                     var used = image.GetUsedRect().Size;
                     var bigUsed = bigImage.GetUsedRect().Size;
-                    int extent = power is GuardStrengthNextTurnPower ? 56 : power is ClockworkMechanismPower ? 60 : 62;
+                    int extent = power is ClockworkMechanismPower ? 60 : 62;
                     Check(power.PackedIconPath == ConstructPowerIcons.Packed(power.GetType()) && icon.GetSize() == new Vector2(64,64) && Math.Max(used.X, used.Y) == extent,
                         "Status icon loads at 64x64 with its fitted visible extent: " + power.GetType().Name);
                     Check(big.GetSize() == new Vector2(256,256) && Math.Max(bigUsed.X, bigUsed.Y) == extent * 4,
                         "Large pixel icon loads at 256x256 with matching visible extent: " + power.GetType().Name);
                 }
-                Check(powers.Select(p => p.PackedIconPath).Distinct().Count() == 11, "Eleven powers have distinct adopted icons");
+                Check(powers.Select(p => p.PackedIconPath).Distinct().Count() == 10, "Ten powers have distinct adopted icons");
                 GD.Print("[PunchConstruct ICON PASS] 23 resource checks; no run or combat started");
                 tree.Quit();
                 return;

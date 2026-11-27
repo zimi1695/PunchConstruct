@@ -1,3 +1,4 @@
+using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Localization;
@@ -28,6 +29,9 @@ internal static class ConstructPunchOffText
 
 internal static class ConstructAncientDialogues
 {
+    private static readonly SoftRef.Ref<MethodInfo> NextButtonTextSetter =
+        SoftRef.Register<MethodInfo>("AncientDialogueLine.NextButtonText", () => AccessTools.PropertySetter(typeof(AncientDialogueLine), nameof(AncientDialogueLine.NextButtonText)));
+
     // The Architect derives directly from EventModel, not AncientEventModel.
     internal static IEnumerable<System.Reflection.MethodBase> Targets() => [
         AccessTools.PropertyGetter(typeof(AncientEventModel), nameof(AncientEventModel.DialogueSet)),
@@ -40,6 +44,9 @@ internal static class ConstructAncientDialogues
         if (__result.CharacterDialogues.ContainsKey(character)) return;
         string prefix = "PUNCHCONSTRUCT_" + __instance.Id.Entry;
         if (!LocString.Exists("ancients", prefix + ".talk." + character + ".0-0r.ancient")) return;
+        var nextButton = NextButtonTextSetter.Value;
+        if (nextButton == null)
+            Diagnostics.Write("warn", "ancient.next_button.native_fallback", new { reason = "AncientDialogueLine.NextButtonText setter unresolved" });
         var dialogues = Enumerable.Range(0, 3).Select(i =>
         {
             var dialogue = new AncientDialogue(["", "", ""])
@@ -49,9 +56,21 @@ internal static class ConstructAncientDialogues
                 EndAttackers = __instance is TheArchitect ? ArchitectAttackers.Both : ArchitectAttackers.None
             };
             dialogue.PopulateLines(prefix, character, i);
-            for (int j = 0; j < 2; j++)
-                AccessTools.PropertySetter(typeof(AncientDialogueLine), nameof(AncientDialogueLine.NextButtonText)).Invoke(dialogue.Lines[j],
-                    [new LocString("ancients", prefix + ".talk." + character + $".{i}-{j}r.next")]);
+            if (nextButton != null)
+            {
+                for (int j = 0; j < 2; j++)
+                {
+                    try
+                    {
+                        nextButton.Invoke(dialogue.Lines[j],
+                            [new LocString("ancients", prefix + ".talk." + character + $".{i}-{j}r.next")]);
+                    }
+                    catch (Exception error)
+                    {
+                        Diagnostics.Write("warn", "ancient.next_button.failed", new { line = j, error = error.Message });
+                    }
+                }
+            }
             return dialogue;
         }).ToArray();
         __result.CharacterDialogues[character] = dialogues;
@@ -60,6 +79,15 @@ internal static class ConstructAncientDialogues
 
 internal static class ConstructAncientDialogueSelection
 {
+    private static readonly SoftRef.Ref<MethodInfo> StartAttackersSetter =
+        SoftRef.Register<MethodInfo>("AncientDialogue.StartAttackers.set", () => AccessTools.PropertySetter(typeof(AncientDialogue), nameof(AncientDialogue.StartAttackers)));
+    private static readonly SoftRef.Ref<MethodInfo> StartAttackersGetter =
+        SoftRef.Register<MethodInfo>("AncientDialogue.StartAttackers.get", () => AccessTools.PropertyGetter(typeof(AncientDialogue), nameof(AncientDialogue.StartAttackers)));
+    private static readonly SoftRef.Ref<MethodInfo> EndAttackersSetter =
+        SoftRef.Register<MethodInfo>("AncientDialogue.EndAttackers.set", () => AccessTools.PropertySetter(typeof(AncientDialogue), nameof(AncientDialogue.EndAttackers)));
+    private static readonly SoftRef.Ref<MethodInfo> EndAttackersGetter =
+        SoftRef.Register<MethodInfo>("AncientDialogue.EndAttackers.get", () => AccessTools.PropertyGetter(typeof(AncientDialogue), nameof(AncientDialogue.EndAttackers)));
+
     // 角色对白.txt 标注的是甲:乙:丙的比例。本地化文件里的 0/1/2 并不总按甲/乙/丙排列，
     // 所以这里按实际 JSON 索引存权重，而不是照抄正文顺序。
     internal static readonly IReadOnlyDictionary<string, int[]> Weights = new Dictionary<string, int[]>
@@ -118,9 +146,25 @@ internal static class ConstructAncientDialogueSelection
 
     private static void CopyStaging(AncientDialogue template, IEnumerable<AncientDialogue> own)
     {
+        var startSetter = StartAttackersSetter.Value;
+        var startGetter = StartAttackersGetter.Value;
+        var endSetter = EndAttackersSetter.Value;
+        var endGetter = EndAttackersGetter.Value;
         foreach (var dialogue in own)
-            foreach (var property in new[] { nameof(AncientDialogue.StartAttackers), nameof(AncientDialogue.EndAttackers) })
-                AccessTools.PropertySetter(typeof(AncientDialogue), property).Invoke(dialogue,
-                    [AccessTools.PropertyGetter(typeof(AncientDialogue), property).Invoke(template, [])]);
+        {
+            CopyStaging(dialogue, template, startSetter, startGetter, nameof(AncientDialogue.StartAttackers));
+            CopyStaging(dialogue, template, endSetter, endGetter, nameof(AncientDialogue.EndAttackers));
+        }
+    }
+
+    private static void CopyStaging(AncientDialogue dialogue, AncientDialogue template, MethodInfo? setter,
+        MethodInfo? getter, string property)
+    {
+        if (setter == null || getter == null) return;
+        try { setter.Invoke(dialogue, [getter.Invoke(template, [])]); }
+        catch (Exception error)
+        {
+            Diagnostics.Write("warn", "ancient.staging_copy_failed", new { property, error = error.Message });
+        }
     }
 }

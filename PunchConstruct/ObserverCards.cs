@@ -22,7 +22,7 @@ namespace PunchConstruct;
 // character, global rewards, unlocks or patches are installed by these cards.
 public sealed class ObserverOriginPool : CustomCardPoolModel
 {
-    public override string Title => "观者";
+    public override string Title => Loc.Pick("观者");
     public override bool IsColorless => false;
     public override bool IsShared => false;
     public override string EnergyColorName => "necrobinder";

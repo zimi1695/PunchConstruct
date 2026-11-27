@@ -1,4 +1,5 @@
 """Summarize exact-build local evidence; never export or modify release files."""
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -81,20 +82,44 @@ def classification_issues(classification, required_local):
     return duplicated, sorted(set(required_local) - set(listed))
 
 def main():
+    global RUNTIME
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--runtime-dir', type=Path, default=RUNTIME,
+                        help='Runtime whose QA evidence is summarized (default: tools/runtime)')
+    args = parser.parse_args()
+    RUNTIME = args.runtime_dir.resolve()
     dll = ROOT / 'PunchConstruct/bin/Release/net9.0/PunchConstruct.dll'
     digest = sha(dll)
     version = json.loads((ROOT / 'PunchConstruct/PunchConstruct.json').read_text(encoding='utf-8'))['version']
     required_checks = checks_for_version(version)
+    required_coop = {'coop-construct-2p', 'coop-necrobinder-3p', 'coop-construct-4p',
+                     'coop-construct-4p-network'}
+    required_recovery = {'recovery-construct-menu', 'recovery-construct-abrupt',
+                         'recovery-construct-process-loss-construct-4p-reverse',
+                         'recovery-construct-host-loss-mixed-3p-reverse'}
     assets = {p.relative_to(ROOT / 'PunchConstruct/assets').as_posix(): sha(p)
               for p in sorted((ROOT / 'PunchConstruct/assets').rglob('*')) if p.is_file()}
     checks, coop, controls, recovery = {}, {}, {}, {}
+    stale_checks, stale_coop, stale_recovery = {}, {}, {}
     for result in sorted((RUNTIME / 'qa').glob('*/result.json')):
         row = json.loads(result.read_text(encoding='utf-8'))
-        network = row.get('scenario') == 'coop' and row.get('build', {}).get('PunchConstruct.dll') == digest
-        if not network and row.get('dll_sha256') != digest:
-            continue
-        key = 'coop-{}-{}p'.format(row['guest'], row['players']) if network else row.get('mode')
+        scenario = row.get('scenario')
+        network = scenario == 'coop' and (row.get('build') or {}).get('PunchConstruct.dll') == digest
+        key = 'coop-{}-{}p'.format(row['guest'], row['players']) if scenario == 'coop' else row.get('mode')
         control = key == 'shaderoriginal'
+        if scenario == 'coop' and not network:
+            # A previous build's coop result is stale evidence, not proof for this
+            # DLL. Missing current evidence still fails closed below.
+            if 'network' in row: key += '-network'
+            if key in required_coop:
+                stale_coop[key] = dict(evidence=result.parent.relative_to(ROOT).as_posix(),
+                    result_sha256=sha(result), recorded_dll_sha256=(row.get('build') or {}).get('PunchConstruct.dll'))
+            continue
+        if not network and row.get('dll_sha256') != digest:
+            if key in required_checks:
+                stale_checks[key] = dict(evidence=result.parent.relative_to(ROOT).as_posix(),
+                    result_sha256=sha(result), recorded_dll_sha256=row.get('dll_sha256'))
+            continue
         if not network and key not in required_checks and not control:
             continue
         evidence = dict(evidence=result.parent.relative_to(ROOT).as_posix(), result_sha256=sha(result),
@@ -123,13 +148,16 @@ def main():
         independent = row.get('independent', False)
         if not row.get('phases') or not row.get('probe_sha256'):
             continue
-        if not independent and row.get('build', {}).get('PunchConstruct.dll') != digest:
-            continue
         mode = row.get('disconnect', 'initial-harness')
         key = 'recovery-{}-{}{}'.format(row['character'], mode, '-live-join' if row.get('live_join') else '')
         if row.get('players', 2) > 2 or row.get('party', 'construct') != 'construct':
             key += '-{}-{}p'.format(row.get('party', 'construct'), row.get('players', 2))
         if row.get('resume_order') == 'reverse': key += '-reverse'
+        if not independent and (row.get('build') or {}).get('PunchConstruct.dll') != digest:
+            if key in required_recovery:
+                stale_recovery[key] = dict(evidence=result.parent.relative_to(ROOT).as_posix(),
+                    result_sha256=sha(result), recorded_dll_sha256=(row.get('build') or {}).get('PunchConstruct.dll'))
+            continue
         diagnostic = independent or row['character'] != 'construct' or mode not in ('menu', 'abrupt', 'process-loss', 'host-loss') or row.get('live_join')
         evidence = dict(evidence=result.parent.relative_to(ROOT).as_posix(), result_sha256=sha(result),
             passed=row['passed'], phases=row['phases'], probe_sha256=row['probe_sha256'],
@@ -156,14 +184,9 @@ def main():
         (controls if diagnostic else recovery)[key] = evidence
     missing = sorted(set(required_checks) - set(checks))
     failed = sorted(k for k, v in checks.items() if not v['passed'])
-    required_coop = {'coop-construct-2p', 'coop-necrobinder-3p', 'coop-construct-4p',
-                     'coop-construct-4p-network'}
     missing_coop = sorted(required_coop - set(coop))
     failed_coop = sorted(k for k, evidence in coop.items() if not evidence['passed'])
     failed_recovery = sorted(k for k, evidence in recovery.items() if not evidence['passed'])
-    required_recovery = {'recovery-construct-menu', 'recovery-construct-abrupt',
-                         'recovery-construct-process-loss-construct-4p-reverse',
-                         'recovery-construct-host-loss-mixed-3p-reverse'}
     missing_recovery = sorted(required_recovery - set(recovery))
     ledger = load_invariants()
     classification = ledger.get('classification', {})
@@ -220,6 +243,8 @@ def main():
         manifest_sha256=sha(ROOT / 'PunchConstruct/PunchConstruct.json'), checks=checks, multiplayer=coop, recovery_checks=recovery, diagnostic_controls=controls,
         missing_checks=missing, failed_checks=failed, missing_multiplayer=missing_coop, failed_multiplayer=failed_coop,
         missing_recovery=missing_recovery, failed_recovery=failed_recovery,
+        stale_checks=stale_checks, stale_multiplayer=stale_coop, stale_recovery=stale_recovery,
+        stale_evidence_count=len(stale_checks) + len(stale_coop) + len(stale_recovery),
         full_local_verification=full_local,
         full_release_verification=full_release, exported=bool(candidate_matches), uploaded=uploaded, upload_status=upload_status,
         candidate=dict(directory=candidate_dir.relative_to(ROOT).as_posix(), matches_current_files=bool(candidate_matches),
@@ -235,7 +260,7 @@ def main():
         full_invariant_verification=full_invariant,
         coverage=ledger['coverage'],
         limits=[
-            'All listed suites use the exact DLL hash above; historical evidence remains under qa/verification-*.json.',
+            'All listed suites use the exact DLL hash above; stale runs for required modes are listed under stale_* and are never counted, while a required mode with no current run stays in missing_* (fail-closed).',
             'Resource tree fingerprint describes current local assets; multiplayer results also pin each tested PCK and manifest.',
             'Muted, isolated targeted fixtures only. No full automated runs or changes to author saves.',
             'Steam invites, internet latency/loss, reconnection and real Workshop subscription are not verified by local ENet.',
@@ -251,13 +276,20 @@ def main():
     current = RUNTIME / 'current-verification.json'
     if current.exists():
         previous = json.loads(current.read_text(encoding='utf-8'))
-        archive = RUNTIME / 'qa' / ('verification-' + previous['version'] + '.json')
-        if previous['version'] != version and not archive.exists(): archive.write_bytes(current.read_bytes())
+        # Keep every distinct build, including same-version rebuilds. A version-only
+        # name silently discarded the previous 0.5.2 candidate when the code changed.
+        archive_name = 'verification-%s-%s.json' % (
+            previous.get('version', 'unknown'), (previous.get('dll_sha256') or 'unknown')[:8])
+        archive = RUNTIME / 'qa' / archive_name
+        if previous.get('dll_sha256') != digest and not archive.exists():
+            archive.write_bytes(current.read_bytes())
     current.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(dict(version=version, passed_checks=sum(v['passed'] for v in checks.values()),
         passed_network_checks=[key for key, evidence in coop.items() if 'network' in evidence and evidence['passed']],
         passed_recovery=[key for key, evidence in recovery.items() if evidence['passed']],
         missing_recovery=missing_recovery, failed_recovery=failed_recovery,
+        stale_checks=sorted(stale_checks), stale_multiplayer=sorted(stale_coop), stale_recovery=sorted(stale_recovery),
+        stale_evidence_count=len(stale_checks) + len(stale_coop) + len(stale_recovery),
         required_checks=len(required_checks), missing=missing, failed=failed, missing_multiplayer=missing_coop,
         failed_multiplayer=failed_coop, full_local_verification=report['full_local_verification'],
         invariants_passed=invariant_passed, invariants_total=invariant_total,

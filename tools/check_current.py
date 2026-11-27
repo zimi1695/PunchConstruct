@@ -373,7 +373,8 @@ def main():
                 saved_log.write_text('[Construct QA PACKAGE] ' + json.dumps(package_hashes, sort_keys=True) + '\n'
                                      + saved_log.read_text(encoding='utf-8-sig'), encoding='utf-8')
         if args.mode != 'startupbase':
-            diagnostic = archive_diagnostics(stage / 'userdata', evidence)
+            diagnostic = archive_diagnostics(stage / 'userdata', evidence,
+                                             expected_dll=hashlib.sha256((target / 'PunchConstruct.dll').read_bytes()).hexdigest())
             if 'log' in locals() and log.exists():
                 shutil.copy2(saved_log, evidence / log.name)
             (evidence / 'result.json').write_text(json.dumps(dict(schema=1, mode=args.mode,

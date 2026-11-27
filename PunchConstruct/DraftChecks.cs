@@ -46,7 +46,7 @@ internal static partial class PlaytestRunner
             CardCmd.Upgrade(never);
             Check(never.EnergyCost.GetWithModifiers(CostModifiers.None) == 1 && !never.Description.GetFormattedText().Contains("拳斗+"),
                 "Never Back Down upgrade costs one without upgrading the generated fist");
-            never.DowngradeInternal(); never.FinalizeUpgradeInternal();
+            NativeCardOps.Downgrade(never); never.FinalizeUpgradeInternal();
             Check(never.EnergyCost.GetWithModifiers(CostModifiers.None) == 2 && ModelDb.Card<IronWaveForm>().Rarity == CardRarity.Uncommon,
                 "Downgrade restores two energy; Iron Wave Form is blue");
             var upgraded = run.CreateCard<ScorchingIronWave>(player);
@@ -140,6 +140,8 @@ internal static partial class PlaytestRunner
                 "Old saved copies migrate to Scorching Iron Wave without registering the deleted model");
             AddedRelicWeightChecks();
             MassiveScrollExclusionChecks();
+            ClockworkChannelChecks();
+            PunchOffTargetsCheck();
             Check(ModelDb.Enchantment<Spiral>().CanEnchant(nativeStrike), "Native Ironclad starter retains Spiral eligibility");
             Check(RelicWeights.Preferred.Count == 13 && new RelicModel[] { ModelDb.Relic<OpenEndWrench>(), ModelDb.Relic<SpinningScrew>(),
                 ModelDb.Relic<SpareKnuckles>(), ModelDb.Relic<EmergencyOilCan>() }.All(r => RelicWeights.Weight(r) == 2),
@@ -242,6 +244,47 @@ internal static partial class PlaytestRunner
             "Construct Neow blessing list hides the Massive Scroll option");
         Check(NeowScrollExclusion.Filter([scrollOption, anchorOption], native).Count == 2,
             "Native Ironclad Neow blessing list keeps the Massive Scroll option");
+    }
+
+    // Clockwork Souvenir is shop-only: reward/chest rarity rolls must never reach it
+    // (the native fallback chain stops below Shop), while the shop channel still can.
+    private static void ClockworkChannelChecks()
+    {
+        var unlocks = new UnlockState([], [], 0);
+        var construct = Player.CreateForNewRun<ConstructCharacter>(unlocks, 1);
+        var run = RunState.CreateForTest([construct], seed: "CLOCKWORKCHANNEL");
+        var souvenir = ModelDb.Relic<ConstructClockworkSouvenir>();
+        var control = ModelDb.Relic<Anchor>();
+        int rewardHits = 0, shopHits = 0;
+        for (ulong seed = 0; seed < 64; ++seed)
+        {
+            foreach (var rarity in new[] { RelicRarity.Common, RelicRarity.Uncommon, RelicRarity.Rare })
+            {
+                var bag = new RelicGrabBag();
+                bag.Populate([souvenir, control], new Rng(seed));
+                AccessTools.Field(typeof(Player), "<RelicGrabBag>k__BackingField").SetValue(construct, bag);
+                if (RelicFactory.PullNextRelicFromFront(construct, rarity) is ConstructClockworkSouvenir) ++rewardHits;
+            }
+            var shopBag = new RelicGrabBag();
+            shopBag.Populate([souvenir, control], new Rng(seed));
+            AccessTools.Field(typeof(Player), "<RelicGrabBag>k__BackingField").SetValue(construct, shopBag);
+            if (RelicFactory.PullNextRelicFromBack(construct, RelicRarity.Shop, _ => true) is ConstructClockworkSouvenir) ++shopHits;
+        }
+        Check(rewardHits == 0, "Clockwork Souvenir never appears in reward/chest-rarity draws across 64 seeds");
+        Check(shopHits > 0, "Clockwork Souvenir remains obtainable through the shop rarity channel");
+        Check(RelicFactoryScope.CurrentPlayer == null && RelicFactoryScope.CurrentRng == null,
+            "Clockwork channel check restores the relic draw scope");
+    }
+
+    // Punch Off keeps native option generation; the text patch must touch only the
+    // three localization methods, never GenerateInitialOptions.
+    private static void PunchOffTargetsCheck()
+    {
+        var targets = ConstructPunchOffText.Targets().ToArray();
+        string[] expected = ["L10NLookup", nameof(EventModel.GetOptionTitle), nameof(EventModel.GetOptionDescription)];
+        Check(targets.Length == 3 && targets.All(m => m.DeclaringType == typeof(EventModel) && expected.Contains(m.Name)) &&
+            targets.All(m => m.Name != "GenerateInitialOptions"),
+            "Punch Off text patch targets only the three localization methods, never GenerateInitialOptions");
     }
 
     private static async Task SelectionAudioRouteCheck()

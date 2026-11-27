@@ -17,6 +17,10 @@ internal static class Loc
     internal static string Pick(string chinese) =>
         English ? EnglishText.Translations.GetValueOrDefault(chinese, chinese) : chinese;
 
+    // English count units need singular/plural; Chinese keeps one classifier.
+    internal static string Count(decimal count, string chineseUnit, string englishSingular, string englishPlural) =>
+        English ? (count == 1 ? englishSingular : englishPlural) : chineseUnit;
+
     internal static CardLoc Card(string title, string description, params (string, string)[] extra) =>
         new(Pick(title), Pick(description), extra.Select(entry => (entry.Item1, Pick(entry.Item2))).ToArray());
 

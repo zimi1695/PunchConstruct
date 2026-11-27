@@ -19,12 +19,29 @@ internal static class RelicWeights
 {
     // First playtest value, adjustable without changing the approved list or vanilla rarity channels.
     internal const float PreferredWeight = 2f;
-    internal static readonly HashSet<string> Preferred = [
-        "BRONZE_SCALES", "ORNAMENTAL_FAN", "KUNAI", "PARRYING_SHIELD", "RAINBOW_RING",
-        "SPARKLING_ROUGE", "LETTER_OPENER", "KIFUDA", "DAUGHTER_OF_THE_WIND",
-        ModelDb.GetId<OpenEndWrench>().Entry, ModelDb.GetId<SpinningScrew>().Entry,
-        ModelDb.GetId<SpareKnuckles>().Entry, ModelDb.GetId<EmergencyOilCan>().Entry
-    ];
+    // Native ModelId lookup stays lazy: a removed/unregistered relic must lower
+    // the preferred set, not throw TypeInitializationException from a static
+    // initializer and fuse the weight hook on every pull.
+    internal static bool Degraded { get; private set; }
+    private static readonly Lazy<HashSet<string>> PreferredIds = new(() =>
+    {
+        var ids = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "BRONZE_SCALES", "ORNAMENTAL_FAN", "KUNAI", "PARRYING_SHIELD", "RAINBOW_RING",
+            "SPARKLING_ROUGE", "LETTER_OPENER", "KIFUDA", "DAUGHTER_OF_THE_WIND"
+        };
+        foreach (var type in new[] { typeof(OpenEndWrench), typeof(SpinningScrew), typeof(SpareKnuckles), typeof(EmergencyOilCan) })
+        {
+            try { ids.Add(ModelDb.GetId(type).Entry); }
+            catch (Exception error)
+            {
+                Degraded = true;
+                Diagnostics.Write("warn", "relic_weight.id_missing", new { relic = type.Name, error = error.Message });
+            }
+        }
+        return ids;
+    });
+    internal static HashSet<string> Preferred => PreferredIds.Value;
     internal static float Weight(RelicModel? relic) => relic != null && Preferred.Contains(relic.Id.Entry) ? PreferredWeight : 1f;
     // Shared relics with a construct variant are never rolled natively; the
     // variant in the character pool carries the adapted rules.
@@ -45,7 +62,9 @@ internal static class RelicFactoryScope
 
 internal static class ConstructRelicRolls
 {
-    private static readonly MethodInfo Available = AccessTools.Method(typeof(RelicGrabBag), "GetAvailableDeque");
+    private static readonly SoftRef.Ref<MethodInfo> Available =
+        SoftRef.Register<MethodInfo>("RelicGrabBag.GetAvailableDeque", () => AccessTools.Method(typeof(RelicGrabBag), "GetAvailableDeque"));
+    private static bool warnedMissingDeque;
     // Relic weighting uses its own deterministic stream: it never advances the
     // native RNG, yet still gets a fresh draw on every pull. Seeded from the run
     // seed and player slot so multiplayer peers agree.
@@ -58,8 +77,20 @@ internal static class ConstructRelicRolls
     {
         var player = RelicFactoryScope.CurrentPlayer ?? runState.Players.FirstOrDefault(p => ReferenceEquals(p.RelicGrabBag, __instance));
         if (player is null || !CharacterScope.IsConstruct(player)) return true;
+        // GetAvailableDeque is resolved by name; if a native rename nulls it, fall
+        // back to the native front-take instead of throwing on every pull.
+        var available = Available.Value;
+        if (available == null)
+        {
+            if (!warnedMissingDeque)
+            {
+                warnedMissingDeque = true;
+                Diagnostics.Write("warn", "relic_weight.native_fallback", new { reason = "RelicGrabBag.GetAvailableDeque unresolved" });
+            }
+            return true;
+        }
         bool Eligible(RelicModel r) => RelicWeights.Allowed(r) && filter(r);
-        var deque = (List<RelicModel>?)Available.Invoke(__instance, [rarity, runState, (Func<RelicModel, bool>)Eligible]);
+        var deque = (List<RelicModel>?)available.Invoke(__instance, [rarity, runState, (Func<RelicModel, bool>)Eligible]);
         var candidates = deque?.Where(Eligible).ToArray() ?? [];
         // The native consumer expects a relic and dereferences it. Never return
         // null: fall back to the same Circlet replacement the game uses when a
@@ -76,10 +107,22 @@ internal static class ConstructRelicRolls
 
 internal static class ConstructTreasureRelics
 {
-    internal static List<CodeInstruction> Transpile(List<CodeInstruction> original)
+    internal static List<CodeInstruction> Transpile(List<CodeInstruction> original, MethodBase __originalMethod)
     {
-        var pull = AccessTools.Method(typeof(RelicGrabBag), nameof(RelicGrabBag.PullFromFront), [typeof(RelicRarity), typeof(IRunState)]);
-        var rng = AccessTools.Field(typeof(TreasureRoomRelicSynchronizer), "_rng");
+        // The replacement loads the per-player contribution from local 1. Verify that
+        // local really is a Player before rewriting; a native layout change must fall
+        // back to the original IL instead of emitting an invalid Ldloc_1 load.
+        var locals = __originalMethod.GetMethodBody()?.LocalVariables;
+        if (locals is null || locals.Count < 2 || locals[1].LocalType != typeof(Player))
+        {
+            Diagnostics.Write("warn", "transpiler.skipped", new { site = "treasure shared relic", reason = "player local 1 missing or mistyped" });
+            return original;
+        }
+        var pull = IlBridge.RequireCall(typeof(RelicGrabBag), nameof(RelicGrabBag.PullFromFront), "treasure shared relic",
+            [typeof(RelicRarity), typeof(IRunState)]);
+        var rng = IlBridge.RequireField(typeof(TreasureRoomRelicSynchronizer), "_rng", typeof(Rng), "treasure shared relic");
+        // A renamed native member would otherwise emit a null-operand ldfld/call (invalid IL).
+        if (pull is null || rng is null) return original;
         var rewritten = new List<CodeInstruction>(original.Count);
         int replaced = 0;
         foreach (var instruction in original)
@@ -159,8 +202,11 @@ internal static class FakeMerchantExclusions
 {
     internal static List<CodeInstruction> Transpile(List<CodeInstruction> original)
     {
+        const string site = "fake merchant exclusions";
+        var field = IlBridge.RequireField(typeof(FakeMerchant), "_inventoryRelics", typeof(RelicModel[]), site);
+        if (field == null) return original;
         var rewritten = new List<CodeInstruction>(original.Count);
-        var field = AccessTools.Field(typeof(FakeMerchant), "_inventoryRelics");
+        int replaced = 0;
         foreach (var instruction in original)
         {
             rewritten.Add(instruction);
@@ -168,8 +214,10 @@ internal static class FakeMerchantExclusions
             {
                 rewritten.Add(new CodeInstruction(OpCodes.Ldarg_0));
                 rewritten.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(FakeMerchantExclusions), nameof(Filter))));
+                replaced++;
             }
         }
+        if (replaced == 0) { IlBridge.Skip(site, "no _inventoryRelics load matched"); return original; }
         return rewritten;
     }
     private static RelicModel[] Filter(RelicModel[] originals, FakeMerchant room) => CharacterScope.IsConstruct(room.Owner)
@@ -184,24 +232,44 @@ internal static class WindDollPriority
         .Select(t => AccessTools.Method(t, "MoveNext"));
     internal static List<CodeInstruction> Transpile(List<CodeInstruction> original, MethodBase __originalMethod)
     {
+        const string site = "wind doll priority";
+        var owner = IlBridge.RequireField(__originalMethod.DeclaringType!, "<>4__this", typeof(DollRoom), site);
+        if (owner == null) return original;
+        var next = IlBridge.RequireCall(typeof(WindDollPriority), nameof(Next), site);
+        var shuffle = IlBridge.RequireCall(typeof(WindDollPriority), nameof(Shuffle), site);
+        if (next == null || shuffle == null) return original;
         var rewritten = new List<CodeInstruction>(original.Count);
-        var owner = AccessTools.Field(__originalMethod.DeclaringType, "<>4__this");
+        int replaced = 0;
         foreach (var instruction in original)
         {
             if (instruction.operand is MethodInfo method && method.IsGenericMethod && method.Name is "NextItem" or "StableShuffle")
             {
-                string replacement = method.Name == "NextItem" ? nameof(Next) : nameof(Shuffle);
+                var replacement = method.Name == "NextItem" ? next : shuffle;
                 if (method.Name == "StableShuffle") _stableShuffle = method.GetGenericMethodDefinition();
                 var load = new CodeInstruction(OpCodes.Ldarg_0); load.labels.AddRange(instruction.labels);
                 rewritten.Add(load);
                 rewritten.Add(new CodeInstruction(OpCodes.Ldfld, owner));
-                rewritten.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(WindDollPriority), replacement).MakeGenericMethod(method.GetGenericArguments())));
+                try
+                {
+                    rewritten.Add(new CodeInstruction(OpCodes.Call, replacement.MakeGenericMethod(method.GetGenericArguments())));
+                }
+                catch (Exception error)
+                {
+                    IlBridge.Skip(site, "generic rewrite failed: " + error.Message);
+                    return original;
+                }
+                replaced++;
             }
             else rewritten.Add(instruction);
         }
+        if (replaced == 0) { IlBridge.Skip(site, "no NextItem/StableShuffle call matched"); return original; }
         return rewritten;
     }
-    private static bool IsWind<T>(T item) => typeof(T).GetField("relic")!.GetValue(item) is DaughterOfTheWind;
+    private static bool IsWind<T>(T item)
+    {
+        var field = typeof(T).GetField("relic");
+        return field != null && field.GetValue(item) is DaughterOfTheWind;
+    }
     private static T Next<T>(Rng rng, IEnumerable<T> items, DollRoom room)
     {
         // Consume the native draw even when the wind doll wins, so a predictor
@@ -216,7 +284,8 @@ internal static class WindDollPriority
     }
     private static List<T> Shuffle<T>(List<T> items, Rng rng, DollRoom room)
     {
-        var shuffled = (List<T>)_stableShuffle!.MakeGenericMethod(typeof(T)).Invoke(null, [items, rng])!;
+        if (_stableShuffle == null) return items;
+        var shuffled = (List<T>)_stableShuffle.MakeGenericMethod(typeof(T)).Invoke(null, [items, rng])!;
         // Keep the other two dolls in their native random order; never mutate the shared _dolls array.
         return CharacterScope.IsConstruct(room.Owner) ? shuffled.OrderBy(item => IsWind(item) ? 0 : 1).ToList() : shuffled;
     }

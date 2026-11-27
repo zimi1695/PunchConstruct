@@ -5,7 +5,7 @@
   "PUNCHCONSTRUCT_ADAPTED_FAKE_STRIKE_DUMMY.description": "名字中含有“斩波”的牌额外造成1点伤害。",
   "PUNCHCONSTRUCT_ADAPTED_GHOST_SEED.description": "你的小斩波获得[gold]虚无[/gold]。",
   "PUNCHCONSTRUCT_ADAPTED_RIPPLE_BASIN.description": "如果你在回合中打出过攻击牌，回合结束时获得4点[gold]格挡[/gold]。",
-  "PUNCHCONSTRUCT_ADAPTED_NUTRITIOUS_SOUP.description": "拾起时，将你[gold]牌组[/gold]中的所有[gold]小斩波[/gold][gold]变化[/gold]为[gold]铁斩波[/gold]，并赋予[gold]永恒[/gold]。",
+  "PUNCHCONSTRUCT_ADAPTED_NUTRITIOUS_SOUP.description": "拾起时，将你[gold]牌组[/gold]中的所有未附魔的[gold]小斩波[/gold][gold]变化[/gold]为[gold]铁斩波[/gold]，并赋予[gold]永恒[/gold]。",
   "PUNCHCONSTRUCT_ADAPTED_RUINED_HELMET.description": "每场战斗第一次获得[gold]力量[/gold]或[gold]敏捷[/gold]时，获得等量的另一项属性。",
   "PUNCHCONSTRUCT_ADAPTED_HELICAL_DART.description": "每打出一张攻击牌，本回合获得1点[gold]敏捷[/gold]。",
   "PUNCHCONSTRUCT_ADAPTED_LEAFY_POULTICE.description": "拾起时，失去[red]{MaxHp}[/red]点最大生命，并[gold]变化[/gold]你的[blue]2[/blue]张[gold]小斩波[/gold]。",

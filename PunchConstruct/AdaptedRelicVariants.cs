@@ -243,7 +243,7 @@ public sealed class ConstructNutritiousSoup : CustomRelicModel
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
         [HoverTipFactory.FromKeyword(CardKeyword.Eternal), HoverTipFactory.FromCard<IronWave>()];
     public override List<(string, string)> Localization => Loc.Relic(VariantText.Native("NUTRITIOUS_SOUP", "title"),
-        "拾起时，将你[gold]牌组[/gold]中的所有[gold]小斩波[/gold][gold]变化[/gold]为[gold]铁斩波[/gold]，并赋予[gold]永恒[/gold]。",
+        "拾起时，将你[gold]牌组[/gold]中的所有未附魔的[gold]小斩波[/gold][gold]变化[/gold]为[gold]铁斩波[/gold]，并赋予[gold]永恒[/gold]。",
         VariantText.Flavor("NUTRITIOUS_SOUP"));
     public override async Task AfterObtained()
     {
@@ -314,7 +314,7 @@ public sealed class ConstructSeaGlass : CustomRelicModel
             foreach (var pool in new CardPoolModel[] { ModelDb.CardPool<RegentCardPool>(), ModelDb.CardPool<NecrobinderCardPool>(), ModelDb.CardPool<DefectCardPool>() })
             {
                 var options = CardCreationOptions.ForNonCombatWithUniformOdds([pool], CardAcquisition.IsSelectedImport)
-                    .WithFlags((CardCreationFlags)17);
+                    .WithFlags(CardAcquisition.EventRewardFlags);
                 rewards.AddRange(CardFactory.CreateForReward(Owner, 5, options));
             }
         }

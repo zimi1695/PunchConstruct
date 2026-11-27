@@ -51,6 +51,9 @@ internal static class CompatibilityChecks
             StructuralBoundary();
             CharacterScopeCoverage();
             RequiredPolicies();
+            RequiredRosterNegative();
+            PoolHealth();
+            HealthGate();
 
             GD.Print($"[Construct COMPAT PASS] {_checks} checks; third-party postfix/prefix/IL/boundary simulations");
             tree.Quit();
@@ -163,6 +166,18 @@ internal static class CompatibilityChecks
             "unregistered adapters default to Optional");
     }
 
+    // Negative case for the fail-closed roster backstop (partial type load): a
+    // Required bridge absent from the installed set must be reported missing so
+    // RequiredFailure trips and the character is hidden rather than half-patched.
+    private static void RequiredRosterNegative()
+    {
+        string[] full = ["BridgeUnarmBlock", "BridgeConstructRelicVariants", "BridgeConstructRelicMigration", "BridgePhilosopherRandomRewards", "BridgeConstructColorlessShop"];
+        Check(PatchRegistry.MissingRequired(full).Count == 0, "a complete required roster reports nothing missing");
+        var partial = PatchRegistry.MissingRequired(["BridgeUnarmBlock", "BridgeConstructRelicVariants"]);
+        Check(partial.Contains("BridgeConstructRelicMigration") && partial.Contains("BridgePhilosopherRandomRewards") && partial.Contains("BridgeConstructColorlessShop"),
+            "a partial required roster fails closed for every absent bridge");
+    }
+
     private static void PatchHealth()
     {
         Check(PatchRegistry.Applied > 0, "patch registry applied at least one class: " + PatchRegistry.Applied);
@@ -229,6 +244,7 @@ internal static class CompatibilityChecks
 
     private static void TranspilerDegradation()
     {
+        int skippedBefore = IlBridge.Skipped;
         var target = AccessTools.Method(typeof(CompatibilityChecks), nameof(NativeFixture));
         var noCall = new List<CodeInstruction> { new(OpCodes.Ldc_I4_1), new(OpCodes.Ret) };
         var missing = IlBridge.ReplaceCall(noCall, target,
@@ -256,6 +272,12 @@ internal static class CompatibilityChecks
             _ => throw new InvalidOperationException("simulated rewrite failure"), "qa.rewrite-failure");
         Check(ReferenceEquals(guarded, throwing) && guarded.Count == 2,
             "a throwing rewrite returns the original IL");
+
+        // Missing target, duplicate target and a throwing rewrite are expected
+        // skips; exclude exactly these from the startup health baseline.
+        int deliberate = IlBridge.Skipped - skippedBefore;
+        Check(deliberate == 3, "transpiler degradation records exactly three deliberate skips");
+        Health.IgnoreDeliberateSkips(deliberate);
     }
 
     private static void StructuralBoundary()
@@ -289,6 +311,21 @@ internal static class CompatibilityChecks
         Check(typeof(CharacterScope).GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
                 .Count(method => method.Name == "IsConstructId") >= 2,
             "CharacterScope also covers ModelId and string identity");
+    }
+
+    // The pool is built lazily, usually after the startup COMPAT line. Force it
+    // here so a removed native card cannot hide behind startup ordering.
+    private static void PoolHealth()
+    {
+        _ = ModelDb.CardPool<ConstructCardPool>().AllCards;
+        Check(!ConstructCardPool.PoolDegraded,
+            "construct card pool builds without missing native cards: " + string.Join(", ", ConstructCardPool.MissingCards));
+    }
+
+    private static void HealthGate()
+    {
+        var issues = Health.Issues();
+        Check(issues.Count == 0, "startup health is PASS: " + string.Join("; ", issues));
     }
 
     private static void RequiredPolicies()

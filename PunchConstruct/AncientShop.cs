@@ -1,3 +1,4 @@
+using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Merchant;
@@ -9,6 +10,9 @@ namespace PunchConstruct;
 
 internal static class AncientShopCards
 {
+    private static readonly SoftRef.Ref<MethodInfo> CreationResultSetter =
+        SoftRef.Register<MethodInfo>("MerchantCardEntry.CreationResult", () => AccessTools.PropertySetter(typeof(MerchantCardEntry), nameof(MerchantCardEntry.CreationResult)));
+
     internal static void Apply(MerchantInventory __instance)
     {
         var player = __instance.Player;
@@ -33,17 +37,42 @@ internal static class AncientShopCards
         // Keep the native entry so its id and purchase subscription stay valid;
         // Courier restocking still draws from its regular eligible pool.
         var entry = entries[rng.NextInt(entries.Count)];
-        AccessTools.PropertySetter(typeof(MerchantCardEntry), nameof(MerchantCardEntry.CreationResult)).Invoke(entry, [new CardCreationResult(card)]);
-        entry.CalcCost();
+        var setter = CreationResultSetter.Value;
+        if (setter == null)
+        {
+            Diagnostics.Write("warn", "shop.ancient.native_fallback", new { reason = "MerchantCardEntry.CreationResult setter unresolved" });
+            return;
+        }
+        try
+        {
+            setter.Invoke(entry, [new CardCreationResult(card)]);
+            entry.CalcCost();
+        }
+        catch (Exception error)
+        {
+            Diagnostics.Write("warn", "shop.ancient.install_failed", new { error = error.ToString() });
+        }
     }
 }
 
 internal static class AncientShopPrice
 {
+    private static readonly SoftRef.Ref<MethodInfo> GetCost =
+        SoftRef.Register<MethodInfo>("MerchantCardEntry.GetCost", () => AccessTools.Method(typeof(MerchantCardEntry), "GetCost"));
+
     internal static void Apply(CardModel card, ref int __result)
     {
         if (!RegentAdaptations.Owns(card) || !CardAcquisition.ShopAncients.Contains(card.GetType())) return;
-        int rare = (int)AccessTools.Method(typeof(MerchantCardEntry), "GetCost").Invoke(null, [ModelDb.Card<Juggernaut>()])!;
-        __result = (int)Math.Ceiling(rare * CardAcquisition.AncientPriceMultiplier);
+        var getCost = GetCost.Value;
+        if (getCost == null) return;
+        try
+        {
+            int rare = (int)getCost.Invoke(null, [ModelDb.Card<Juggernaut>()])!;
+            __result = (int)Math.Ceiling(rare * CardAcquisition.AncientPriceMultiplier);
+        }
+        catch (Exception error)
+        {
+            Diagnostics.Write("warn", "shop.ancient.price_failed", new { error = error.ToString() });
+        }
     }
 }

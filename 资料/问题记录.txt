@@ -1,6 +1,8 @@
-﻿拳击构装体：当前问题与验证（2026-11-17，0.5.1）
+﻿拳击构装体：当前问题与验证（2026-11-18，0.5.2）
 
-0.5.1 已合入左勾拳削弱、录像命令 `pcdeck`（含药水与 `mod` 原创展示）、10 张愚者搬运牌与啾组门槛、先古药水／浑浊机油图标修正、pcdeck 遗物图标可见性修复，以及任务清单改动（机械飞升改 3 费、霸无敌重写为下回合能量＋抽牌、能量文字改用能量图标、卸甲成军／厄运共鸣／霸无敌换用交接新美术并按先古卡规格裁剪）。最终 DLL `702f587a…`（PCK `d67662e5…`、277 份资源）已通过全量 QA：本地 35/35、联机 4/4（含 4p 弱网）、断线恢复 4/4，`full_local_verification=true`、不变量 16/16，`workshop.py --verify` 全 PASS；content 已同步、归档与 ZIP 已重建，0.113.1 隔离预检复核通过。旧候选及旧私有测试上传已作废；私密测试条目 3835179658 待按最终 DLL 重传（本次 Steam 未运行，暂缓、暂存就绪）。0.4.28 已发布并冻结，不重建、不重传。
+0.5.2 修复批次（候选 DLL `2bc0f3a3…`）：修复被寄生的自动机械 SEARCH 预览升级不一致（#27）、古牙对构装体泄漏原版先古映射（#28，无东尼斩波不出现古牙）、清理古铜之拳临时力量死代码并改 QA 测活力（#25）、共享遗物池按玩家过滤（混编队友保留原生遗物）、稳健性加固（C1–C7/C9/C6/C12）与独立审查 3 缺口（treasure transpiler pull/_rng 判空、CompatibilityPrecheck 异常隔离、降级标志消费点）。代码编译 0 警告 0 错误；全量 QA 已在此 DLL 重跑通过（此前 35/35＋4/4＋4/4＋verify＋0.113.1 预检 6/6 证据对应修复前 DLL `fa70dbed…`）。霸无敌 2p rejoin 的 pending 波次持久化、F4/C14 RNG 原生对齐归 0.5.2+ 待作者批准。公开版本为 0.5.1（已上线）。
+
+0.5.1 已合入左勾拳削弱、录像命令 `pcdeck`（含药水与 `mod` 原创展示）、10 张愚者搬运牌与啾组门槛、先古药水／浑浊机油图标修正、pcdeck 遗物图标可见性修复，以及任务清单改动（机械飞升改 3 费、霸无敌重写为下回合能量＋抽牌、能量文字改用能量图标、卸甲成军／厄运共鸣／霸无敌换用交接新美术并按先古卡规格裁剪）。最终 DLL `702f587a…`（PCK `d67662e5…`、277 份资源）已通过全量 QA：本地 35/35、联机 4/4（含 4p 弱网）、断线恢复 4/4，`full_local_verification=true`、不变量 16/16，`workshop.py --verify` 全 PASS；content 已同步、归档与 ZIP 已重建，0.113.1 隔离预检复核通过。旧候选及旧私有测试上传已作废；私密测试条目 3835179658 待按最终 DLL 重传（本次 Steam 未运行，暂缓、暂存就绪）。0.4.28 已发布并冻结，不重建、不重传。（注：本段为 0.5.1 当时记录——702f587a 后再合入 Blitz/Dread，0.5.1 最终公开 DLL 为 858f76de；私测已于 2026-11-17 20:10 重传校验通过、公开 0.5.1 已于 21:59 上线，见台账 §0；当前候选为 0.5.2，见上段。）
 
 0.5.1 审查项与处理（2026-11-10 审查，2026-11-15 更新）
 
@@ -66,11 +68,11 @@
 
 1. 任务清单（`新建 文本文档.txt`）七项全部落地：机械飞升费用 1→3；霸无敌重写为 1 费先古卡（保留），下回合开始获得 1 能量、抽 1 牌、对所有敌人造成 15 伤害并获得 15 格挡，升级后 0 费、2 能量／2 抽牌（伤害／格挡仍 15）；能量文字改用游戏能量图标（霸无敌与应急油壶），不再写「(能量)」二字；卸甲成军、厄运共鸣、霸无敌换用交接文档新美术，旧图归档、在用图进 `资料/美术素材`、交接目录尽量清空；霸无敌卡面按先古卡 606×852 肖像框裁剪而非拉伸。
 2. QA 侧修正：modes 断言在池挑战下尊重原生 MultiplayerConstraint 排除（ConstraintAllows），不再把原生排除误判为失败；`tools/network_proxy.py` 容忍加入期一次性 Windows ICMP 10054 重置（connected UDP 发往无监听端口触发），不再终结代理线程，游戏错误判定不变。
-3. 最终构建 0 警告／0 错误；DLL `702f587aa5149f086cc99833beba4ea24912b07642fa50785dc884e80e873792`、PCK `d67662e5ddaad39799e179d357d2cff72817cffaf45a13f93d7bbf430c8dee08`、清单 `030ce557094f662bb5331d41386971fd2d703de833b19e9ff33c6dbd2f2dbc83`，277 份资源。构建链：`0c404043…`（additions 138 简单测试）→ 任务清单改动 `702f587a…`（全量）。
+3. 最终构建 0 警告／0 错误；DLL `702f587aa5149f086cc99833beba4ea24912b07642fa50785dc884e80e873792`、PCK `d67662e5ddaad39799e179d357d2cff72817cffaf45a13f93d7bbf430c8dee08`、清单 `030ce557094f662bb5331d41386971fd2d703de833b19e9ff33c6dbd2f2dbc83`，277 份资源。构建链：`0c404043…`（additions 138 简单测试）→ 任务清单改动 `702f587a…`（全量）。（注：702f587a 后再合入 Blitz/Dread 适配，0.5.1 最终公开 DLL 为 858f76de，见下节；本段为当时构建记录。）
 4. 全量 QA 在最终 DLL 上重跑全通过：本地 35/35（4979 条断言，含 compat／english／locale／localezh）、联机 4/4（2p 构装体、3p 死灵、4p 构装体、4p 弱网）、断线恢复 4/4（菜单 2p、强制 2p、进程丢失 4p 倒序、主机丢失 3p 混组倒序）；`full_local_verification=true`、`full_invariant_verification=true`（16/16），missing_checks／missing_multiplayer／missing_recovery 均空。证据 `tools/runtime/current-verification.json` 与 `tools/runtime/qa/` 各场景目录（含构建指纹与日志 SHA256）。
 5. 发布链：`dist/SteamWorkshop/content` 与 `content-current.json` 已同步最终候选；`dist/releases/0.5.1/` 与 `PunchConstruct-0.5.1.zip`（51,343,686 B，SHA256 `0c36fc7d7ddb298800f51df39c19804ad65627cf90107dffef38cb5028c0134f`，三文件位于根目录、与 content 逐字节一致）已重建；`workshop.py --verify` 全 PASS（`targeted_package_checks=PASS`、`network_multiplayer=PASS_LOCAL_ENET`、`upload_status=NOT_UPLOADED`），验收日志快照已写入 `dist/SteamWorkshop/验收日志/`。旧归档与 ZIP（49,980,789 B，SHA256 `47883127…`）作废。
 6. 0.113.1 隔离预检在最终 DLL 复核：startup、smoke、additions 140、pool 均 PASS，startup 日志 `[PunchConstruct] v0.5.1.0 loaded (game v0.113.1 / BaseLib 3.4.8.0; per-hook patches + relic variants)`，无错误、无缺失方法。证据 `tools/runtime/{startup,smoke,additions,pool}-0.113.1-preview.json`。官方 35/35 仍以 0.113.0 为准，作者 0.113.1 实机试玩仍待完成。
-7. 待办：私密测试条目 3835179658 需按最终 DLL 重传并核对回下载哈希——本次 Steam 未运行，作者指示先做文档，重传暂缓、暂存就绪（临时工作区保留测试条目标题与 `visibility=private`，命令 `ModUploader.exe upload -w <临时工作区> -i 3835179658`）。公开条目 3826907330 仍为 0.4.28，待作者明确同意后再更新；0.4.28 三文件哈希复核不变，保持冻结。
+7. 待办：私密测试条目 3835179658 需按最终 DLL 重传并核对回下载哈希——本次 Steam 未运行，作者指示先做文档，重传暂缓、暂存就绪（临时工作区保留测试条目标题与 `visibility=private`，命令 `ModUploader.exe upload -w <临时工作区> -i 3835179658`）。公开条目 3826907330 仍为 0.4.28，待作者明确同意后再更新；0.4.28 三文件哈希复核不变，保持冻结。（注：此暂缓状态已被取代——2026-11-17 20:10 已按 858f76de 重传私测并校验通过，21:59 经作者同意公开上传 0.5.1，见下节及台账 §0。）
 8. 文档同步：根 README、tools/README、卡牌清单、角色设计、兼容性台账、发布前清单、发布审查、dist/README、待办与实现任务书、安装说明均已更新到最终 DLL／效果／计数；历史段落保留原样并标注「已被取代」，不因工具补字段而视作重测。
 
 0.5.1 作者实机反馈待修（2026-11-17，最终候选 DLL 858f76de）

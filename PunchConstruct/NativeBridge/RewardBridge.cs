@@ -70,7 +70,7 @@ internal static class BridgePhilosopherRandomRewards
         var result = __result;
         var runNative = AdaptationRegistry.Guard("reward", "PhilosopherRandomRewards",
             () => PhilosopherRandomRewards.Apply(__instance, pool, ref result));
-        __result = result;
+        __result = runNative ? result : AsyncGuard.Wrap("reward", "PhilosopherRandomRewards", result);
         return runNative;
     }
 }

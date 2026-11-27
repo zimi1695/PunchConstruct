@@ -1,5 +1,6 @@
 """Read-only checks for the current roster, documentation links and art manifest."""
 from collections import Counter
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -9,6 +10,10 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--runtime-dir', type=Path, default=ROOT / 'tools/runtime',
+                        help='Runtime whose pool audit is checked (default: tools/runtime, the 0.113.0 baseline)')
+    args = parser.parse_args()
     roster = (ROOT / '资料/卡牌清单.txt').read_text(encoding='utf-8')
     entries = re.findall(r'^(\d{2})\s+([^：\n]+)：(攻击|技能|能力)／(白卡|蓝卡|金卡|基础|先古)。', roster, re.M)
     assert [int(e[0]) for e in entries] == list(range(1, 99)), 'Missing, repeated or unordered card numbers'
@@ -22,7 +27,7 @@ def main():
         '发条机关': 81, '机械飞升': 82, '燃尽': 83, '霸无敌': 84, '小斩波': 85, '东尼斩波': 86, '震荡': 87}
     print('PASS: 98 unique sequential cards, fixed references, rarity and type counts.')
 
-    log = (ROOT / 'tools/runtime/pool-current-check.log').read_text(encoding='utf-8-sig')
+    log = (args.runtime_dir.resolve() / 'pool-current-check.log').read_text(encoding='utf-8-sig')
     actual = re.findall(r'\[PunchConstruct AUDIT (\d+)\] ([^|]+) \| [^|]+ \| (\w+)', log)
     assert [(int(n), title.strip()) for n, title, _ in actual] == [(int(e[0]), e[1]) for e in entries], 'Roster differs from actual game audit'
     assert '[PunchConstruct POOL PASS]' in log and '[Construct QA FAIL]' not in log
@@ -33,7 +38,9 @@ def main():
             actual_rarities[title] = grade[match[1]]
     assert all(actual_rarities[re.sub(r'\s+', '', e[1])] == e[3] for e in entries), 'A card rarity differs from the actual game audit'
     pool_source = (ROOT / 'PunchConstruct/ConstructPools.cs').read_text(encoding='utf-8')
-    imported = set(re.findall(r'ModelDb.Card<(\w+)>\(\)', pool_source))
+    # The pool imports native cards through its guarded TryCard<T>() helper; the
+    # helper body's own ModelDb.Card<T>() is the generic placeholder, not a card.
+    imported = set(re.findall(r'(?:ModelDb\.Card|TryCard)<(\w+)>\(\)', pool_source)) - {'T'}
     designed = set()
     declared = {}
     for path in (ROOT / 'PunchConstruct').glob('*.cs'):
@@ -134,7 +141,7 @@ def main():
     for chinese, text in translations.items():
         assert text and not cjk.search(text), ('Untranslated English value', chinese)
         if chinese in official:
-            assert normalized(text) == normalized(official[chinese]), ('Official term mismatch', chinese, text)
+            assert normalized(normalize(text)) == normalized(normalize(official[chinese])), ('Official term mismatch', chinese, text)
         english_tags = {normalized(value) for _, value in highlight.findall(text)}
         for zh_tag in [value for _, value in highlight.findall(chinese)]:
             if zh_tag in official:
@@ -168,7 +175,7 @@ def main():
     config = json.loads((ROOT / 'dist/SteamWorkshop/workshop.json').read_text(encoding='utf-8-sig'))
     squeezed = re.sub(r'\s+', '', config['description'])
     assert '98种卡牌' in squeezed and '23张原创设计' in squeezed
-    assert 'BaseLib（已验证3.4.8）' in squeezed and '0.113.0' in squeezed
+    assert 'BaseLib（已验证3.4.8）' in squeezed and '0.114.0' in squeezed
     assert '[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3747526116]原模组页面[/url]' in config['description']
     assert (ROOT / 'dist/SteamWorkshop/发布说明.txt').read_text(encoding='utf-8') == config['title'] + '\n\n' + config['description'] + '\n'
     sync = json.loads((ROOT / 'tools/runtime/content-current.json').read_text(encoding='utf-8'))

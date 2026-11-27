@@ -1,10 +1,12 @@
-﻿拳击构装体：发布前清单（2026-10-26，2026-11-17更新）
+﻿拳击构装体：发布前清单（2026-10-26，2026-11-27更新）
 
 【长期护栏·每次工坊上传必做】附加宣传图空壳已多次复发（0.4.24／0.4.28／0.5.1）：ModUploader 对后端已存在的同名附加预览只保留条目、不重传图片内容，URL 全空时页面表现为宣传图"消失"，单传封面修不了。每次 upload 后必须跑 `python tools/verify_previews.py <条目>` 确认封面＋6 张附加预览 URL 全非空（退出码 0）；若为空壳，按"先清空 previews/ 上传删除空壳 → 放回 6 张再上传重传内容"两步修复，再复核。完整规程见 tools/README.md「附加宣传图空壳护栏」。此操作只动预览，不影响 mod 本体三文件哈希。
 
 当前交付
 
-0.5.1（最终 DLL `702f587a…`、PCK `d67662e5…`、277 份资源；任务清单改动与愚者搬运、药水图标、pcdeck 均已合入；本地 35/35、联机 4/4（含 4p 弱网）、断线恢复 4/4 与 `workshop.py --verify` 全通过，content 已同步、归档与 ZIP 已重建；私密测试条目 3835179658 待重传，公开条目未上传）
+0.5.2（最终候选 DLL `0a6ea643…`、PCK `99a6c13b…`、JSON `9ceef44e…`、277 份资源；修复被寄生的自动机械 SEARCH 预览、古牙构装体映射、清理古铜之拳临时力量死代码、共享遗物池按玩家过滤、稳健性加固、统一健康状态、机械飞升完整力量/敏捷预览与独立审查 3 缺口；0.114.0 适配保留愚者搬运牌模组数值、修正愚者卡框、收窄脑蛭无色池。代码编译 0 警告 0 错误，0.114.0 本地 35/35（5020 断言）、精确包 35/35、联机 4/4（含 4p 弱网）、恢复 4/4 全部通过，不变量 16/16，`workshop.py --verify` targeted=PASS；ZIP 51,364,889 B／SHA256 `fb4e66d0…`；私测待 Steam，公开待作者许可）
+
+0.5.1（已公开上线，DLL `858f76de…`；以下为历史记录，原记最终 DLL `702f587a…`、PCK `d67662e5…`、277 份资源；任务清单改动与愚者搬运、药水图标、pcdeck 均已合入；本地 35/35、联机 4/4（含 4p 弱网）、断线恢复 4/4 与 `workshop.py --verify` 全通过，content 已同步、归档与 ZIP 已重建）
 
 [已完成] 源码与文档更新到 0.5.1：新增发条机关、机械飞升、燃尽、霸无敌、核心电涌、万能药，齿轮工艺品遗物，3 种构造专属药水，改写被寄生的自动机械事件并补齐获取限制。
 [已完成] 左勾拳削弱：基础版仍为 6 伤害／4 格挡但去掉保留，升级版仍为 6 伤害／4 格挡并获得保留；右勾拳不变。`BoxingChecks` 已断言基础/升级差异与右勾拳生成。
@@ -94,7 +96,7 @@
 Steam现状
 
 条目3826907330已存在，2026-10-27已上传0.4.23、private、未公开。无需重复创建条目。作者本次明确同意私密上传；不能再写“从未上传”或“本地content未上传”。
-发布文案和小斩波封面保留；文案中的数量已更新为98种、23张原创。dist/SteamWorkshop/verification.json 已按最终 DLL `702f587a…`（PCK `d67662e5…`、清单 `030ce557…`，277 份资源）重建：`targeted_package_checks=PASS`、`network_multiplayer=PASS_LOCAL_ENET`（8 个联机／恢复场景）、`upload_status=NOT_UPLOADED`；content 与 content-current.json 已同步该最终候选，`full_local_verification=true`、不变量 16/16。0.4.28 仍为线上公开版本并保持冻结。私密测试条目 3835179658 待按最终 DLL 重传（暂缓，暂存就绪）；旧验收日志只对应历史构建，不能证明当前 content 完整验收通过。
+发布文案和小斩波封面保留；文案中的数量已更新为98种、23张原创。dist/SteamWorkshop/verification.json 已按 0.114.0 候选 DLL `0a6ea643…`（PCK `99a6c13b…`、清单 `9ceef44e…`，277 份资源）重建：`targeted_package_checks=PASS`、`network_multiplayer=PASS_LOCAL_ENET`、`missing_multiplayer_checks=[]`、`upload_status=NOT_UPLOADED`；content 与 content-current.json 已同步该候选，`full_local_verification=true`、`full_invariant_verification=true`（16/16），本地 35/35、精确包 35/35、联机 4/4、恢复 4/4 均通过；`dist/releases/0.5.2/` 与 `PunchConstruct-0.5.2.zip`（51,364,889 B，SHA256 `fb4e66d0…`）已按同一三件套重建并由 `release.py --check` 复核。0.5.1 仍为线上公开版本（条目 3826907330），0.4.28 归档保持冻结。私密测试条目 3835179658 待按最终 DLL 重传（Steam 未运行，暂存就绪）。3p 死灵首轮在 RIGHT_HOOK 后出现一次校验和分歧，同一 DLL 隔离重跑 83 项全 PASS，期间未改玩法代码。
 
 较低优先级与可选项
 

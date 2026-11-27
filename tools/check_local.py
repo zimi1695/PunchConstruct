@@ -13,21 +13,25 @@ ROOT = Path(__file__).resolve().parent.parent
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--package-dir', type=Path, help='Read-only verification of an already prepared exact candidate')
+    parser.add_argument('--runtime-dir', type=Path, default=ROOT / 'tools/runtime',
+                        help='Isolated game runtime to test against (default: tools/runtime, the 0.113.0 baseline)')
     args = parser.parse_args()
+    runtime = args.runtime_dir.resolve()
     binary = ROOT / 'PunchConstruct/bin/Release/net9.0/PunchConstruct.dll'
     if args.package_dir: binary = args.package_dir / 'PunchConstruct.dll'
     digest = hashlib.sha256(binary.read_bytes()).hexdigest()
     manifest = args.package_dir / 'PunchConstruct.json' if args.package_dir else ROOT / 'PunchConstruct/PunchConstruct.json'
     version = json.loads(manifest.read_text(encoding='utf-8'))['version']
     required_checks = checks_for_version(version)
-    progress = ROOT / 'tools/runtime' / (('candidate-batch-' if args.package_dir else 'local-batch-') + version + '.json')
+    progress = runtime / (('candidate-batch-' if args.package_dir else 'local-batch-') + version + '.json')
     state = dict(version=version, dll_sha256=digest, package_dir=str(args.package_dir) if args.package_dir else None, passed=False, checks={})
 
     def save():
         progress.write_text(json.dumps(state, indent=2) + '\n', encoding='utf-8')
 
     def run(mode):
-        command = [sys.executable, str(ROOT / 'tools/check_current.py'), mode, '--rendered']
+        command = [sys.executable, str(ROOT / 'tools/check_current.py'), mode, '--rendered',
+                   '--runtime-dir', str(runtime)]
         if args.package_dir: command += ['--package-dir', str(args.package_dir)]
         result = subprocess.run(command, cwd=ROOT,
             capture_output=True, text=True, encoding='utf-8', errors='replace')
@@ -60,7 +64,8 @@ def main():
         raise SystemExit('Build changed during verification; partial results retained.')
     state['passed'] = len(state['checks']) == len(required_checks) and all(v['passed'] for v in state['checks'].values())
     save()
-    subprocess.run([sys.executable, str(ROOT / 'tools/report_local.py')], cwd=ROOT, check=True)
+    subprocess.run([sys.executable, str(ROOT / 'tools/report_local.py'),
+                    '--runtime-dir', str(runtime)], cwd=ROOT, check=True)
     raise SystemExit(0 if state['passed'] else 1)
 
 if __name__ == '__main__': main()

@@ -114,6 +114,7 @@ internal static partial class PlaytestRunner
 
 // Observe the real native damage boundary, rather than the fix's helper.
 [HarmonyPatch(typeof(Hook), nameof(Hook.BeforeDamageReceived))]
+[QaOnly]
 internal static class DelayedFacingProbe
 {
     internal static bool Enabled;

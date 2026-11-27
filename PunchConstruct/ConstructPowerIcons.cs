@@ -13,7 +13,6 @@ internal static class ConstructPowerIcons
         [typeof(UnarmToArmsPower)] = "unarm_to_arms",
         [typeof(NeverBackDownPower)] = "never_back_down",
         [typeof(BoxingChampionFormPower)] = "boxing_champion_form",
-        [typeof(GuardStrengthNextTurnPower)] = "brass_nut",
         [typeof(ClockworkMechanismPower)] = "clockwork_mechanism",
         [typeof(ConstructDomineeringPower)] = "delayed_wave",
     };

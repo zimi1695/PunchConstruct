@@ -31,7 +31,10 @@ def main():
     parser.add_argument('--jitter-ms', type=float, default=0)
     parser.add_argument('--loss-percent', type=float, default=0)
     parser.add_argument('--blackout-seconds', type=float, default=0, help='Drop both directions once at the first combat hand-choice action')
+    parser.add_argument('--runtime-dir', type=Path, default=RUNTIME,
+                        help='Game runtime to stage and record evidence in (default: tools/runtime)')
     args = parser.parse_args()
+    runtime = args.runtime_dir.resolve()
     if not (0 <= args.jitter_ms <= args.latency_ms <= 500 and 0 <= args.loss_percent <= 30 and 0 <= args.blackout_seconds <= 10):
         parser.error('Require 0 <= jitter <= latency <= 500ms, loss 0..30%, blackout 0..10s')
     impaired = any((args.latency_ms, args.loss_percent, args.blackout_seconds))
@@ -42,7 +45,7 @@ def main():
     if impaired:
         label += '-network'
     stamp = time.strftime('%Y%m%d-%H%M%S') + '-' + str(time.time_ns() % 1000000000)
-    evidence = RUNTIME / 'qa' / ('coop-' + label + '-' + stamp)
+    evidence = runtime / 'qa' / ('coop-' + label + '-' + stamp)
     evidence.mkdir(parents=True)
     summary = dict(schema=1, scenario='coop', guest=args.guest, players=args.players, passed=False, peers={}, snapshots={})
     if args.treasure_only:
@@ -58,13 +61,13 @@ def main():
             dest.parent.mkdir(parents=True, exist_ok=True)
             os.link(source, dest)
 
-        for source in RUNTIME.iterdir():
+        for source in runtime.iterdir():
             if source.is_file() and (source.suffix.lower() in ('.dll', '.exe', '.pck') or source.name in ('override.cfg', 'release_info.json')):
                 link(source, stage / source.name)
         for tree in ('data_sts2_windows_x86_64', 'mods/BaseLib'):
-            for source in (RUNTIME / tree).rglob('*'):
+            for source in (runtime / tree).rglob('*'):
                 if source.is_file():
-                    link(source, stage / tree / source.relative_to(RUNTIME / tree))
+                    link(source, stage / tree / source.relative_to(runtime / tree))
         mod = stage / 'mods/PunchConstruct'
         mod.mkdir(parents=True)
         if args.package_dir:
@@ -134,20 +137,21 @@ def main():
         for role, process in zip(roles, processes):
             log = stage / (role + '.log')
             report = log.read_text(encoding='utf-8-sig', errors='replace') if log.exists() else (stage / (role + '-console.log')).read_text(encoding='utf-8-sig', errors='replace')
-            archive = RUNTIME / ('coop-' + label + '-' + role + '.log')
+            archive = runtime / ('coop-' + label + '-' + role + '.log')
             archive.write_text(report, encoding='utf-8')
             for line in report.splitlines():
                 if '[Construct ' in line:
                     print(role + ': ' + line)
             (evidence / (role + '.log')).write_text(report, encoding='utf-8')
-            diagnostic = archive_diagnostics(stage / 'userdata' / role, evidence / role, require_actions=not args.treasure_only)
+            diagnostic = archive_diagnostics(stage / 'userdata' / role, evidence / role, require_actions=not args.treasure_only,
+                                             expected_dll=summary['build']['PunchConstruct.dll'])
             issues = qa_issues(report) + diagnostic['errors']
             summary['peers'][role] = dict(exit_code=process.returncode, diagnostics=diagnostic, assertions=len(re.findall(r'\[Construct QA \d+\]', report)), errors=issues)
             if process.returncode != 0 or '[Construct COOP PASS]' not in report or '[Construct QA FAIL]' in report or issues:
                 passed = False
                 print(role + ' errors:', issues)
                 print(report[-6000:])
-        phases = ('treasure',) if args.treasure_only else ('combat', 'marks', 'divinity', 'turn', 'temporary-strength-expired', 'choices', 'rewards', 'concurrent', 'survivor')
+        phases = ('treasure',) if args.treasure_only else ('combat', 'marks', 'divinity', 'turn', 'second-turn', 'choices', 'rewards', 'concurrent', 'survivor')
         if not args.treasure_only and tested_version >= (0, 4, 20):
             phases = phases[:7] + ('boxing-generated', 'boxing-resolved') + phases[7:]
         if not args.treasure_only and tested_version >= (0, 4, 22):
@@ -159,7 +163,7 @@ def main():
                 summary['snapshots'][phase] = matching
                 passed &= matching
                 for p in snapshots:
-                    shutil.copy2(p, RUNTIME / ('coop-' + label + '-' + p.name))
+                    shutil.copy2(p, runtime / ('coop-' + label + '-' + p.name))
                     shutil.copy2(p, evidence / p.name)
                 print('All actual peer snapshots match:', phase, matching)
             else:
@@ -173,7 +177,7 @@ def main():
             passed = summary['passed']
             print('Network impairment:', json.dumps(summary['network']))
         if not passed:
-            raise SystemExit('Coop check failed; inspect runtime/coop-' + args.guest + '-*.log')
+            raise SystemExit('Coop check failed; inspect ' + str(runtime / ('coop-' + label + '-*.log')))
         print('COOP PASS:', args.guest, 'DLL', hashlib.sha256((mod / 'PunchConstruct.dll').read_bytes()).hexdigest())
     finally:
         if args.treasure_only:
@@ -191,7 +195,8 @@ def main():
             summary['network']['validation_errors'] = proxy.validation_errors()
         for role in roles:
             if role not in summary['peers']:
-                archive_diagnostics(stage / 'userdata' / role, evidence / role)
+                archive_diagnostics(stage / 'userdata' / role, evidence / role,
+                                    expected_dll=summary['build']['PunchConstruct.dll'])
                 for suffix in ('.log', '-console.log'):
                     source = stage / (role + suffix)
                     if source.exists():

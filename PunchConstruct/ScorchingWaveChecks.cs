@@ -48,9 +48,13 @@ internal static partial class PlaytestRunner
             CardCmd.Upgrade(copy);
             Check(copy.CurrentUpgradeLevel == 9 && copy.DynamicVars.Damage.BaseValue == 59 && copy.DynamicVars.Block.BaseValue == 59,
                 "Cloned/restored card can upgrade again exactly once");
-            copy.DowngradeInternal(); copy.FinalizeUpgradeInternal();
-            Check(copy.CurrentUpgradeLevel == 0 && copy.DynamicVars.Damage.BaseValue == 5 && copy.DynamicVars.Block.BaseValue == 5,
-                "Native downgrade resets repeated upgrades to 5/5");
+            NativeCardOps.Downgrade(copy); copy.FinalizeUpgradeInternal();
+            int downgraded = NativeCardOps.DowngradesOneLevel ? 8 : 0;
+            decimal downgradedValue = 5 + downgraded * (downgraded + 3) / 2;
+            Check(copy.CurrentUpgradeLevel == downgraded && copy.DynamicVars.Damage.BaseValue == downgradedValue &&
+                copy.DynamicVars.Block.BaseValue == downgradedValue,
+                "Native downgrade keeps the game's version semantics: " +
+                (NativeCardOps.DowngradesOneLevel ? "one level (0.114)" : "full reset (0.113)"));
         }
         Check(card.CurrentUpgradeLevel == 8 && card.DynamicVars.Damage.BaseValue == 49 &&
             ModelDb.Card<ScorchingIronWave>().DynamicVars.Damage.BaseValue == 5 && original.MaxUpgradeLevel == 1,

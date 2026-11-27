@@ -33,10 +33,11 @@ public sealed class AncientGuardStance : CustomRelicModel
     public override async Task AfterDamageReceived(PlayerChoiceContext context, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? card)
     {
         if (target != Owner.Creature || !result.WasFullyBlocked) return;
-        int amount = NextAmount++;
+        int amount = NextAmount;
+        await GuardStancePowerGain.Apply<VigorPower>(context, Owner.Creature, amount);
+        NextAmount = amount + 1;
         InvokeDisplayAmountChanged();
         Flash();
-        await GuardStancePowerGain.Apply<VigorPower>(context, Owner.Creature, amount);
     }
 }
 
@@ -70,7 +71,9 @@ internal static class AncientWaveMapping
 {
     internal static void Apply(ref Dictionary<ModelId, CardModel> __result)
     {
+        // Replace, not extend: only TonyWave maps for constructs. Without TonyWave the starter lookup
+        // returns null, so ArchaicTooth.SetupForPlayer fails and Orobas never offers the relic.
         if (ScopedAncientTooth.ConstructSetup)
-            __result = new Dictionary<ModelId, CardModel>(__result) { [ModelDb.GetId<TonyWave>()] = ModelDb.Card<ConstructDomineering>() };
+            __result = new Dictionary<ModelId, CardModel> { [ModelDb.GetId<TonyWave>()] = ModelDb.Card<ConstructDomineering>() };
     }
 }
